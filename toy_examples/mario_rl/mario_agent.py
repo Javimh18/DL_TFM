@@ -21,13 +21,13 @@ class Mario:
         self.curr_step = 0
 
         self.save_every = 5e5  # no. of experiences between saving Mario Net (maybe too much??)
+        
+        self.memory = TensorDictReplayBuffer(storage=LazyMemmapStorage(100000, device=torch.device("cpu")))
+        self.batch_size = 8
 
         self.gamma = 0.9
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=0.00025)
         self.loss_fn = torch.nn.SmoothL1Loss()
-
-        self.memory = TensorDictReplayBuffer(storage=LazyMemmapStorage(100000, device=torch.device("cpu")))
-        self.batch_size = 32
 
         self.burnin = 1e4  # min. experiences before training
         self.learn_every = 3  # no. of experiences between updates to Q_online
@@ -51,7 +51,7 @@ class Mario:
         else:
             state = state[0].__array__() if isinstance(state, tuple) else state.__array__()
             state = torch.tensor(state, device=self.device).unsqueeze(0)
-            action_values = self.net(state, model="online") # model=online is because training itself is online?
+            action_values = self.net(state, model="online")
             action_idx = torch.argmax(action_values, axis=1).item()
 
         # decrease exploration_rate
@@ -193,7 +193,7 @@ class MarioNet(nn.Module):
     def forward(self, input, model):
         if model == "online":
             return self.online(input)
-        elif model == "online":
+        elif model == "target":
             return self.target(input)
         
     def __build_cnn(self, c, output_dim):

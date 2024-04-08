@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     logger = MetricLogger(save_dir)
 
-    episodes = 40
+    episodes = 400
     for e in range(episodes):
 
         state = env.reset()
