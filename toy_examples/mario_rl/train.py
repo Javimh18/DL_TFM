@@ -3,7 +3,7 @@ from torchvision import transforms as T
 from pathlib import Path
 import datetime
 
-import gym
+import gymnasium as gym
 from gym.wrappers import FrameStack
 from nes_py.wrappers import JoypadSpace
 from wrappers import SkipFrame, GrayScaleObservation, ResizeObservation
@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
     logger = MetricLogger(save_dir)
 
-    episodes = 400
+    episodes = 4000
     for e in range(episodes):
 
         state = env.reset()

@@ -22,8 +22,8 @@ class Mario:
 
         self.save_every = 5e5  # no. of experiences between saving Mario Net (maybe too much??)
         
-        self.memory = TensorDictReplayBuffer(storage=LazyMemmapStorage(100000, device=torch.device("cpu")))
-        self.batch_size = 8
+        self.memory = TensorDictReplayBuffer(storage=LazyMemmapStorage(7e4, device=torch.device("cpu")))
+        self.batch_size = 32
 
         self.gamma = 0.9
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=0.00025)
@@ -138,6 +138,16 @@ class Mario:
         Transferring the parameters from the online net to the target net.
         """
         self.net.target.load_state_dict(self.net.online.state_dict())
+        
+    def save(self):
+        save_path = (
+            self.save_dir / f"mario_net_{int(self.curr_step // self.save_every)}.chkpt"
+        )
+        torch.save(
+            dict(model=self.net.state_dict(), exploration_rate=self.exploration_rate),
+            save_path,
+        )
+        print(f"MarioNet saved to {save_path} at step {self.curr_step}")
 
     def learn(self):
         """
