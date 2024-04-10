@@ -8,3 +8,5 @@ pip install torchrl==0.3.0
 
 pip install matplotlib
 
+pip install gymnasium[accept-rom-license]
+pip install gymnasium[atari]
