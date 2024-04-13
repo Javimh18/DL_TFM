@@ -1,2 +1,10 @@
 **__pycache__
 *.pyc
+*.jpg
+*.jpeg
+*.mp4
+*.avi
+*.chkpt
+**log
+**/checkpoints
+**/memmap_dir
