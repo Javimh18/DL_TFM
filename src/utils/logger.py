@@ -81,6 +81,7 @@ class MetricLogger:
         time_since_last_record = np.round(self.record_time - last_record_time, 3)
 
         print(
+            f"INFO:"
             f"Episode {episode} - "
             f"Step {step} - "
             f"Epsilon {epsilon} - "
