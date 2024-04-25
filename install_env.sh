@@ -10,3 +10,4 @@ pip install matplotlib
 
 pip install gymnasium[accept-rom-license]
 pip install gymnasium[atari]
+pip install timm
