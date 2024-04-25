@@ -158,19 +158,21 @@ class DQN(nn.Module):
                                 n_layers=2,
                                 patch_size=4,
                                 fc_dim=16,
+                                head_dim=256,
                                 embed_dim=128,
                                 attn_heads=[4,8],
                                 dropouts=[0.3, 0.3],
-                                input_shape=obs_shape)
+                                input_shape=(1,)+obs_shape)
             
             self.target = PatchTransformer(n_actions=n_actions,
                                 n_layers=2,
                                 patch_size=4,
                                 fc_dim=16,
+                                head_dim=256,
                                 embed_dim=128,
                                 attn_heads=[4,8],
                                 dropouts=[0.3, 0.3],
-                                input_shape=obs_shape)
+                                input_shape=(1,)+obs_shape)
         
         self.target.load_state_dict(self.online.state_dict())
 
