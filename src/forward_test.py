@@ -1,9 +1,8 @@
+import sys
+from models.patch_transformer import PatchTransformer
 import torch
 from torch import nn
-from src.models.patch_transformer import PatchTransformer
 from torchsummary import summary    
-
-
 
 if __name__ == '__main__':
     B = 8
@@ -17,6 +16,7 @@ if __name__ == '__main__':
                            n_actions=4,
                            patch_size=8,
                            fc_dim=16,
+                           head_dim=256,
                            embed_dim=128,
                            attn_heads=[4,8],
                            dropouts=[0.3, 0.3],
