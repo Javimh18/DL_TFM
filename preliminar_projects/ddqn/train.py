@@ -57,10 +57,9 @@ if __name__ == '__main__':
     for e in range(episodes):
 
         state = env.reset()
-
-        # Play the game!
+        measure_array = []
         while True:
-
+            start = datetime.datetime.now()
             # Run agent on the state
             action = mario.act(state)
 
@@ -78,11 +77,17 @@ if __name__ == '__main__':
 
             # Update state
             state = next_state
+            
+            measure = datetime.datetime.now() - start
+            measure = measure.total_seconds() * 1000
 
             # Check if end of game
             if done or info["flag_get"] or trunc:
                 break
-
+            measure_array.append(measure)
+            
+        avg_measure = sum(measure_array)/len(measure_array)
+        print(f"Avg. step ({mario.curr_step}) time for measure: {avg_measure:.2f} ms")
         logger.log_episode()
 
         if (e % 20 == 0) or (e == episodes - 1):

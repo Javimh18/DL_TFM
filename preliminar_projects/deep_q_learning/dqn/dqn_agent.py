@@ -92,9 +92,9 @@ class Agent:
             state, action.squeeze(), reward.squeeze(), next_state, done.squeeze(), trunc.squeeze()
             
         # once we have our transition tuple, we apply TD learning over our DQN and compute the loss
-        q_estimate = self.net(state.to(device=self.device), model='online')[np.arange(0, self.batch_size),action]
+        q_estimate = self.net(state, model='online')[np.arange(0, self.batch_size),action]
         # (1-(done and trunc))
-        q_target = reward + (1 - done.float())*self.gamma*torch.max(self.net(next_state.to(device=self.device), model='target'))
+        q_target = reward + (1 - done.float())*self.gamma*torch.max(self.net(next_state, model='target'))
         loss = self.loss_fn(q_estimate, q_target)
                     
         # Optimize using Adamax (we can use SGD too)
