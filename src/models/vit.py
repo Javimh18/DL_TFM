@@ -54,28 +54,27 @@ class MultiHeadAttention(nn.Module):
         self.n_heads = n_heads 
         
         # key, query, value projections
-        self.key = nn.Linear(n_embd, n_embd*n_heads)
-        self.query = nn.Linear(n_embd, n_embd*n_heads)
-        self.value = nn.Linear(n_embd, n_embd*n_heads)
-        
-        # output projection
-        self.proj = nn.Linear(n_embd*n_heads, n_embd)
+        self.qkv = nn.Linear(n_embd, 3*n_embd)
+        self.drop = nn.Dropout(0.5)
 
     def forward(self, x):
         B, N, E = x.size()
         
-        # calculate query, key, values for all heads in batch and move head forward to be the batch dim
-        k = self.key(x).view(B,  N, E, self.n_heads).transpose(1, 3) # (B, nh, N, E)
-        q = self.query(x).view(B, N, E, self.n_heads).transpose(1, 3) # (B, nh, N, E)
-        v = self.value(x).view(B, N, E, self.n_heads).transpose(1, 3) # (B, nh, N, E)
+        if E != self.n_heads: # The dimension of the embedding should not change
+            print(f"MHSA: The embeding dimension does not match with the input dimension. \n Input dim: {E}, Embed Dim: {self.embed_dim}")
+            exit(-1)
         
-        # attention (B, nh, N, E) x (B, nh, E, N) -> (B, nh, N, N) 
+        # calculate query, key, values for all heads in batch and move head forward to be the batch dim
+        qkv = self.qkv(x).reshape(B, N, 3, self.n_heads, E//self.n_heads).permute(2, 0, 3, 1, 4) # (B, N, 3*E) -> (B, N, 3, nh, E//nh) -> (3, B, nh, N, E//nh)
+        q, k, v = qkv[0], qkv[1], qkv[1] 
+        
+        # attention (B, nh, N, E//nh) x (B, nh, E//nh, N) -> (B, nh, N, N) 
         att = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(k.size(-1)))
         att = torch.nn.functional.softmax(att, dim=-1)
         y = att @ v # (B, nh, N, N) x (B, nh, N, E) -> (B, nh, N, E)
-        y = y.transpose(1, 2).contiguous().view(B, N, E*self.n_heads) # re-assemble all head outputs side by side
+        y = y.transpose(1, 2).contiguous().view(B, N, E) # re-assemble all head outputs side by side
         
-        return self.proj(y)
+        return self.drop(y)
     
 class TransformerBlock(nn.Module):
     def __init__(self, n_embd, n_heads):
