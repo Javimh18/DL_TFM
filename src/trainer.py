@@ -27,7 +27,6 @@ class Trainer:
         self.save_video_dir.mkdir(parents=True)
         logger = MetricLogger(self.save_check_dir)
         
-        
         for e in range(self.n_episodes):
             # reset environment
             done, trunc = False, False
@@ -35,20 +34,20 @@ class Trainer:
             measure_array = []
             while (not done) and (not trunc):
                 # 1. get action for state
-                start = datetime.datetime.now()
-                action = self.agent.perform_action(state) # 20.69 ms
+                action = self.agent.perform_action(state) # 20.69 ms  
                 # 2. run action in environment
                 next_state, reward, done, trunc, _ = self.env.step(action) # 1.70 ms
                 # 3. collect experience in exp. replay buffer for Q-learning
                 self.agent.store_transition(state, action, reward, next_state, done, trunc) # 0.56 ms
                 # 4. Learn from collected experiences
+                start = datetime.datetime.now()
                 q, loss = self.agent.learn(step) # 39.76 ms
+                measure = datetime.datetime.now() - start
+                measure = measure.total_seconds() * 1000
                 # 5. Update the current state 
                 state = next_state
                 # 6. Update step value 
-                step += 1
-                measure = datetime.datetime.now() - start
-                measure = measure.total_seconds() * 1000                
+                step += 1            
                 # Logging
                 logger.log_step(reward, loss, q)
                 measure_array.append(measure)
@@ -66,7 +65,7 @@ class Trainer:
                 
             logger.log_episode()
             if (not(e % self.log_every) and e > 0) or (e == self.n_episodes - 1) :
-                logger.record(episode=e, epsilon=self.agent.gamma, step=step)
+                logger.record(episode=e, epsilon=self.agent.exploration_rate, step=step)
                 
             
         

@@ -26,6 +26,7 @@ if __name__ == '__main__':
     parser.add_argument("--save_check_dir", help="Path to the folder where checkpoints are stored", default="../checkpoints")
     parser.add_argument("--save_video_dir", help="Path to the folder where videos of the agent playing are stored", default="../videos")
     parser.add_argument("--save_net_every", help="How many steps between saving the network", default=5e5)
+    parser.add_argument("--log_every",  help="How many episodes between printing logger statistics", default=20)
     # process the arguments, store them in args
     args = parser.parse_args()
     # create the environment and add the wrappers
@@ -55,7 +56,7 @@ if __name__ == '__main__':
     trainer = Trainer(env=env, 
                       agent=agent, 
                       n_episodes=args.number_episodes, 
-                      log_every=2,
+                      log_every=args.log_every,
                       save_check_dir=save_check_dir,
                       save_video_dir=save_video_dir)
     
