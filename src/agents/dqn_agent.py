@@ -26,7 +26,7 @@ class DQNAgent:
                  sync_every=1e4, 
                  gamma=0.9, 
                  replay_memory_size=REPLAY_MEMORY_SIZE,
-                 save_every=200):
+                 save_every=2e5):
         
         self.device = device
         self.action_dim = action_dim
@@ -58,7 +58,7 @@ class DQNAgent:
         self.exploration_rate_min = 0.1
         
         # learn and burning parameters
-        self.learn_every = 2
+        self.learn_every = 3
         self.burning = 1e4
         
         # update the q_target each sync_every steps
@@ -106,27 +106,6 @@ class DQNAgent:
         }, batch_size=[]))
         
     def learn(self, step):
-        # sample from memory 
-        transitions_batch = self.memory.sample(self.batch_size).to(self.device)
-        # extract samples such that: s_t, a_t, r_t+1, s_t+1
-        state, action, reward, next_state, done, trunc = (transitions_batch.get(key) for key in \
-                                                    (TRANSITION_KEYS))
-        
-        # since they are all tensors, we only need to squeeze the ones with an additional dimension
-        state, action, reward, next_state, done, trunc = \
-            state, action.squeeze(), reward.squeeze(), next_state, done.squeeze(), trunc.squeeze()
-    
-        # once we have our transition tuple, we apply TD learning over our DQN and compute the loss
-        q_estimate = self.net(state.to(device=self.device), model='online')[np.arange(0, self.batch_size),action] # 15.65 ms
-        
-        # (1-(done and trunc))
-        q_target = reward + (1 - done.float())*self.gamma*torch.max(self.net(next_state.to(device=self.device), model='target'))
-        loss = self.loss_fn(q_estimate, q_target)
-                    
-        # Optimize using Adamax (we can use SGD too)
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
         
         # Once the error is computed, each sync_every the weights of the 
         # target network are updated to the online network
@@ -136,16 +115,39 @@ class DQNAgent:
         # save the model each save_every steps
         if step % self.save_every == 0 and step > 0:
             self.save(step)
-            
+        
         # Burning lets episodes pass w/o doing nothing?
         if step < self.burning:
             return None, None
 
         # Not learning every step, but every learn_every steps
-        if step % self.learn_every == 0:
+        if step % self.learn_every != 0:
             return None, None
+        
+        # sample from memory 
+        transitions_batch = self.memory.sample(self.batch_size)
+        # extract samples such that: s_t, a_t, r_t+1, s_t+1
+        state, action, reward, next_state, done, trunc = (transitions_batch.get(key) for key in \
+                                                    (TRANSITION_KEYS))
+        
+        # since they are all tensors, we only need to squeeze the ones with an additional dimension
+        state, action, reward, next_state, done, trunc = \
+            state, action.squeeze(), reward.squeeze(), next_state, done.squeeze(), trunc.squeeze()
+    
+        # once we have our transition tuple, we apply TD learning over our DQN and compute the loss
+        q_estimate = self.net(state, model='online')[np.arange(0, self.batch_size),action] # 15.65 ms
+        
+        # (1-(done and trunc))
+        q_target = reward + (1 - done.float())*self.gamma*torch.max(self.net(next_state, model='target'))
+        loss = self.loss_fn(q_estimate, q_target)
+                    
+        # Optimize using Adamax (we can use SGD too)
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
             
         return q_estimate.mean().item(), loss.item()
+    
     
     def sync_Q_target(self):
         """
