@@ -53,7 +53,6 @@ class MultiHeadSelfAttention(nn.Module):
         self.n_heads = n_heads
         self.head_dim = head_dim
         
-        # TODO: Temporal fix for attention, but still not sure if it is the best thing...
         self.Wq = nn.Linear(self.embed_dim, self.head_dim)
         self.Wk = nn.Linear(self.embed_dim, self.head_dim)
         self.Wv = nn.Linear(self.embed_dim, self.head_dim)
@@ -73,7 +72,7 @@ class MultiHeadSelfAttention(nn.Module):
                       .permute(0, 2, 1, 3)# (B, N, E) * (E, H) -> (B, nh, N, H//nh)
         v = self.Wv(x).reshape(B, N, self.n_heads, self.head_dim//self.n_heads)\
                       .permute(0, 2, 1, 3)# (B, N, E) * (E, H) -> (B, nh, N, H//nh)
-        attn = torch.softmax((q @ k.transpose(-2,-1)) / math.sqrt(q.shape[-1]), dim=2) # (B, nh, N, E//nh) * (B, nh, E//nh, N) -> (B, nh, N, N)
+        attn = torch.softmax((q @ k.transpose(-2,-1)) / math.sqrt(q.shape[-1]), dim=-1) # (B, nh, N, E//nh) * (B, nh, E//nh, N) -> (B, nh, N, N)
         x = (attn @ v) # (B, nh, N, N) * (B, nh, N, E//nh) -> (B, nh, N, E//nh)
         x = x.transpose(1,2) # (B, nh, N, E//nh) -> (B, N, nh, E//nh)
         x = x.reshape(B, N, self.head_dim) # (B, N, nh, E//nh) -> (B, N, E)
