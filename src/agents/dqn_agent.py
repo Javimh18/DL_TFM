@@ -2,6 +2,7 @@ import torch
 from torch import nn
 from collections import deque
 from torchrl.data import TensorDictReplayBuffer, LazyMemmapStorage
+from torchrl.data.replay_buffers.samplers import PrioritizedSampler
 from tensordict import TensorDict
 import numpy as np
 import datetime
@@ -39,7 +40,7 @@ class DQNAgent:
         # defining the memory (experience replay) of the agent
         self.memory = TensorDictReplayBuffer(storage=LazyMemmapStorage(
             max_size=replay_memory_size,
-            #scratch_dir='./memmap_dir',
+            scratch_dir='./memmap_dir',
             device=self.device
         ))
         
@@ -53,9 +54,9 @@ class DQNAgent:
         self.loss_fn = torch.nn.SmoothL1Loss()
         
         # exploration (epsilon) parameter for e-greedy policy
-        self.exploration_rate = 0.5
-        self.exploration_rate_decay = 0.99999975
-        self.exploration_rate_min = 0.1
+        self.exploration_rate = 0.9
+        self.exploration_rate_decay = 0.9999999975
+        self.exploration_rate_min = 0.3
         
         # learn and burning parameters
         self.learn_every = 3
