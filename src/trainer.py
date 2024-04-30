@@ -53,9 +53,9 @@ class Trainer:
                 measure_array.append(measure)
                 
             avg_measure = sum(measure_array)/len(measure_array)
-            print(f"Avg. step time for measure: {avg_measure:.2f} ms")
+            # print(f"Avg. step time for measure: {avg_measure:.2f} ms")
             
-            if e > 0: 
+            if e > 999: 
                 save_video(
                     self.env.render(),
                     self.save_video_dir,
