@@ -5,6 +5,7 @@
 *.mp4
 *.avi
 *.chkpt
+*.out
 **log
 **/checkpoints
 **/memmap_dir
