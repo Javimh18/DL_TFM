@@ -23,6 +23,7 @@ if __name__ == '__main__':
     parser.add_argument("-b", "--batch_size", help='batch size for the experience replay learning of the DQN.', default=32)
     parser.add_argument("-f", "--discount_factor", help="Discount factor for Q-learning updates", default=0.9)
     parser.add_argument("-n", "--number_episodes", help="Number of episodes", default=60000)
+    parser.add_argument("-a", "--agent", help="Type of agent to train (DQN/DDQN)", default="DDQN")
     parser.add_argument("-t", "--type", help="Which type of Tranformer to use for vision", default="patch_transformer")
     parser.add_argument("--save_check_dir", help="Path to the folder where checkpoints are stored", default="../checkpoints")
     parser.add_argument("--save_video_dir", help="Path to the folder where videos of the agent playing are stored", default="../videos")
@@ -44,15 +45,29 @@ if __name__ == '__main__':
     save_check_dir = Path(args.save_check_dir) / args.environment / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     save_video_dir = Path(args.save_video_dir) / args.environment / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     
-    agent = DDQNAgent(type=args.type,
-                     obs_shape=obs_shape,
-                     action_dim=n_actions,
-                     device=device,
-                     batch_size=args.batch_size,
-                     gamma=args.discount_factor,
-                     save_every=args.save_net_every,
-                     save_net_dir=save_check_dir
-                    )
+    if args.agent == 'DQN':
+        agent = DQNAgent(type=args.type,
+                        obs_shape=obs_shape,
+                        action_dim=n_actions,
+                        device=device,
+                        batch_size=args.batch_size,
+                        gamma=args.discount_factor,
+                        save_every=args.save_net_every,
+                        save_net_dir=save_check_dir
+                        )
+    elif args.agent == 'DDQN':
+        agent = DDQNAgent(type=args.type,
+                        obs_shape=obs_shape,
+                        action_dim=n_actions,
+                        device=device,
+                        batch_size=args.batch_size,
+                        gamma=args.discount_factor,
+                        save_every=args.save_net_every,
+                        save_net_dir=save_check_dir
+                        )
+    else:
+        print("WARNING: Type of agent specified not recognized. Exiting...")
+        exit()
     
     trainer = Trainer(env=env, 
                       agent=agent, 
