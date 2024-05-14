@@ -1,4 +1,5 @@
 from agents.dqn_agent import DQNAgent
+from agents.ddqn_agent import DDQNAgent
 from trainer import Trainer
 from gym.wrappers import FrameStack
 from utils.wrappers import SkipFrame, GrayScaleObservation, ResizeObservation
@@ -43,7 +44,7 @@ if __name__ == '__main__':
     save_check_dir = Path(args.save_check_dir) / args.environment / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     save_video_dir = Path(args.save_video_dir) / args.environment / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     
-    agent = DQNAgent(type=args.type,
+    agent = DDQNAgent(type=args.type,
                      obs_shape=obs_shape,
                      action_dim=n_actions,
                      device=device,
