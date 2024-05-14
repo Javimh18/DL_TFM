@@ -9,3 +9,6 @@
 **log
 **/checkpoints
 **/memmap_dir
+
+commands.txt
+**_swin*.py
