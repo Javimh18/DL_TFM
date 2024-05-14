@@ -21,7 +21,7 @@ if __name__ == '__main__':
     parser.add_argument("-k", "--skip_frames", help='Tells the number of frames to skip and stack for the observation.', default=4)
     parser.add_argument("-b", "--batch_size", help='batch size for the experience replay learning of the DQN.', default=32)
     parser.add_argument("-f", "--discount_factor", help="Discount factor for Q-learning updates", default=0.9)
-    parser.add_argument("-n", "--number_episodes", help="Number of episodes", default=40000)
+    parser.add_argument("-n", "--number_episodes", help="Number of episodes", default=60000)
     parser.add_argument("-t", "--type", help="Which type of Tranformer to use for vision", default="patch_transformer")
     parser.add_argument("--save_check_dir", help="Path to the folder where checkpoints are stored", default="../checkpoints")
     parser.add_argument("--save_video_dir", help="Path to the folder where videos of the agent playing are stored", default="../videos")
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     env = GrayScaleObservation(env)
     env = ResizeObservation(env, shape=84)
     env = FrameStack(env, num_stack=args.skip_frames)
-    env.metadata["render_fps"] = 40
+    env.metadata["render_fps"] = 30
     
     obs_shape = env.observation_space.shape
     n_actions = env.action_space.n
