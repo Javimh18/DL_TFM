@@ -11,7 +11,7 @@ from utils.utils import first_if_tuple
 from models.patch_transformer import PatchTransformer
 from models.vit import ViT
 
-REPLAY_MEMORY_SIZE = 50_000
+REPLAY_MEMORY_SIZE = 100_000
 TRANSITION_KEYS = ("state", "action", "reward", "next_state", "done", 'trunc')
 
 measure_array = []
@@ -55,7 +55,7 @@ class DQNAgent:
         
         # exploration (epsilon) parameter for e-greedy policy
         self.exploration_rate = 0.9
-        self.exploration_rate_decay = 0.9999999975
+        self.exploration_rate_decay = 0.999999945069387
         self.exploration_rate_min = 0.3
         
         # learn and burning parameters
@@ -74,6 +74,7 @@ class DQNAgent:
             action =  np.random.randint(0, self.action_dim)
         else:
             # use of __array__(): https://gymnasium.farama.org/main/_modules/gymnasium/wrappers/frame_stack/
+            self.net.eval()
             state = first_if_tuple(state).__array__()
             state = torch.tensor(state, device=self.device).unsqueeze(0)
             q_values = self.net(state, model='online')
@@ -136,11 +137,13 @@ class DQNAgent:
             state, action.squeeze(), reward.squeeze(), next_state, done.squeeze(), trunc.squeeze()
     
         # once we have our transition tuple, we apply TD learning over our DQN and compute the loss
-        q_estimate = self.net(state, model='online')[np.arange(0, self.batch_size),action] # 15.65 ms
+        # np.arange does the trick of extracting all the q_values from the batch, given the action
+        self.net.train()
+        q_estimate = self.net(state, model='online')[np.arange(0, self.batch_size),action]
         
         # (1-(done and trunc))
         q_target = reward + (1 - done.float())*self.gamma*torch.max(self.net(next_state, model='target'))
-        loss = self.loss_fn(q_estimate, q_target)
+        loss = self.loss_fn(q_target, q_estimate) # Compute Huber loss
                     
         # Optimize using Adamax (we can use SGD too)
         self.optimizer.zero_grad()
