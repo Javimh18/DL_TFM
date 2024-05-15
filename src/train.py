@@ -51,6 +51,7 @@ if __name__ == '__main__':
     with open(args.agent_model_config, 'r') as f:
         nn_config = yaml.load(f, Loader=yaml.SafeLoader)
     
+    # declaring the agent using the configs
     agent = f'{args.agent}_agent'
     if 'dqn' in agent:
         agent = DQNAgent(obs_shape=obs_shape,
@@ -71,16 +72,17 @@ if __name__ == '__main__':
     else:
         print("WARNING: Type of agent specified not recognized. Exiting...")
         exit()
-        
+    
+    # load agent weights  
     # agent.load_weights('/home/javier.munozh/dev/DL_TFM/checkpoints/ALE/DemonAttack-v5/2024-04-28T11-30-13/_net_20_0.9_0.00025.chkpt', True)
     
+    # declare the training class and start training the agent
     trainer = Trainer(env=env, 
                       agent=agent, 
                       n_episodes=args.number_episodes, 
                       log_every=args.log_every,
                       save_check_dir=save_check_dir,
                       save_video_dir=save_video_dir)
-    
     trainer.train()
     
     print("Training finished!")
