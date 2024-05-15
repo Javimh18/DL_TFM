@@ -1,0 +1,12 @@
+dqn_agent:
+  type: vit # swin, patch
+  sync_every: 1e4
+  gamma: 0.9
+  replay_memory_size: 1e5
+  save_every: 2e5
+  exp_rate_max: 0.9
+  exp_rate_min: 0.3
+  steps_to_explore: 20e6
+  learn_every: 3
+  burning: 1e4
+  lr: 0.00025

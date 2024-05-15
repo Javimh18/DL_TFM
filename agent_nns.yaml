@@ -1,0 +1,14 @@
+patch_transformer:
+  n_layers: 2
+  patch_size: 4
+  fc_dim: 16
+  head_dim: 256
+  embed_dim: 128
+  attn_heads: [4, 8]
+  dropouts: [0.3, 0.3]
+
+vit:
+  patch_size: 4
+  embed_dim: 128
+  n_heads: 4
+  n_layers: 2
