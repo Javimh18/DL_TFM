@@ -9,7 +9,7 @@
 **log
 **/checkpoints
 **/memmap_dir
-*test.py
+**test.py
 # geintra specific
 commands.txt
 **_swin*.py
