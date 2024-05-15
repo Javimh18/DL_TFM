@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-from agents.dqn_agent import DQNAgent, REPLAY_MEMORY_SIZE, TRANSITION_KEYS
+from agents.dqn_agent import DQNAgent, TRANSITION_KEYS
 
 class DDQNAgent(DQNAgent):
     def __init__(self, 
