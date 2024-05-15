@@ -18,55 +18,54 @@ measure_array = []
 
 class DQNAgent:
     def __init__(self, 
-                 type:str,
                  obs_shape:tuple,
                  action_dim: int, 
                  device: str, 
-                 batch_size: int, 
                  save_net_dir: str,
-                 sync_every=1e4, 
-                 gamma=0.9, 
-                 replay_memory_size=REPLAY_MEMORY_SIZE,
-                 save_every=2e5):
+                 agent_config: dict,
+                 nn_config:dict):
         
         self.device = device
         self.action_dim = action_dim
         self.obs_shape = obs_shape
-        self.type = type
+        self.type = agent_config['type']
         
         # defining the DQN
-        self.net = DQN(type=self.type, n_actions=self.action_dim, obs_shape=self.obs_shape).float()
+        self.net = DQN(type=self.type, 
+                       n_actions=self.action_dim, 
+                       obs_shape=self.obs_shape,
+                       config=nn_config).float()
         self.net = self.net.to(self.device)
         # defining the memory (experience replay) of the agent
         self.memory = TensorDictReplayBuffer(storage=LazyMemmapStorage(
-            max_size=replay_memory_size,
+            max_size=float(agent_config['replay_memory_size']),
             scratch_dir='./memmap_dir',
             device=self.device
         ))
         
         # hyperparameters
-        self.batch_size = batch_size
-        self.gamma = gamma 
-        self.lr = 0.00025
+        self.batch_size = int(agent_config["batch_size"])
+        self.gamma = float(agent_config["gamma"] )
+        self.lr = float(agent_config['lr'])
         
         # loss function and optimizer
         self.optimizer = torch.optim.Adamax(self.net.parameters(), lr=self.lr)
         self.loss_fn = torch.nn.SmoothL1Loss()
         
         # exploration (epsilon) parameter for e-greedy policy
-        self.exploration_rate = 0.9
-        self.exploration_rate_decay = 0.999999945069387
-        self.exploration_rate_min = 0.3
+        self.exploration_rate = float(agent_config['exp_rate_max'])
+        self.exploration_rate_min = float(agent_config['exp_rate_min'])
+        self.exploration_rate_decay = \
+            (self.exploration_rate_min/self.exploration_rate)**(1/float(agent_config['steps_to_explore']))
         
         # learn and burning parameters
-        self.learn_every = 3
-        self.burning = 1e4
+        self.learn_every = int(agent_config['learn_every'])
+        self.burning = int(agent_config['learn_every'])
         
         # update the q_target each sync_every steps
-        self.sync_every = sync_every
-        self.save_every = save_every
+        self.sync_every = float(agent_config["sync_every"])
+        self.save_every = float(agent_config["save_every"])
         self.save_net_dir = save_net_dir
-    
     
     @torch.no_grad()
     def perform_action(self, state):
@@ -195,48 +194,48 @@ class DQNAgent:
          
         
 class DQN(nn.Module):
-    def __init__(self, type, n_actions, obs_shape) -> None:
+    def __init__(self, type:str, n_actions:int, obs_shape:tuple, config:dict) -> None:
         super().__init__()
-        
+        nn_config = config[type]
         if type == 'vit':
             C,H,W = obs_shape
             self.online = ViT(img_size=(H,W),
-                              patch_size=4,
+                              patch_size=int(nn_config['patch_size']),
                               in_chans=C,
-                              embed_dim=128,
-                              n_heads=4,
-                              n_layers=2,
+                              embed_dim=int(nn_config['embed_dim']),
+                              n_heads=int(nn_config['n_heads']),
+                              n_layers=int(nn_config['n_layers']),
                               n_actions=n_actions)
             
             self.target = ViT(img_size=(H,W),
-                              patch_size=4,
+                              patch_size=int(nn_config['patch_size']),
                               in_chans=C,
-                              embed_dim=128,
-                              n_heads=4,
-                              n_layers=2,
+                              embed_dim=int(nn_config['embed_dim']),
+                              n_heads=int(nn_config['n_heads']),
+                              n_layers=int(nn_config['n_layers']),
                               n_actions=n_actions)
         elif type == 'swin':
             # TODO: Inicializar SWIN Transformer...
             pass
         elif type == 'patch_transformer':
             self.online = PatchTransformer(n_actions=n_actions,
-                                n_layers=2,
-                                patch_size=4,
-                                fc_dim=16,
-                                head_dim=256,
-                                embed_dim=128,
-                                attn_heads=[4,8],
-                                dropouts=[0.3, 0.3],
+                                n_layers=int(nn_config['n_layers']),
+                                patch_size=int(nn_config['patch_size']),
+                                fc_dim=int(nn_config['fc_dim']),
+                                head_dim=int(nn_config['head_dim']),
+                                embed_dim=int(nn_config['embed_dim']),
+                                attn_heads=nn_config['attn_heads'],
+                                dropouts=nn_config['dropouts'],
                                 input_shape=(1,)+obs_shape)
             
             self.target = PatchTransformer(n_actions=n_actions,
-                                n_layers=2,
-                                patch_size=4,
-                                fc_dim=16,
-                                head_dim=256,
-                                embed_dim=128,
-                                attn_heads=[4,8],
-                                dropouts=[0.3, 0.3],
+                               n_layers=int(nn_config['n_layers']),
+                                patch_size=int(nn_config['patch_size']),
+                                fc_dim=int(nn_config['fc_dim']),
+                                head_dim=int(nn_config['head_dim']),
+                                embed_dim=int(nn_config['embed_dim']),
+                                attn_heads=nn_config['attn_heads'],
+                                dropouts=nn_config['dropouts'],
                                 input_shape=(1,)+obs_shape)
         else:
             print(f"Type of agent for the model is not correctly specified.\n"
@@ -244,27 +243,9 @@ class DQN(nn.Module):
                   f"\t - Visual Transformer (vit)\n"
                   f"\t - Patch Transformer (patch_transformer)\n"
                   f"\t - SWIN Transformer (swin)\n"
-                  f"In the arguments of the train example.\nUsing Patch Transformer as the default option."
+                  f"Exiting..."
                   )
-            self.online = PatchTransformer(n_actions=n_actions,
-                                n_layers=2,
-                                patch_size=4,
-                                fc_dim=16,
-                                head_dim=256,
-                                embed_dim=128,
-                                attn_heads=[4,8],
-                                dropouts=[0.3, 0.3],
-                                input_shape=(1,)+obs_shape)
-            
-            self.target = PatchTransformer(n_actions=n_actions,
-                                n_layers=2,
-                                patch_size=4,
-                                fc_dim=16,
-                                head_dim=256,
-                                embed_dim=128,
-                                attn_heads=[4,8],
-                                dropouts=[0.3, 0.3],
-                                input_shape=(1,)+obs_shape)
+            exit()
             
         self.target.load_state_dict(self.online.state_dict())
 

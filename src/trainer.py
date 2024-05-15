@@ -31,7 +31,7 @@ class Trainer:
             # reset environment
             done, trunc = False, False
             state = self.env.reset()
-            measure_array = []
+            #measure_array = []
             while (not done) and (not trunc):
                 # 1. get action for state
                 action = self.agent.perform_action(state) # 20.69 ms  
@@ -50,7 +50,7 @@ class Trainer:
                 step += 1            
                 # Logging
                 logger.log_step(reward, loss, q)
-                measure_array.append(measure)
+                #measure_array.append(measure)
                 
             avg_measure = sum(measure_array)/len(measure_array)
             # print(f"Avg. step time for measure: {avg_measure:.2f} ms")

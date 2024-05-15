@@ -4,8 +4,15 @@ import torch
 from agents.dqn_agent import DQNAgent, REPLAY_MEMORY_SIZE, TRANSITION_KEYS
 
 class DDQNAgent(DQNAgent):
-    def __init__(self, type: str, obs_shape: tuple, action_dim: int, device: str, batch_size: int, save_net_dir: str, sync_every=10000, gamma=0.9, replay_memory_size=REPLAY_MEMORY_SIZE, save_every=200000):
-        super().__init__(type, obs_shape, action_dim, device, batch_size, save_net_dir, sync_every, gamma, replay_memory_size, save_every)
+    def __init__(self, 
+                 obs_shape: tuple, 
+                 action_dim: int, 
+                 device: str, 
+                 save_net_dir: str, 
+                 agent_config: dict,
+                 nn_config:dict
+                 ):
+        super().__init__(obs_shape, action_dim, device, save_net_dir, agent_config, nn_config)
         
     def learn(self, step):
         # Once the error is computed, each sync_every the weights of the 
