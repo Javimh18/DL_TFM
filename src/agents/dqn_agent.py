@@ -67,6 +67,7 @@ class DQNAgent:
         self.save_every = save_every
         self.save_net_dir = save_net_dir
     
+    
     @torch.no_grad()
     def perform_action(self, state):
         # decide wether to exploit or explore
@@ -85,6 +86,7 @@ class DQNAgent:
         self.exploration_rate = max(self.exploration_rate_min, self.exploration_rate)
         
         return action
+        
         
     def store_transition(self, state, action, reward, next_state, done, trunc):
         # check if the environment returned the state as a tuple
@@ -106,6 +108,7 @@ class DQNAgent:
             'done': done,
             'trunc': trunc
         }, batch_size=[]))
+        
         
     def learn(self, step):
         
@@ -160,15 +163,35 @@ class DQNAgent:
         self.net.target.load_state_dict(self.net.online.state_dict())
         
         
-    def save(self, step):
+    def save(self, step:int):
         save_path = (
-            self.save_net_dir / f"_net_{int(step // self.save_every)}_{self.gamma}_{self.lr}.chkpt"
+            self.save_net_dir / f"{self.type}_net_{int(step // self.save_every)}_{self.gamma}_{self.lr}.chkpt"
         )
         torch.save(
-            dict(model=self.net.state_dict(), exploration_rate=self.exploration_rate),
+            dict(model=self.net.state_dict(), exploration_rate=self.exploration_rate, type_model=self.type),
             save_path,
         )
-        print(f"DQNAgent net saved to {save_path} at step {step}")
+        print(f"INFO: DQNAgent net saved to {save_path} at step {step}")
+        
+        
+    def load_weights(self, path_to_checkpoint:str, set_epsilon:bool):
+        checkpoint = torch.load(path_to_checkpoint)
+        
+        if checkpoint['type'] != self.type:
+            print(f"ERROR: Tried to load a net with a different type."
+                  f"Declared model: {self.type} | Loaded model: {checkpoint['type']}"
+                  f"Please review the datatypes."
+                  f"Exiting...")
+            exit()
+
+        # load model from dictionary
+        self.net.load_state_dict(checkpoint['model'])
+        # set the exploration rate to whatever it was trained
+        if set_epsilon:
+            print(f"INFO: Saved exploration rate loaded. eps_max={checkpoint['exploration_rate']}")
+            self.exploration_rate = checkpoint['exploration_rate']
+        else:
+            print(f"INFO: Saved exploration rate not loaded. eps_max={self.exploration_rate}") 
          
         
 class DQN(nn.Module):
