@@ -52,7 +52,7 @@ class Trainer:
                 logger.log_step(reward, loss, q)
                 #measure_array.append(measure)
                 
-            avg_measure = sum(measure_array)/len(measure_array)
+            # avg_measure = sum(measure_array)/len(measure_array)
             # print(f"Avg. step time for measure: {avg_measure:.2f} ms")
             
             if e > 999: 
