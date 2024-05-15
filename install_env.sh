@@ -13,3 +13,4 @@ pip3 install gymnasium[atari]
 pip3 install timm
 pip3 install moviepy
 pip3 install torchsummary
+pip3 install pyyaml
