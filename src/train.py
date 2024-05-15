@@ -17,18 +17,16 @@ if __name__ == '__main__':
     
     parser = argparse.ArgumentParser()
     parser.add_argument("-e", "--environment", help='The name of environment where the agent is going to perform.', default="ALE/DemonAttack-v5")
-    parser.add_argument("-l", "--log_path", help='The path where the logs are going to be stored.')
-    parser.add_argument("-s", "--save_checkpoint", help='The path where the weights from the model are going to be stored.')
     parser.add_argument("-k", "--skip_frames", help='Tells the number of frames to skip and stack for the observation.', default=4)
     parser.add_argument("-b", "--batch_size", help='batch size for the experience replay learning of the DQN.', default=32)
     parser.add_argument("-f", "--discount_factor", help="Discount factor for Q-learning updates", default=0.9)
     parser.add_argument("-n", "--number_episodes", help="Number of episodes", default=60000)
     parser.add_argument("-a", "--agent", help="Type of agent to train (DQN/DDQN)", default="DDQN")
-    parser.add_argument("-t", "--type", help="Which type of Tranformer to use for vision", default="patch_transformer")
-    parser.add_argument("--save_check_dir", help="Path to the folder where checkpoints are stored", default="../checkpoints")
-    parser.add_argument("--save_video_dir", help="Path to the folder where videos of the agent playing are stored", default="../videos")
-    parser.add_argument("--save_net_every", help="How many steps between saving the network", default=5e5)
-    parser.add_argument("--log_every",  help="How many episodes between printing logger statistics", default=20)
+    parser.add_argument("-t", "--type", help="Which type of tranformer to use for vision", default="patch_transformer")
+    parser.add_argument("-s", "--save_check_dir", help="Path to the folder where checkpoints are stored", default="../checkpoints")
+    parser.add_argument("-v", "--save_video_dir", help="Path to the folder where videos of the agent playing are stored", default="../videos")
+    parser.add_argument("-t", "--save_net_every", help="How many steps between saving the network", default=5e5)
+    parser.add_argument("-l", "--log_every",  help="How many episodes between printing logger statistics", default=20)
     # process the arguments, store them in args
     args = parser.parse_args()
     # create the environment and add the wrappers
@@ -68,6 +66,8 @@ if __name__ == '__main__':
     else:
         print("WARNING: Type of agent specified not recognized. Exiting...")
         exit()
+        
+    # agent.load_weights('/home/javier.munozh/dev/DL_TFM/checkpoints/ALE/DemonAttack-v5/2024-04-28T11-30-13/_net_20_0.9_0.00025.chkpt', True)
     
     trainer = Trainer(env=env, 
                       agent=agent, 
