@@ -108,7 +108,8 @@ class AttentionBlocks(nn.Module):
         
         
 class PatchTransformer(nn.Module):
-    def __init__(self, n_layers: int, 
+    def __init__(self, 
+                 n_layers: int, 
                  n_actions: int, 
                  patch_size: int,
                  fc_dim: int,
