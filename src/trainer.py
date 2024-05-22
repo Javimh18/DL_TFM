@@ -2,9 +2,12 @@ import gymnasium as gym
 from gym.utils.save_video import save_video
 
 from utils.logger import MetricLogger
-import datetime
+import numpy as np
 
 class Trainer:
+    """
+    Handler for training the Agent
+    """
     def __init__(self, 
                  env: gym.Env, 
                  agent, 
@@ -21,6 +24,9 @@ class Trainer:
         self.save_video_dir = save_video_dir
         
     def train(self):
+        """
+        This function implements the training loop of an experience replay DQN agent.
+        """
         step = 0
         # create if not exists
         self.save_check_dir.mkdir(parents=True)
@@ -36,14 +42,16 @@ class Trainer:
                 # 1. get action for state
                 action = self.agent.perform_action(state) # 20.69 ms  
                 # 2. run action in environment
-                next_state, reward, done, trunc, _ = self.env.step(action) # 1.70 ms
+                next_state, reward, done, trunc, info = self.env.step(action) # 1.70 ms
+                if trunc:
+                    next_state = info["final_observation"]
                 # 3. collect experience in exp. replay buffer for Q-learning
                 self.agent.store_transition(state, action, reward, next_state, done, trunc) # 0.56 ms
                 # 4. Learn from collected experiences
-                start = datetime.datetime.now()
+                #start = datetime.datetime.now()
                 q, loss = self.agent.learn(step) # 39.76 ms
-                measure = datetime.datetime.now() - start
-                measure = measure.total_seconds() * 1000
+                #measure = datetime.datetime.now() - start
+                #measure = measure.total_seconds() * 1000
                 # 5. Update the current state 
                 state = next_state
                 # 6. Update step value 
