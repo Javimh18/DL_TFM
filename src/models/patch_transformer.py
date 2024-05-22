@@ -12,6 +12,17 @@ from torch import nn
 import math
 
 class PatchEmbedding(nn.Module):
+    """
+    Module that implements the patch embedding. It takes an image and divides it into patches, flattens the content and projects it into 
+    another dimension using a linear transformation.
+    ...
+    
+    Attributes
+    ----------
+        img_size:tuple|int
+            if tuple, gives the height and the width of the input image. If int, the image shape is assumed to be equal in terms of height and width
+        
+    """
     # Code taken from https://colab.research.google.com/github/juansensio/blog/blob/master/064_vit/vit.ipynb#scrollTo=vanilla-toolbox
     def __init__(self, img_size, patch_size, in_chans, embed_dim):
         super().__init__()
@@ -38,6 +49,9 @@ class PatchEmbedding(nn.Module):
         self.proj = nn.Conv2d(in_chans, embed_dim, kernel_size=patch_size, stride=patch_size)
 
     def forward(self, x):
+        """
+        Execute a forward pass of the module.
+        """
         x = self.proj(x)  # (B, E, H//P, W//P)
         # We then flatten the patches to obtain an embedding per N, where each N corresponds to the flattened (P,P)
         # It would be like erasing the spatial information of an image of PxP pixels to an a array of P^2 pixels
@@ -47,7 +61,46 @@ class PatchEmbedding(nn.Module):
         return x
         
 class MultiHeadSelfAttention(nn.Module):
-    def __init__(self, head_dim, embed_dim, n_heads, dropout):
+    """
+    This class implements the Multi-head self-attention from the vision transformer. 
+    ...
+    
+    Attributes
+    ----------
+    embed_dim: int
+        the dimension of the embedding vector (patch channel dimension)
+    n_heads: int
+        the number of heads of the attention mechanism
+    head_dim:int
+        the dimension of the embedding when applying the attention mechanism
+    Wq, Wk, Wv: torch.Tensor
+        tensors (layers) that represent the weights of the query, key and value
+    dropout: torch.Tensor
+        layer that implements dropout with a probability p
+    Wo: torch.Tensor
+        tensor (layer) that projects from the attention head embedding dimension to the embedding dimension
+        
+    Methods
+    -------
+    forward(x)
+        Executes the MHSA module, obtaining the attention weighted input
+    """
+
+    def __init__(self, head_dim:int, embed_dim:int, n_heads:int, dropout:float):
+        """
+        Initialize the attributes for the MHSA module
+        
+        Parameters
+        ----------
+            head_dim: int 
+                the dimension of the projection of embedding inside the attention head
+            embed_dim: int
+                the dimension of the input embedding 
+            n_heads: int
+                number of heads attending to the input 
+            dropout: float
+                probability of dropout in the module
+        """
         super().__init__()
         self.embed_dim = embed_dim
         self.n_heads = n_heads
@@ -61,6 +114,9 @@ class MultiHeadSelfAttention(nn.Module):
         self.Wo = nn.Linear(self.head_dim, self.embed_dim)
         
     def forward(self, x):
+        """
+        Execute a forward pass of the module.
+        """
         B, N, E = x.shape
         if self.embed_dim != E:
             print(f"MHSA: The embeding dimension does not match with the input dimension. \n Input dim: {E}, Embed Dim: {self.embed_dim}")
@@ -72,18 +128,48 @@ class MultiHeadSelfAttention(nn.Module):
                       .permute(0, 2, 1, 3)# (B, N, E) * (E, H) -> (B, nh, N, H//nh)
         v = self.Wv(x).reshape(B, N, self.n_heads, self.head_dim//self.n_heads)\
                       .permute(0, 2, 1, 3)# (B, N, E) * (E, H) -> (B, nh, N, H//nh)
-        attn = torch.softmax((q @ k.transpose(-2,-1)) / math.sqrt(q.shape[-1]), dim=-1) # (B, nh, N, E//nh) * (B, nh, E//nh, N) -> (B, nh, N, N)
-        x = (attn @ v) # (B, nh, N, N) * (B, nh, N, E//nh) -> (B, nh, N, E//nh)
-        x = x.transpose(1,2) # (B, nh, N, E//nh) -> (B, N, nh, E//nh)
-        x = x.reshape(B, N, self.head_dim) # (B, N, nh, E//nh) -> (B, N, E)
+        attn = torch.softmax((q @ k.transpose(-2,-1)) / math.sqrt(q.shape[-1]), dim=-1) # (B, nh, N, H//nh) * (B, nh, H//nh, N) -> (B, nh, N, N)
+        x = (attn @ v) # (B, nh, N, N) * (B, nh, N, H//nh) -> (B, nh, N, H//nh)
+        x = x.transpose(1,2) # (B, nh, N, H//nh) -> (B, N, nh, H//nh)
+        x = x.reshape(B, N, self.head_dim) # (B, N, nh, H//nh) -> (B, N, H)
         x = self.dropout(x)
-        x = self.Wo(x)
+        x = self.Wo(x) # (B, N, H) -> (B, N, E)
         
         return x
         
         
 class AttentionBlocks(nn.Module):
-    def __init__(self, head_dim, embed_dim, attn_heads, dropout):
+    """
+    This class implements an Attention block, that comprises the multi-head self attention plus some
+    additional layers to implement an essential block of the encoder from the transformer
+    ...
+    
+    Attributes
+    ----------
+    attn_heads: int 
+        number of attention heads in the attention block
+    embed_dim: int
+        the dimension of the input embedding 
+    dropout: float
+        probability of dropout in the multi-head self attention module
+    head_dim: int 
+        the dimension of the projection of embedding inside the attention head
+    """
+    def __init__(self, head_dim: int, embed_dim: int, attn_heads: int, dropout: float):
+        """
+        Initialize the attributes for each attention block
+        
+        Parameters
+        ----------
+            head_dim: int 
+                the dimension of the projection of embedding inside the attention head
+            embed_dim: int
+                the dimension of the input embedding 
+            n_heads: int
+                number of heads attending to the input 
+            dropout: float
+                probability of dropout in the module
+        """
         super().__init__()
         
         self.attn_heads = attn_heads
@@ -100,14 +186,62 @@ class AttentionBlocks(nn.Module):
         self.ln = nn.LayerNorm(embed_dim)
         
     def forward(self, x):
-        
-        x = self.mhsa(x) # (B, N, E) -> (B, N, E)
-        x = self.mlp(x) # (B, N, E) -> (B, N, E)
-        x = self.ln(x) # (B, N, E) -> (B, N, E)
+        """
+        Execute a forward pass of the module.
+        """
+        x = x + self.mhsa(self.ln(x)) # (B, N, E) -> (B, N, E)
+        x = x + self.mlp(self.ln(x)) # (B, N, E) -> (B, N, E)
+        # x = self.ln(x) # (B, N, E) -> (B, N, E)
         return x
         
         
 class PatchTransformer(nn.Module):
+    """
+    Pytorch module that implements the patch transformer. It is an altered more flexible implementation of the Vision Transformer.
+    ...
+    Attributes
+    ----------
+        n_layers:int
+            number of layers (attention blocks of the encoder) that are involved in the model.
+        n_actions:int
+            number of actions that the environment allows to act in the environment.
+        embed_dim:int
+            dimension of the patch embedding that goes into the attention module
+        head_dim:int
+            the dimension of the patch embedding inside the MHSA module
+        attn_heads:list
+            number of attention heads for each layer/attention block
+        patch_size:int
+            size of the projection on which the image is divided in patches (for the patch embedding)
+        dropouts:list
+            list with the dropouts for each attention layer block
+        input_shape:tuple
+            shape of the batched input tensor
+        fc_dim:int
+            the dimension of the fully connected linear layer that picks the attention weighted embeddings and projects 
+            them onto the final action layer
+        patch_embed:PatchEmbedding(nn.Module)
+            module that takes the image as an input, divides it into patches, flattens its content and projects it into 
+            the embed_dim dimension
+        pos_embed:nn.Parameter
+            a learnable parameter that serves the transformer to understand the position of the patch embeddings in the image
+        model:nn.Module
+            the list of the concatenated sequential attention blocks of len n_layers
+        avgpool:nn.Module
+            layer that takes the output attention weighted embedding and colapses the embedding dimension using an average i.e. (B, N, E) -> (B, N)
+        fc:nn.Linear
+            fully connected layer that takes as input the attention embeddings from the MHSA
+        action_layer:nn.Linear
+            layer that takes the output from the fc layer onto the action layer that gives the q_values of the possible actions
+        relu: nn.ReLu
+            layer that applies the rectified linear uniform activation function
+            
+    Methods
+    -------
+    forward(x)
+        Executes the MHSA module, obtaining the attention weighted input
+    """
+    
     def __init__(self, 
                  n_layers: int, 
                  n_actions: int, 
@@ -118,17 +252,43 @@ class PatchTransformer(nn.Module):
                  attn_heads: list,
                  dropouts: list,
                  input_shape: tuple):
+        """
+        Initialize the whole patch transformer module. IMPORTANT: It does not have a class
+        token parameter, instead it averages each patch embedding and forwards it to the 
+        output layer that selects which action to perform.
         
+        Parameters
+        ----------
+            n_layers: int
+                number of attention blocks that are involved into the transfomer module
+            n_actions: int
+                number of actions that the environment allows to perform
+            embed_dim: int
+                the dimension of the embedding for each layer
+            head_dim: int
+                the dimension for the Self Attention linear transformations
+            attn_heads: list
+                list that contains the attention heads for each layer (1 element -> 1 layer)
+            patch_size: int
+                size of the patch that is projected from the image onto the enbedding dimension
+            dropouts: list
+                list that contains the probabilities of dropout for each layer
+            input_shape: tuple
+                contains the shape of the mini-batch input that is forwarded through the net
+            fc_dim: int
+                the dimension of the fully connected layer that takes as input the attention embeddings from the MHSA
+            
+        """
         super().__init__()
-        self.n_layers = n_layers, # Number of layers (or blocks) that our model is going to have
-        self.n_actions = n_actions # q-values of the actions our DDQN agent is going to perform
-        self.embed_dim = embed_dim # The dimension of the embedding for each layer
-        self.head_dim = head_dim # The dimension for the Self Attention linear transformations
-        self.attn_heads = attn_heads # The attention heads for each layer
-        self.patch_size = patch_size # Patch size of the image/frame
-        self.dropouts = dropouts # The dropout rate to apply at the end of each layer
-        self.input_shape = input_shape # the input shape of the image/frame we are going to process
-        self.fc_dim = fc_dim # dimension of the FC layer
+        self.n_layers = n_layers 
+        self.n_actions = n_actions
+        self.embed_dim = embed_dim 
+        self.head_dim = head_dim 
+        self.attn_heads = attn_heads 
+        self.patch_size = patch_size 
+        self.dropouts = dropouts 
+        self.input_shape = input_shape 
+        self.fc_dim = fc_dim
         
         if n_layers != len(attn_heads) or n_layers != len(dropouts):
                 print("n_layers parameter not consistent with either embed_dims, attn_heads or dropouts ")
@@ -157,9 +317,11 @@ class PatchTransformer(nn.Module):
     
         
     def forward(self, x):
-        
+        """
+        Execute a forward pass of the module.
+        """
         e = self.patch_embed(x) # (B, C, H, W) -> (B, N, E)
-        e = e + self.pos_embed
+        e = e + self.pos_embed # adding the learned positional embedding
         
         z = self.model(e) # (B, N, E) -> (B, N, E)
         
