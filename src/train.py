@@ -3,6 +3,13 @@ from agents.ddqn_agent import DDQNAgent
 from trainer import Trainer
 from gym.wrappers import FrameStack
 from utils.wrappers import SkipFrame, GrayScaleObservation, ResizeObservation
+from stable_baselines3.common.atari_wrappers import (
+    ClipRewardEnv,
+    EpisodicLifeEnv,
+    FireResetEnv,
+    MaxAndSkipEnv,
+    NoopResetEnv
+)
 
 import gymnasium as gym
 import argparse
@@ -11,16 +18,28 @@ from pathlib import Path
 import datetime
 import yaml
 
+# create the environment, add the wrappers and extract important parameters
+def make_env():
+    env = gym.make(args.environment, render_mode='rgb_array_list')
+    env = SkipFrame(env, skip=args.skip_frames)
+    env = GrayScaleObservation(env)
+    env = ResizeObservation(env, shape=84)
+    env = FrameStack(env, num_stack=args.skip_frames)
+    env = ClipRewardEnv(env)
+    env = EpisodicLifeEnv(env)
+    env.metadata["render_fps"] = 30
+    return env
+
 if __name__ == '__main__':
     
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print(f"Using torch with {device}")
     
     parser = argparse.ArgumentParser()
-    parser.add_argument("-e", "--environment", help='The name of environment where the agent is going to perform.', default="ALE/DemonAttack-v5")
+    parser.add_argument("-e", "--environment", help='The name of environment where the agent is going to perform.', default="ALE/MsPacman-v5")
     parser.add_argument("-k", "--skip_frames", help='Tells the number of frames to skip and stack for the observation.', default=4)
-    parser.add_argument("-n", "--number_episodes", help="Number of episodes", default=60000)
-    parser.add_argument("-a", "--agent", help="Type of agent to train (dqn/ddqn)", default="ddqn")
+    parser.add_argument("-n", "--number_episodes", help="Number of episodes", default=80001)
+    parser.add_argument("-a", "--agent", help="Type of agent to train (dqn/ddqn)", default="dqn")
     parser.add_argument("-s", "--save_check_dir", help="Path to the folder where checkpoints are stored", default="../checkpoints")
     parser.add_argument("-v", "--save_video_dir", help="Path to the folder where videos of the agent playing are stored", default="../videos")
     parser.add_argument("-l", "--log_every",  help="How many episodes between printing logger statistics", default=20, type=int)
@@ -29,13 +48,7 @@ if __name__ == '__main__':
     # process the arguments, store them in args
     args = parser.parse_args()
     
-    # create the environment, add the wrappers and extract important parameters
-    env = gym.make(args.environment, render_mode='rgb_array_list')
-    env = SkipFrame(env, skip=args.skip_frames)
-    env = GrayScaleObservation(env)
-    env = ResizeObservation(env, shape=84)
-    env = FrameStack(env, num_stack=args.skip_frames)
-    env.metadata["render_fps"] = 30
+    env = make_env()
     obs_shape = env.observation_space.shape
     n_actions = env.action_space.n
     
