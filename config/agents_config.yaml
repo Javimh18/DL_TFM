@@ -1,31 +1,31 @@
 ddqn_agent:
   type: patch_transformer # swin, patch
-  sync_every: 1e4
-  gamma: 0.9
-  replay_memory_size: 1e5
+  sync_every: 1e3
+  gamma: 0.99
+  replay_memory_size: 5e5
   save_every: 2e5
   exp_rate_max: 0.9
-  exp_rate_min: 0.3
+  exp_rate_min: 0.01
   steps_to_explore: 2e7
   learn_every: 3
-  burning: 1e4
-  lr: 0.00025
+  burning: 1e5
+  lr: 0.00015
   batch_size: 32
   sync_every: 3
   save_every: 2e5
 
 dqn_agent:
-  type: patch_transformer # swin, patch
-  sync_every: 1e4
-  gamma: 0.9
-  replay_memory_size: 1e5
+  type: cnn # swin, patch, cnn
+  sync_every: 1e3
+  gamma: 0.99
+  replay_memory_size: 5e5
   save_every: 2e5
   exp_rate_max: 0.9
-  exp_rate_min: 0.3
+  exp_rate_min: 0.01
   steps_to_explore: 2e7
   learn_every: 3
-  burning: 1e4
-  lr: 0.00025
+  burning: 1e5
+  lr: 0.0015
   batch_size: 32
   sync_every: 3
   save_every: 5e5
