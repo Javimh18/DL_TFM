@@ -14,18 +14,19 @@ import torch.nn.functional as F
 import math
 
 class PatchEmbedding(nn.Module):
-    def __init__(self, img_size, patch_size, in_chans, embed_dim):
+    def __init__(self, img_size, patch_size, embed_dim):
         super().__init__()
-        self.img_size = img_size
+        C, H, W = img_size
+        self.img_size = (H, W)
         self.patch_size = patch_size
         
         # divide the image using the integer division of the image dimensions H, W
         # and the patch dimensions, such that we get a tensor with the dimensions 
         # (Batch, Embed, H//P, W//P)
         if isinstance(img_size, tuple) and isinstance(patch_size, tuple):
-            self.n_patches = (img_size[0] // patch_size[0])*(img_size[1] // patch_size[1])
-        elif not isinstance(img_size, tuple) and isinstance(patch_size, tuple) or \
-            isinstance(img_size, tuple) and not isinstance(patch_size, tuple):
+            self.n_patches = (self.img_size[0] // self.patch_size[0])*(self.img_size[1] // self.patch_size[1])
+        elif not isinstance(self.img_size, tuple) and isinstance(self.patch_size, tuple) or \
+            isinstance(self.img_size, tuple) and not isinstance(self.patch_size, tuple):
             print("The format of image_size and path_size must be the same. Exiting.")
             exit()
         else:   
@@ -36,7 +37,7 @@ class PatchEmbedding(nn.Module):
         # the projection that takes as input the selected patch of the image, and produces
         # an output of the size of the embedding. Repeating this for all the patches with 
         # a conv stride of patch_size, produces the following transformation: B, C, H, W -> B, E, H//P, W//P
-        self.proj = nn.Conv2d(in_chans, embed_dim, kernel_size=patch_size, stride=patch_size)
+        self.proj = nn.Conv2d(C, embed_dim, kernel_size=self.patch_size, stride=self.patch_size)
 
     def forward(self, x):
         x = self.proj(x)  # (B, E, H//P, W//P)
@@ -52,6 +53,7 @@ class MultiHeadAttention(nn.Module):
     def __init__(self, n_embd, n_heads):
         super().__init__()
         self.n_heads = n_heads 
+        self.embed_dim = n_embd
         
         # key, query, value projections
         self.qkv = nn.Linear(n_embd, 3*n_embd)
@@ -66,7 +68,7 @@ class MultiHeadAttention(nn.Module):
         
         # calculate query, key, values for all heads in batch and move head forward to be the batch dim
         qkv = self.qkv(x).reshape(B, N, 3, self.n_heads, E//self.n_heads).permute(2, 0, 3, 1, 4) # (B, N, 3*E) -> (B, N, 3, nh, E//nh) -> (3, B, nh, N, E//nh)
-        q, k, v = qkv[0], qkv[1], qkv[1] 
+        q, k, v = qkv[0], qkv[1], qkv[2] 
         
         # attention (B, nh, N, E//nh) x (B, nh, E//nh, N) -> (B, nh, N, N) 
         att = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(k.size(-1)))
@@ -95,10 +97,10 @@ class TransformerBlock(nn.Module):
     
 class ViT(nn.Module):
 
-    def __init__(self, img_size=(28,28), patch_size=7, in_chans=1, embed_dim=100, n_heads=3, n_layers=3, n_actions=10):
+    def __init__(self, img_size=(28,28), patch_size=7, embed_dim=100, n_heads=3, n_layers=3, n_actions=10):
         super().__init__()
 
-        self.patch_embed = PatchEmbedding(img_size, patch_size, in_chans, embed_dim)
+        self.patch_embed = PatchEmbedding(img_size, patch_size, embed_dim)
         self.action_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
         self.pos_embed = nn.Parameter(torch.zeros(1, 1 + self.patch_embed.n_patches, embed_dim))
         
