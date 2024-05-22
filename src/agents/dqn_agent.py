@@ -10,8 +10,8 @@ import datetime
 from utils.utils import first_if_tuple
 from models.patch_transformer import PatchTransformer
 from models.vit import ViT
+from models.cnn import CNN
 
-REPLAY_MEMORY_SIZE = 100_000
 TRANSITION_KEYS = ("state", "action", "reward", "next_state", "done", 'trunc')
 
 measure_array = []
@@ -37,10 +37,11 @@ class DQNAgent:
                        config=nn_config).float()
         self.net = self.net.to(self.device)
         # defining the memory (experience replay) of the agent
+        # TODO: Add prioritized experience replay
         self.memory = TensorDictReplayBuffer(storage=LazyMemmapStorage(
             max_size=float(agent_config['replay_memory_size']),
             scratch_dir='./memmap_dir',
-            device=self.device
+            device=self.device,
         ))
         
         # hyperparameters
@@ -198,18 +199,16 @@ class DQN(nn.Module):
         super().__init__()
         nn_config = config[type]
         if type == 'vit':
-            C,H,W = obs_shape
-            self.online = ViT(img_size=(H,W),
-                              patch_size=int(nn_config['patch_size']),
-                              in_chans=C,
+            P = int(nn_config['patch_size'])
+            self.online = ViT(img_size=obs_shape,
+                              patch_size=(P, P),
                               embed_dim=int(nn_config['embed_dim']),
                               n_heads=int(nn_config['n_heads']),
                               n_layers=int(nn_config['n_layers']),
                               n_actions=n_actions)
             
-            self.target = ViT(img_size=(H,W),
-                              patch_size=int(nn_config['patch_size']),
-                              in_chans=C,
+            self.target = ViT(img_size=obs_shape,
+                              patch_size=(P, P),
                               embed_dim=int(nn_config['embed_dim']),
                               n_heads=int(nn_config['n_heads']),
                               n_layers=int(nn_config['n_layers']),
@@ -237,6 +236,9 @@ class DQN(nn.Module):
                                 attn_heads=nn_config['attn_heads'],
                                 dropouts=nn_config['dropouts'],
                                 input_shape=(1,)+obs_shape)
+        elif type == 'cnn':
+            self.online = CNN(n_actions=n_actions)
+            self.target = CNN(n_actions=n_actions)
         else:
             print(f"Type of agent for the model is not correctly specified.\n"
                   f"Select between:\n"
