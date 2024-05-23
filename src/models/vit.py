@@ -62,7 +62,7 @@ class MultiHeadAttention(nn.Module):
     def forward(self, x):
         B, N, E = x.size()
         
-        if E != self.n_heads: # The dimension of the embedding should not change
+        if E != self.embed_dim: # The dimension of the embedding should not change
             print(f"MHSA: The embeding dimension does not match with the input dimension. \n Input dim: {E}, Embed Dim: {self.embed_dim}")
             exit(-1)
         
