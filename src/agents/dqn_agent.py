@@ -6,15 +6,10 @@ from torchrl.data.replay_buffers.samplers import PrioritizedSampler
 from tensordict import TensorDict
 import numpy as np
 import datetime
-
 from utils.utils import first_if_tuple
-from models.patch_transformer import PatchTransformer
-from models.vit import ViT
-from models.cnn import CNN
+from agents.dqn_models import DQN
 
 TRANSITION_KEYS = ("state", "action", "reward", "next_state", "done", 'trunc')
-
-measure_array = []
 
 class DQNAgent:
     def __init__(self, 
@@ -37,12 +32,13 @@ class DQNAgent:
                        config=nn_config).float()
         self.net = self.net.to(self.device)
         # defining the memory (experience replay) of the agent
-        # TODO: Add prioritized experience replay
         self.memory = TensorDictReplayBuffer(storage=LazyMemmapStorage(
             max_size=float(agent_config['replay_memory_size']),
             scratch_dir='./memmap_dir',
             device=self.device,
-        ))
+        ),sampler=PrioritizedSampler(max_capacity=int(float(agent_config['replay_memory_size'])), 
+          alpha=1.0, 
+          beta=1.0))
         
         # hyperparameters
         self.batch_size = int(agent_config["batch_size"])
@@ -61,12 +57,13 @@ class DQNAgent:
         
         # learn and burning parameters
         self.learn_every = int(agent_config['learn_every'])
-        self.burning = int(agent_config['learn_every'])
+        self.burning = float(agent_config['burning'])
         
         # update the q_target each sync_every steps
         self.sync_every = float(agent_config["sync_every"])
         self.save_every = float(agent_config["save_every"])
         self.save_net_dir = save_net_dir
+    
     
     @torch.no_grad()
     def perform_action(self, state):
@@ -75,7 +72,6 @@ class DQNAgent:
             action =  np.random.randint(0, self.action_dim)
         else:
             # use of __array__(): https://gymnasium.farama.org/main/_modules/gymnasium/wrappers/frame_stack/
-            self.net.eval()
             state = first_if_tuple(state).__array__()
             state = torch.tensor(state, device=self.device).unsqueeze(0)
             q_values = self.net(state, model='online')
@@ -93,8 +89,8 @@ class DQNAgent:
         state = first_if_tuple(state).__array__()
         next_state = first_if_tuple(next_state).__array__()
         # cast the information from the env.step() as a tensor
-        state = np.array(torch.tensor(state))
-        next_state = np.array(torch.tensor(next_state))
+        state = torch.tensor(state)
+        next_state = torch.tensor(next_state)
         action = torch.tensor([action])
         reward = torch.tensor([reward])
         done = torch.tensor([done])
@@ -108,6 +104,30 @@ class DQNAgent:
             'done': done,
             'trunc': trunc
         }, batch_size=[]))
+    
+    
+    def compute_q_estimate(self, state, action):
+        # get the q values estimates for the states || Q_online(s,a;w)
+        q_estimates = self.net(state, model='online')
+        # select, for each q_estimate, the q_value of the selected action
+        # np.arange does the trick of extracting all the q_values from the batch, given the action
+        q_action_estimates = q_estimates[np.arange(0, self.batch_size), action]
+        return q_action_estimates
+    
+    
+    @torch.no_grad() # since this is our "ground truth" (look ahead prediction)
+    def compute_q_target(self, reward, done, next_state):
+        q_max_value, _ = torch.max(self.net(next_state, model='target'), dim=1)
+        return reward + (1 - done.float()) * self.gamma * q_max_value
+    
+    
+    def recall(self):
+        # sample from memory 
+        transitions_batch = self.memory.sample(self.batch_size)
+        # extract samples such that: s_t, a_t, r_t+1, s_t+1
+        state, action, reward, next_state, done, trunc = (transitions_batch.get(key) for key in \
+                                                    (TRANSITION_KEYS))
+        return state, action.squeeze(), reward.squeeze(), next_state, done.squeeze(), trunc.squeeze()
         
         
     def learn(self, step):
@@ -121,34 +141,22 @@ class DQNAgent:
         if step % self.save_every == 0 and step > 0:
             self.save(step)
         
-        # Burning lets episodes pass w/o doing nothing?
+        # Burning lets episodes pass but collects experiences for the memory buffer
         if step < self.burning:
             return None, None
 
-        # Not learning every step, but every learn_every steps
+        # Not learning every step, but every "learn_every" steps
         if step % self.learn_every != 0:
             return None, None
         
-        # sample from memory 
-        transitions_batch = self.memory.sample(self.batch_size)
-        # extract samples such that: s_t, a_t, r_t+1, s_t+1
-        state, action, reward, next_state, done, trunc = (transitions_batch.get(key) for key in \
-                                                    (TRANSITION_KEYS))
-        
-        # since they are all tensors, we only need to squeeze the ones with an additional dimension
-        state, action, reward, next_state, done, trunc = \
-            state, action.squeeze(), reward.squeeze(), next_state, done.squeeze(), trunc.squeeze()
-    
+        state, action, reward, next_state, done, _ = self.recall()
+            
         # once we have our transition tuple, we apply TD learning over our DQN and compute the loss
-        # np.arange does the trick of extracting all the q_values from the batch, given the action
-        self.net.train()
-        q_estimate = self.net(state, model='online')[np.arange(0, self.batch_size),action]
-        
-        # (1-(done and trunc))
-        q_target = reward + (1 - done.float())*self.gamma*torch.max(self.net(next_state, model='target'))
+        q_estimate = self.compute_q_estimate(state, action)
+        q_target = self.compute_q_target(reward, done, next_state)
+            
+        # update the q_online network using the loss
         loss = self.loss_fn(q_target, q_estimate) # Compute Huber loss
-                    
-        # Optimize using Adamax (we can use SGD too)
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
@@ -192,79 +200,4 @@ class DQNAgent:
             self.exploration_rate = checkpoint['exploration_rate']
         else:
             print(f"INFO: Saved exploration rate not loaded. eps_max={self.exploration_rate}") 
-         
-        
-class DQN(nn.Module):
-    def __init__(self, type:str, n_actions:int, obs_shape:tuple, config:dict) -> None:
-        super().__init__()
-        nn_config = config[type]
-        if type == 'vit':
-            P = int(nn_config['patch_size'])
-            self.online = ViT(img_size=obs_shape,
-                              patch_size=(P, P),
-                              embed_dim=int(nn_config['embed_dim']),
-                              n_heads=int(nn_config['n_heads']),
-                              n_layers=int(nn_config['n_layers']),
-                              n_actions=n_actions)
-            
-            self.target = ViT(img_size=obs_shape,
-                              patch_size=(P, P),
-                              embed_dim=int(nn_config['embed_dim']),
-                              n_heads=int(nn_config['n_heads']),
-                              n_layers=int(nn_config['n_layers']),
-                              n_actions=n_actions)
-        elif type == 'swin':
-            # TODO: Inicializar SWIN Transformer...
-            pass
-        elif type == 'patch_transformer':
-            self.online = PatchTransformer(n_actions=n_actions,
-                                n_layers=int(nn_config['n_layers']),
-                                patch_size=int(nn_config['patch_size']),
-                                fc_dim=int(nn_config['fc_dim']),
-                                head_dim=int(nn_config['head_dim']),
-                                embed_dim=int(nn_config['embed_dim']),
-                                attn_heads=nn_config['attn_heads'],
-                                dropouts=nn_config['dropouts'],
-                                input_shape=(1,)+obs_shape)
-            
-            self.target = PatchTransformer(n_actions=n_actions,
-                               n_layers=int(nn_config['n_layers']),
-                                patch_size=int(nn_config['patch_size']),
-                                fc_dim=int(nn_config['fc_dim']),
-                                head_dim=int(nn_config['head_dim']),
-                                embed_dim=int(nn_config['embed_dim']),
-                                attn_heads=nn_config['attn_heads'],
-                                dropouts=nn_config['dropouts'],
-                                input_shape=(1,)+obs_shape)
-        elif type == 'cnn':
-            self.online = CNN(n_actions=n_actions)
-            self.target = CNN(n_actions=n_actions)
-        else:
-            print(f"Type of agent for the model is not correctly specified.\n"
-                  f"Select between:\n"
-                  f"\t - Visual Transformer (vit)\n"
-                  f"\t - Patch Transformer (patch_transformer)\n"
-                  f"\t - SWIN Transformer (swin)\n"
-                  f"Exiting..."
-                  )
-            exit()
-            
-        self.target.load_state_dict(self.online.state_dict())
-
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
-
-        # Q_online network parameters must be trained
-        for p in self.online.parameters():
-            p.requires_grad = True
-            
-        # Q_target network parameters are frozen
-        for p in self.target.parameters():
-            p.requires_grad = False
-
-    def forward(self, input, model):
-        if model == "online":
-            return self.online(input)
-        elif model == "target":
-            return self.target(input)
-        
 
