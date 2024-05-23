@@ -1,7 +1,7 @@
 from agents.dqn_agent import DQNAgent
 from agents.ddqn_agent import DDQNAgent
 from trainer import Trainer
-from gym.wrappers import FrameStack
+from gym.wrappers import FrameStack, RecordEpisodeStatistics
 from utils.wrappers import SkipFrame, GrayScaleObservation, ResizeObservation
 from stable_baselines3.common.atari_wrappers import (
     ClipRewardEnv,
@@ -21,12 +21,15 @@ import yaml
 # create the environment, add the wrappers and extract important parameters
 def make_env():
     env = gym.make(args.environment, render_mode='rgb_array_list')
+    env = RecordEpisodeStatistics(env)
     env = SkipFrame(env, skip=args.skip_frames)
+    env = EpisodicLifeEnv(env)
+    if "FIRE" in env.unwrapped.get_action_meanings():
+        env = FireResetEnv(env)
+    env = ClipRewardEnv(env)
     env = GrayScaleObservation(env)
     env = ResizeObservation(env, shape=84)
     env = FrameStack(env, num_stack=args.skip_frames)
-    env = ClipRewardEnv(env)
-    env = EpisodicLifeEnv(env)
     env.metadata["render_fps"] = 30
     return env
 
@@ -38,11 +41,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-e", "--environment", help='The name of environment where the agent is going to perform.', default="ALE/MsPacman-v5")
     parser.add_argument("-k", "--skip_frames", help='Tells the number of frames to skip and stack for the observation.', default=4)
-    parser.add_argument("-n", "--number_episodes", help="Number of episodes", default=80001)
+    parser.add_argument("-n", "--number_steps", help="Number of steps", default=1e7)
     parser.add_argument("-a", "--agent", help="Type of agent to train (dqn/ddqn)", default="dqn")
     parser.add_argument("-s", "--save_check_dir", help="Path to the folder where checkpoints are stored", default="../checkpoints")
     parser.add_argument("-v", "--save_video_dir", help="Path to the folder where videos of the agent playing are stored", default="../videos")
-    parser.add_argument("-l", "--log_every",  help="How many episodes between printing logger statistics", default=20, type=int)
+    parser.add_argument("-l", "--log_every",  help="How many episodes between printing logger statistics", default=10, type=int)
     parser.add_argument("-c", "--agent_config", help="Path to the config file of the agent", default="../config/agents_config.yaml")
     parser.add_argument("-m", "--agent_model_config", help="Path to the config file of the model that the agent uses as a function approximator", default="../config/agent_nns.yaml")
     # process the arguments, store them in args
@@ -92,11 +95,12 @@ if __name__ == '__main__':
     # declare the training class and start training the agent
     trainer = Trainer(env=env, 
                       agent=agent, 
-                      n_episodes=args.number_episodes, 
+                      n_steps=args.number_steps, 
                       log_every=args.log_every,
                       save_check_dir=save_check_dir,
                       save_video_dir=save_video_dir)
     trainer.train()
+    env.close()
     
     print("Training finished!")
     
