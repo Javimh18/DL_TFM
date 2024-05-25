@@ -36,18 +36,17 @@ class MetricLogger:
         # Timing
         self.record_time = time.time()
 
-    def log_step(self, reward, loss, q):
-        self.curr_ep_reward += reward
-        self.curr_ep_length += 1
+    def log_step(self, loss, q):
         if loss:
             self.curr_ep_loss += loss
             self.curr_ep_q += q
             self.curr_ep_loss_length += 1
 
-    def log_episode(self):
+    def log_episode(self, ep_reward, ep_length):
         "Mark end of episode"
-        self.ep_rewards.append(self.curr_ep_reward)
-        self.ep_lengths.append(self.curr_ep_length)
+        self.ep_rewards.append(ep_reward)
+        self.ep_lengths.append(ep_length)
+
         if self.curr_ep_loss_length == 0:
             ep_avg_loss = 0
             ep_avg_q = 0
@@ -60,8 +59,6 @@ class MetricLogger:
         self.init_episode()
 
     def init_episode(self):
-        self.curr_ep_reward = 0.0
-        self.curr_ep_length = 0
         self.curr_ep_loss = 0.0
         self.curr_ep_q = 0.0
         self.curr_ep_loss_length = 0
