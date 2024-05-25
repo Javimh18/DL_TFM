@@ -45,13 +45,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-e", "--environment", help='The name of environment where the agent is going to perform.', default="ALE/MsPacman-v5")
     parser.add_argument("-k", "--skip_frames", help='Tells the number of frames to skip and stack for the observation.', default=4)
-    parser.add_argument("-n", "--number_steps", help="Number of steps", default=1e7)
-    # parser.add_argument("-a", "--agent", help="Type of agent to train (dqn/ddqn)", default="dqn")
+    parser.add_argument("-n", "--number_steps", help="Number of steps", default=1e7, type=float)
+    parser.add_argument("-x", "--exploration_schedule", help=f"Type of scheduler for the exploration rate: lin (default) | exp | pow", default="lin")
     parser.add_argument("-s", "--save_check_dir", help="Path to the folder where checkpoints are stored", default="../checkpoints")
     parser.add_argument("-v", "--save_video_dir", help="Path to the folder where videos of the agent playing are stored", default="../videos")
     parser.add_argument("-l", "--log_every",  help="How many episodes between printing logger statistics", default=50, type=int)
     parser.add_argument("-c", "--agent_config", help="Path to the config file of the agent", default="../config/agents_config.yaml")
     parser.add_argument("-m", "--agent_model_config", help="Path to the config file of the model that the agent uses as a function approximator", default="../config/agent_nns.yaml")
+    parser.add_argument("-o", '--option_agent', help="Agent config to train. See agents_config.yaml for further info", required=True)
     # process the arguments, store them in args
     args = parser.parse_args()
     
@@ -72,13 +73,12 @@ if __name__ == '__main__':
     for i in range(len(agents_list)):
         print(f"Option {i+1}: {agents_list[i]}")
     
-    choice = input("> Option:")
+    choice = args.option_agent
     choice = int(choice)
     while choice <= 0 or choice > len(agents_list):
         print("Incorrect option, please try again.")
         choice = input("> Option:")
         choice = int(choice)
-    
     
     # Selected agent
     agent = agents_list[choice-1]
@@ -93,6 +93,7 @@ if __name__ == '__main__':
                         action_dim=n_actions,
                         device=device,
                         save_net_dir=save_check_dir,
+                        exp_schedule=args.exploration_schedule,
                         agent_config=agent_config[agent],
                         nn_config=nn_config
                         )
@@ -101,6 +102,7 @@ if __name__ == '__main__':
                         action_dim=n_actions,
                         device=device,
                         save_net_dir=save_check_dir,
+                        exp_schedule=args.exploration_schedule,
                         agent_config=agent_config[agent],
                         nn_config=nn_config
                         )

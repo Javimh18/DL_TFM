@@ -41,7 +41,7 @@ class Trainer:
             #measure_array = []
             while (not done) and (not trunc):
                 # 1. get action for state
-                action = self.agent.perform_action(state) # 20.69 ms  
+                action = self.agent.perform_action(state, self.curr_step) # 20.69 ms  
                 # 2. run action in environment
                 next_state, reward, done, trunc, info = self.env.step(action) # 1.70 ms
                 # 3. collect experience in exp. replay buffer for Q-learning
