@@ -8,6 +8,7 @@ import numpy as np
 import datetime
 from utils.utils import first_if_tuple
 from agents.dqn_models import DQN
+from utils.schedulers import LinearScheduler, ExpDecayScheduler, PowerDecayScheduler
 
 TRANSITION_KEYS = ("state", "action", "reward", "next_state", "done", 'trunc')
 
@@ -17,6 +18,7 @@ class DQNAgent:
                  action_dim: int, 
                  device: str, 
                  save_net_dir: str,
+                 exp_schedule:str,
                  agent_config: dict,
                  nn_config:dict):
         
@@ -25,6 +27,43 @@ class DQNAgent:
         self.obs_shape = obs_shape
         self.type = agent_config['type']
         
+        # hyperparameters
+        self.batch_size = int(agent_config["batch_size"])
+        self.gamma = float(agent_config["gamma"] )
+        self.lr = float(agent_config['lr'])
+        
+        # learn every and burning parameters
+        self.learn_every = int(agent_config['learn_every'])
+        self.burning = float(agent_config['burning'])
+        
+        # update the q_target each sync_every steps
+        self.sync_every = float(agent_config["sync_every"])
+        self.save_every = float(agent_config["save_every"])
+        self.save_net_dir = save_net_dir
+        
+        # scheduling exploration (epsilon) parameter for e-greedy policy
+        self.exploration_rate_max = float(agent_config['exp_rate_max'])
+        self.exploration_rate_min = float(agent_config['exp_rate_min'])
+        self.exploration_rate = self.exploration_rate_max
+        self.n_steps_exp = float(agent_config['steps_to_explore'])
+        self.type_exp_scheduler = exp_schedule
+        if exp_schedule == 'lin':
+            self.exp_scheduler = LinearScheduler(self.exploration_rate_max,
+                                                 self.exploration_rate_min,
+                                                 self.n_steps_exp)
+        elif exp_schedule == 'exp':
+            self.exp_scheduler = ExpDecayScheduler(self.exploration_rate_max,
+                                                  self.exploration_rate_min,
+                                                  self.n_steps_exp)
+        elif exp_schedule == 'pow':
+            self.exp_scheduler = PowerDecayScheduler(self.exploration_rate_max,
+                                                  self.exploration_rate_min,
+                                                  self.n_steps_exp)
+        else:
+            print("Exploration schedule not supported. Available exploration schedules:")
+            print("Linear (lin) | Exponential (exp) | Power (pow)")
+            print("Exiting...")
+            exit()
         # defining the DQN
         self.net = DQN(type=self.type, 
                        n_actions=self.action_dim, 
@@ -39,36 +78,13 @@ class DQNAgent:
         ),sampler=PrioritizedSampler(max_capacity=int(float(agent_config['replay_memory_size'])), 
                                      alpha=1.0, 
                                      beta=1.0))
-        
-        # hyperparameters
-        self.batch_size = int(agent_config["batch_size"])
-        self.gamma = float(agent_config["gamma"] )
-        self.lr = float(agent_config['lr'])
-        
         # loss function and optimizer
         self.optimizer = torch.optim.Adamax(self.net.parameters(), lr=self.lr)
         self.loss_fn = torch.nn.SmoothL1Loss()
-        
-        # exploration (epsilon) parameter for e-greedy policy
-        self.exploration_rate = float(agent_config['exp_rate_max'])
-        self.exploration_rate_min = float(agent_config['exp_rate_min'])
-        k = float(agent_config['steps_to_explore'])
-        self.exploration_rate_decay = \
-            (self.exploration_rate_min/self.exploration_rate)**(1/k)
-        print(f"Initializing agent with rate decay: {self.exploration_rate_decay}")
-        
-        # learn and burning parameters
-        self.learn_every = int(agent_config['learn_every'])
-        self.burning = float(agent_config['burning'])
-        
-        # update the q_target each sync_every steps
-        self.sync_every = float(agent_config["sync_every"])
-        self.save_every = float(agent_config["save_every"])
-        self.save_net_dir = save_net_dir
     
     
     @torch.no_grad()
-    def perform_action(self, state):
+    def perform_action(self, state, t):
         # decide wether to exploit or explore
         if np.random.random() < self.exploration_rate:
             action =  np.random.randint(0, self.action_dim)
@@ -79,8 +95,8 @@ class DQNAgent:
             q_values = self.net(state, model='online')
             action = torch.argmax(q_values, dim=1).item()
         
-         # decrease exploration_rate
-        self.exploration_rate *= self.exploration_rate_decay
+        # decrease exploration_rate according to scheduler
+        self.exploration_rate = self.exp_scheduler.step(t)
         self.exploration_rate = max(self.exploration_rate_min, self.exploration_rate)
         
         return action
@@ -112,7 +128,7 @@ class DQNAgent:
         # get the q values estimates for the states || Q_online(s,a;w)
         q_estimates = self.net(state, model='online')
         # select, for each q_estimate, the q_value of the selected action
-        # np.arange does the trick of extracting all the q_values from the batch, given the action
+        # np.arange does the trick of extracting all the q_values from the batch, given the action (torch.Tensor.gather would do the same)
         q_action_estimates = q_estimates[np.arange(0, self.batch_size), action]
         return q_action_estimates
     
@@ -175,7 +191,7 @@ class DQNAgent:
         
     def save(self, step:int):
         save_path = (
-            self.save_net_dir / f"{self.type}_net_{int(step // self.save_every)}_{self.gamma}_{self.lr}.chkpt"
+            self.save_net_dir / f"{self.type}_{self.type_exp_scheduler}_net_{int(step // self.save_every)}_{self.gamma}_{self.lr}.chkpt"
         )
         torch.save(
             dict(model=self.net.state_dict(), exploration_rate=self.current_exploration_rate, type_model=self.type),
