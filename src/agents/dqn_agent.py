@@ -194,7 +194,7 @@ class DQNAgent:
             self.save_net_dir / f"{self.type}_{self.type_exp_scheduler}_net_{int(step // self.save_every)}_{self.gamma}_{self.lr}.chkpt"
         )
         torch.save(
-            dict(model=self.net.state_dict(), exploration_rate=self.current_exploration_rate, type_model=self.type),
+            dict(model=self.net.state_dict(), exploration_rate=self.exploration_rate, type_model=self.type),
             save_path,
         )
         print(f"INFO: DQNAgent net saved to {save_path} at step {step}")

@@ -12,7 +12,7 @@ class Scheduler(ABC):
 class LinearScheduler(Scheduler):
     def __init__(self, e_0, e_f, n_steps) -> None:
         super().__init__(e_0, e_f, n_steps)
-        self.slope = (e_0 - e_f)/n_steps
+        self.slope = (e_f - e_0)/n_steps
         
     def step(self, t):
         e_t = self.slope*t + self.e_0
