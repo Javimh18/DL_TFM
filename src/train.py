@@ -18,22 +18,26 @@ from pathlib import Path
 import datetime
 import yaml
 
+SEED = 1234    
+
 # create the environment, add the wrappers and extract important parameters
 def make_env():
     env = gym.make(args.environment, render_mode='rgb_array_list')
     env = RecordEpisodeStatistics(env)
     env = SkipFrame(env, skip=args.skip_frames)
     env = EpisodicLifeEnv(env)
-    if "FIRE" in env.unwrapped.get_action_meanings():
-        env = FireResetEnv(env)
     env = ClipRewardEnv(env)
     env = GrayScaleObservation(env)
     env = ResizeObservation(env, shape=84)
     env = FrameStack(env, num_stack=args.skip_frames)
     env.metadata["render_fps"] = 30
+    env.action_space.seed(SEED)
     return env
 
 if __name__ == '__main__':
+
+    torch.manual_seed(SEED)
+    torch.backends.cudnn.deterministic = True
     
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print(f"Using torch with {device}")
@@ -42,10 +46,10 @@ if __name__ == '__main__':
     parser.add_argument("-e", "--environment", help='The name of environment where the agent is going to perform.', default="ALE/MsPacman-v5")
     parser.add_argument("-k", "--skip_frames", help='Tells the number of frames to skip and stack for the observation.', default=4)
     parser.add_argument("-n", "--number_steps", help="Number of steps", default=1e7)
-    parser.add_argument("-a", "--agent", help="Type of agent to train (dqn/ddqn)", default="dqn")
+    # parser.add_argument("-a", "--agent", help="Type of agent to train (dqn/ddqn)", default="dqn")
     parser.add_argument("-s", "--save_check_dir", help="Path to the folder where checkpoints are stored", default="../checkpoints")
     parser.add_argument("-v", "--save_video_dir", help="Path to the folder where videos of the agent playing are stored", default="../videos")
-    parser.add_argument("-l", "--log_every",  help="How many episodes between printing logger statistics", default=10, type=int)
+    parser.add_argument("-l", "--log_every",  help="How many episodes between printing logger statistics", default=50, type=int)
     parser.add_argument("-c", "--agent_config", help="Path to the config file of the agent", default="../config/agents_config.yaml")
     parser.add_argument("-m", "--agent_model_config", help="Path to the config file of the model that the agent uses as a function approximator", default="../config/agent_nns.yaml")
     # process the arguments, store them in args
@@ -55,10 +59,6 @@ if __name__ == '__main__':
     obs_shape = env.observation_space.shape
     n_actions = env.action_space.n
     
-    # initializing key directories for metrics and evidences from the code
-    save_check_dir = Path(args.save_check_dir) / args.environment / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
-    save_video_dir = Path(args.save_video_dir) / args.environment / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
-    
     # load the agent configuration
     with open(args.agent_config, 'r') as f:
         agent_config = yaml.load(f, Loader=yaml.SafeLoader)
@@ -67,8 +67,27 @@ if __name__ == '__main__':
     with open(args.agent_model_config, 'r') as f:
         nn_config = yaml.load(f, Loader=yaml.SafeLoader)
     
-    # declaring the agent using the configs
-    agent = f'{args.agent}_agent'
+    print("Select among the different agent configs:")
+    agents_list = list(agent_config.keys())
+    for i in range(len(agents_list)):
+        print(f"Option {i+1}: {agents_list[i]}")
+    
+    choice = input("> Option:")
+    choice = int(choice)
+    while choice <= 0 or choice > len(agents_list):
+        print("Incorrect option, please try again.")
+        choice = input("> Option:")
+        choice = int(choice)
+    
+    
+    # Selected agent
+    agent = agents_list[choice-1]
+    print(f">>>>>>>> Selected agent: {agent}")
+    
+    # initializing key directories for metrics and evidences from the code
+    save_check_dir = Path(args.save_check_dir) / args.environment / agent / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
+    save_video_dir = Path(args.save_video_dir) / args.environment / agent / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
+    
     if 'dqn' in agent:
         agent = DQNAgent(obs_shape=obs_shape,
                         action_dim=n_actions,

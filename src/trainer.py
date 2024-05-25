@@ -34,7 +34,7 @@ class Trainer:
         self.save_video_dir.mkdir(parents=True)
         logger = MetricLogger(self.save_check_dir)
     
-        while self.curr_episode < self.n_steps:
+        while self.curr_step < self.n_steps:
             # reset environment
             done, trunc = False, False
             state = self.env.reset()
@@ -43,7 +43,7 @@ class Trainer:
                 # 1. get action for state
                 action = self.agent.perform_action(state) # 20.69 ms  
                 # 2. run action in environment
-                next_state, reward, done, trunc, _ = self.env.step(action) # 1.70 ms
+                next_state, reward, done, trunc, info = self.env.step(action) # 1.70 ms
                 # 3. collect experience in exp. replay buffer for Q-learning
                 self.agent.store_transition(state, action, reward, next_state, done, trunc) # 0.56 ms
                 # 4. Learn from collected experiences
@@ -55,14 +55,23 @@ class Trainer:
                 state = next_state
                 # 6. Update step value 
                 self.curr_step += 1            
-                # Logging
-                logger.log_step(reward, loss, q)
                 #measure_array.append(measure)
+                logger.log_step(loss, q)
             
-            self.curr_episode += 1
+            if 'episode' in info:
+                # episode field is stored in the info dict if episode ended
+                logger.log_episode(ep_length=info['episode']['l'], ep_reward=info['episode']['r'],)
+                if not(self.curr_episode % self.log_every) :
+                    logger.record(episode=self.curr_episode, 
+                                  epsilon=self.agent.exploration_rate, 
+                                  step=self.curr_step)
+                # log the real reward using episode statistics
+                self.curr_episode += 1
+            
             # avg_measure = sum(measure_array)/len(measure_array)
             # print(f"Avg. step time for measure: {avg_measure:.2f} ms")
             
+            """
             if self.curr_episode > 999: 
                 save_video(
                     self.env.render(),
@@ -70,10 +79,8 @@ class Trainer:
                     fps=self.env.metadata["render_fps"],
                     episode_index=self.curr_episode
                 )
+            """
                 
-            logger.log_episode()
-            if (not(self.curr_episode % self.log_every) and self.curr_episode > 0) :
-                logger.record(episode=self.curr_episode, epsilon=self.agent.exploration_rate, step=self.curr_step)
                 
             
         
