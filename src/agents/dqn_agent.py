@@ -37,8 +37,8 @@ class DQNAgent:
             scratch_dir='./memmap_dir',
             device=self.device,
         ),sampler=PrioritizedSampler(max_capacity=int(float(agent_config['replay_memory_size'])), 
-          alpha=1.0, 
-          beta=1.0))
+                                     alpha=1.0, 
+                                     beta=1.0))
         
         # hyperparameters
         self.batch_size = int(agent_config["batch_size"])
@@ -52,8 +52,10 @@ class DQNAgent:
         # exploration (epsilon) parameter for e-greedy policy
         self.exploration_rate = float(agent_config['exp_rate_max'])
         self.exploration_rate_min = float(agent_config['exp_rate_min'])
+        k = float(agent_config['steps_to_explore'])
         self.exploration_rate_decay = \
-            (self.exploration_rate_min/self.exploration_rate)**(1/float(agent_config['steps_to_explore']))
+            (self.exploration_rate_min/self.exploration_rate)**(1/k)
+        print(f"Initializing agent with rate decay: {self.exploration_rate_decay}")
         
         # learn and burning parameters
         self.learn_every = int(agent_config['learn_every'])
@@ -117,8 +119,8 @@ class DQNAgent:
     
     @torch.no_grad() # since this is our "ground truth" (look ahead prediction)
     def compute_q_target(self, reward, done, next_state):
-        q_max_value, _ = torch.max(self.net(next_state, model='target'), dim=1)
-        return reward + (1 - done.float()) * self.gamma * q_max_value
+        q_next_max_value, _ = torch.max(self.net(next_state, model='target'), dim=1)
+        return reward + (1 - done.float()) * self.gamma * q_next_max_value
     
     
     def recall(self):
@@ -176,7 +178,7 @@ class DQNAgent:
             self.save_net_dir / f"{self.type}_net_{int(step // self.save_every)}_{self.gamma}_{self.lr}.chkpt"
         )
         torch.save(
-            dict(model=self.net.state_dict(), exploration_rate=self.exploration_rate, type_model=self.type),
+            dict(model=self.net.state_dict(), exploration_rate=self.current_exploration_rate, type_model=self.type),
             save_path,
         )
         print(f"INFO: DQNAgent net saved to {save_path} at step {step}")
