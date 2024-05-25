@@ -52,6 +52,12 @@ from gym.wrappers import FrameStack
 
 from tensordict import TensorDict
 from torchrl.data import TensorDictReplayBuffer, LazyMemmapStorage
+from torchrl.data.replay_buffers.samplers import PrioritizedSampler
+
+from stable_baselines3.common.atari_wrappers import (
+    ClipRewardEnv,
+    EpisodicLifeEnv,
+)
 
 ######################################################################
 # RL Definitions
@@ -94,7 +100,7 @@ from torchrl.data import TensorDictReplayBuffer, LazyMemmapStorage
 #
 
 # Initialize Super Mario environment (in v0.26 change render mode to 'human' to see results on the screen)
-env_id = 'DemonAttack-v4'
+env_id = 'ALE/MsPacman-v5'
 env = gym.make(env_id)
 
 env.reset()
@@ -196,11 +202,9 @@ class ResizeObservation(gym.ObservationWrapper):
 env = SkipFrame(env, skip=4)
 env = GrayScaleObservation(env)
 env = ResizeObservation(env, shape=84)
-if gym.__version__ < '0.26':
-    env = FrameStack(env, num_stack=4, new_step_api=True)
-else:
-    env = FrameStack(env, num_stack=4)
-
+env = FrameStack(env, num_stack=4)
+env = ClipRewardEnv(env)
+env = EpisodicLifeEnv(env)
 
 class Mario:
     def __init__(self, state_dim, action_dim, save_dir):
@@ -220,7 +224,10 @@ class Mario:
         self.curr_step = 0
 
         self.save_every = 5e5  # no. of experiences between saving Mario Net
-        self.memory = TensorDictReplayBuffer(storage=LazyMemmapStorage(100000, device=torch.device("cpu")))
+        self.memory = TensorDictReplayBuffer(storage=LazyMemmapStorage(100000, device=torch.device(self.device)),
+                                             sampler=PrioritizedSampler(max_capacity=100000,
+                                                                         alpha=1.0,
+                                                                         beta=1.0))
         self.batch_size = 32
         
         self.gamma = 0.9
