@@ -64,12 +64,14 @@ class DQNAgent:
             print("Linear (lin) | Exponential (exp) | Power (pow)")
             print("Exiting...")
             exit()
+            
         # defining the DQN
         self.net = DQN(type=self.type, 
                        n_actions=self.action_dim, 
                        obs_shape=self.obs_shape,
                        config=nn_config).float()
         self.net = self.net.to(self.device)
+        
         # defining the memory (experience replay) of the agent
         self.memory = TensorDictReplayBuffer(storage=LazyMemmapStorage(
             max_size=float(agent_config['replay_memory_size']),
@@ -78,6 +80,7 @@ class DQNAgent:
         ),sampler=PrioritizedSampler(max_capacity=int(float(agent_config['replay_memory_size'])), 
                                      alpha=1.0, 
                                      beta=1.0))
+        
         # loss function and optimizer
         self.optimizer = torch.optim.Adamax(self.net.parameters(), lr=self.lr)
         self.loss_fn = torch.nn.SmoothL1Loss()
@@ -203,9 +206,9 @@ class DQNAgent:
     def load_weights(self, path_to_checkpoint:str, set_epsilon:bool):
         checkpoint = torch.load(path_to_checkpoint)
         
-        if checkpoint['type'] != self.type:
+        if checkpoint['type_model'] != self.type:
             print(f"ERROR: Tried to load a net with a different type."
-                  f"Declared model: {self.type} | Loaded model: {checkpoint['type']}"
+                  f"Declared model: {self.type} | Loaded model: {checkpoint['type_model']}"
                   f"Please review the datatypes."
                   f"Exiting...")
             exit()
