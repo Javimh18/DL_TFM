@@ -66,7 +66,7 @@ dqn_vit_agent:
 ############################################################################################################
 
 ddqn_patch_transformer_agent:
-  type: vit # swin, patch
+  type: patch_transformer # swin, patch
   gamma: 0.9
   replay_memory_size: 2e5
   save_every: 2e5
@@ -80,7 +80,7 @@ ddqn_patch_transformer_agent:
   batch_size: 32
 
 dqn_patch_transformer_agent:
-  type: vit # swin, patch, cnn, vit
+  type: patch_transformer # swin, patch, cnn, vit
   gamma: 0.99
   replay_memory_size: 5e5
   save_every: 5e5

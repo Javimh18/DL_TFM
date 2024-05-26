@@ -1,16 +1,16 @@
 patch_transformer:
-  n_layers: 2
-  patch_size: 4
+  n_layers: 4
+  patch_size: 3
   fc_dim: 256
   head_dim: 256
   embed_dim: 128
-  attn_heads: [4, 8]
-  dropouts: [0.3, 0.3]
+  attn_heads: [4, 4, 4, 8]
+  dropouts: [0.3, 0.3, 0.3, 0.3]
 
 vit:
-  patch_size: 4
-  embed_dim: 128
+  patch_size: 3
+  embed_dim: 144
   n_heads: 4
-  n_layers: 2
+  n_layers: 4
 
 cnn:
