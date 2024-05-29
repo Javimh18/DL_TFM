@@ -102,8 +102,8 @@ class MetricLogger:
 
         for metric in ["ep_lengths", "ep_avg_losses", "ep_avg_qs", "ep_rewards"]:
             plt.clf()
-            plt.plot(self.steps, getattr(self, f"Moving Avg. {metric}"), label=f"moving_avg_{metric}")
+            plt.plot(self.steps, getattr(self, f"moving_avg_{metric}"), label=f"moving_avg_{metric}")
             plt.xlabel("Step")
-            plt.ylabel(f"moving_avg_{metric}")
+            plt.ylabel(f"Moving Avg.{metric}")
             plt.legend()
             plt.savefig(getattr(self, f"{metric}_plot"))
