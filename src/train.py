@@ -39,22 +39,29 @@ if __name__ == '__main__':
     torch.manual_seed(SEED)
     torch.backends.cudnn.deterministic = True
     
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    print(f"Using torch with {device}")
-    
     parser = argparse.ArgumentParser()
     parser.add_argument("-e", "--environment", help='The name of environment where the agent is going to perform.', default="ALE/MsPacman-v5")
     parser.add_argument("-k", "--skip_frames", help='Tells the number of frames to skip and stack for the observation.', default=4)
-    parser.add_argument("-n", "--number_steps", help="Number of steps", default=1e7, type=float)
-    parser.add_argument("-x", "--exploration_schedule", help=f"Type of scheduler for the exploration rate: lin (default) | exp | pow", default="lin")
-    parser.add_argument("-s", "--save_check_dir", help="Path to the folder where checkpoints are stored", default="../checkpoints")
-    parser.add_argument("-v", "--save_video_dir", help="Path to the folder where videos of the agent playing are stored", default="../videos")
-    parser.add_argument("-l", "--log_every",  help="How many episodes between printing logger statistics", default=50, type=int)
-    parser.add_argument("-c", "--agent_config", help="Path to the config file of the agent", default="../config/agents_config.yaml")
-    parser.add_argument("-m", "--agent_model_config", help="Path to the config file of the model that the agent uses as a function approximator", default="../config/agent_nns.yaml")
-    parser.add_argument("-o", '--option_agent', help="Agent config to train. See agents_config.yaml for further info", required=True)
+    parser.add_argument("-n", "--number_steps", help="Number of steps.", default=1e7, type=float)
+    parser.add_argument("-x", "--exploration_schedule", help=f"Type of scheduler for the exploration rate: lin (default) | exp | pow.", default="lin", type=str)
+    parser.add_argument("-s", "--save_check_dir", help="Path to the folder where checkpoints are stored.", default="../checkpoints")
+    parser.add_argument("-v", "--save_video_dir", help="Path to the folder where videos of the agent playing are stored.", default="../videos")
+    parser.add_argument("-sv", "--save_video_progress", help="Boolear flag that specifies if videos throughout the training process are saved", default=False)
+    parser.add_argument("-l", "--log_every",  help="How many episodes between printing logger statistics.", default=50, type=int)
+    parser.add_argument("-c", "--agent_config", help="Path to the config file of the agent.", default="../config/agents_config.yaml")
+    parser.add_argument("-m", "--agent_model_config", help="Path to the config file of the model that the agent uses as a function approximator.", default="../config/agent_nns.yaml")
+    parser.add_argument("-o", '--option_agent', help="Agent config to train. See agents_config.yaml for further info.", required=True)
+    parser.add_argument("-d", "--cuda_device", help="Cuda device to train on.")
+    parser.add_argument("-p", "--prioritized_replay", help="Use prioritized experience replay", default=False, action='store_true')
+    parser.add_argument("-w", "--path_to_weights", help="Path to an already trained models.", default=None, type=str)
     # process the arguments, store them in args
     args = parser.parse_args()
+
+    if torch.cuda.device_count() > 1:
+        device = torch.device(f'cuda:{args.cuda_device}')
+    else:
+        device = torch.device(f'cuda') if torch.cuda.is_available() else torch.device('cpu')
+    print(f"Using torch with {device}")
     
     env = make_env()
     obs_shape = env.observation_space.shape
@@ -93,6 +100,7 @@ if __name__ == '__main__':
                         action_dim=n_actions,
                         device=device,
                         save_net_dir=save_check_dir,
+                        prioritized_replay=args.prioritized_replay,
                         exp_schedule=args.exploration_schedule,
                         agent_config=agent_config[agent],
                         nn_config=nn_config
@@ -102,6 +110,7 @@ if __name__ == '__main__':
                         action_dim=n_actions,
                         device=device,
                         save_net_dir=save_check_dir,
+                        prioritized_replay=args.prioritized_replay,
                         exp_schedule=args.exploration_schedule,
                         agent_config=agent_config[agent],
                         nn_config=nn_config
@@ -110,8 +119,10 @@ if __name__ == '__main__':
         print("WARNING: Type of agent specified not recognized. Exiting...")
         exit()
     
-    # load agent weights  
-    # agent.load_weights('/home/javier.munozh/dev/DL_TFM/checkpoints/ALE/DemonAttack-v5/2024-04-28T11-30-13/_net_20_0.9_0.00025.chkpt', True)
+    # load agent weights
+    if args.path_to_weights is not None:
+        print(f"Loading weights from path: {args.path_to_weights}")
+        agent.load_weights(args.path_to_weights, True)
     
     # declare the training class and start training the agent
     trainer = Trainer(env=env, 
@@ -119,7 +130,8 @@ if __name__ == '__main__':
                       n_steps=args.number_steps, 
                       log_every=args.log_every,
                       save_check_dir=save_check_dir,
-                      save_video_dir=save_video_dir)
+                      save_video_dir=save_video_dir,
+                      save_video_progress=args.save_video_progress)
     trainer.train()
     env.close()
     
