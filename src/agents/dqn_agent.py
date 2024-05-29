@@ -2,7 +2,7 @@ import torch
 from torch import nn
 from collections import deque
 from torchrl.data import TensorDictReplayBuffer, LazyMemmapStorage
-from torchrl.data.replay_buffers.samplers import PrioritizedSampler
+from torchrl.data.replay_buffers.samplers import PrioritizedSampler, RandomSampler
 from tensordict import TensorDict
 import numpy as np
 import datetime
@@ -16,9 +16,10 @@ class DQNAgent:
     def __init__(self, 
                  obs_shape:tuple,
                  action_dim: int, 
-                 device: str, 
+                 device: torch.device, 
                  save_net_dir: str,
                  exp_schedule:str,
+                 prioritized_replay:bool,
                  agent_config: dict,
                  nn_config:dict):
         
@@ -73,13 +74,17 @@ class DQNAgent:
         self.net = self.net.to(self.device)
         
         # defining the memory (experience replay) of the agent
+        if prioritized_replay:
+            sampler = PrioritizedSampler(max_capacity=int(float(agent_config['replay_memory_size'])), 
+                                     alpha=1.0, 
+                                     beta=1.0)
+        else:
+            sampler = RandomSampler()
         self.memory = TensorDictReplayBuffer(storage=LazyMemmapStorage(
             max_size=float(agent_config['replay_memory_size']),
             scratch_dir='./memmap_dir',
             device=self.device,
-        ),sampler=PrioritizedSampler(max_capacity=int(float(agent_config['replay_memory_size'])), 
-                                     alpha=1.0, 
-                                     beta=1.0))
+        ),sampler=sampler)
         
         # loss function and optimizer
         self.optimizer = torch.optim.Adamax(self.net.parameters(), lr=self.lr)
