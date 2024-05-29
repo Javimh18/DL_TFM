@@ -15,7 +15,8 @@ class Trainer:
                  n_steps: int, 
                  log_every=200, 
                  save_check_dir="../checkpoint",
-                 save_video_dir='../video'):
+                 save_video_dir='../video',
+                 save_video_progress:bool=False):
         self.env = env
         self.agent = agent
         self.n_steps = n_steps
@@ -24,6 +25,7 @@ class Trainer:
         self.log_every = log_every
         self.save_check_dir = save_check_dir
         self.save_video_dir = save_video_dir
+        self.save_vid_flag = save_video_progress
         
     def train(self):
         """
@@ -58,6 +60,8 @@ class Trainer:
                 #measure_array.append(measure)
                 logger.log_step(loss, q)
             
+            # since we are dealing with an episodic life env, at the end of each episode
+            # the info dictionary contains the relevant statistics for the reward and length
             if 'episode' in info:
                 # episode field is stored in the info dict if episode ended
                 logger.log_episode(ep_length=info['episode']['l'], ep_reward=info['episode']['r'],)
@@ -71,15 +75,14 @@ class Trainer:
             # avg_measure = sum(measure_array)/len(measure_array)
             # print(f"Avg. step time for measure: {avg_measure:.2f} ms")
             
-            """
-            if self.curr_episode > 999: 
+            if self.save_vid_flag and self.curr_episode > 999: 
                 save_video(
                     self.env.render(),
                     self.save_video_dir,
                     fps=self.env.metadata["render_fps"],
                     episode_index=self.curr_episode
                 )
-            """
+            
                 
                 
             
