@@ -4,6 +4,7 @@ from torch import nn
 from models.patch_transformer import PatchTransformer
 from models.vit import ViT
 from models.cnn import CNN
+from models._swin_transformer import SwinTransformer
 
 class DQN(nn.Module):
     def __init__(self, type:str, n_actions:int, obs_shape:tuple, config:dict) -> None:
@@ -25,9 +26,23 @@ class DQN(nn.Module):
                               n_layers=int(nn_config['n_layers']),
                               n_actions=n_actions)
         elif type == 'swin':
-            # TODO: Inicializar SWIN Transformer...
-            pass
-        elif type == 'patch_transformer':
+            self.online = SwinTransformer(img_size=obs_shape[-1], 
+                                          patch_size=nn_config['patch_size'], 
+                                          in_chans=obs_shape[0], 
+                                          num_classes=n_actions, 
+                                          embed_dim=nn_config['embed_dim'],
+                                          depths=nn_config['depths'], 
+                                          num_heads=nn_config['num_heads'], 
+                                          window_size=nn_config['window_size'])
+            self.target = SwinTransformer(img_size=obs_shape[-1], 
+                                          patch_size=nn_config['patch_size'], 
+                                          in_chans=obs_shape[0], 
+                                          num_classes=n_actions, 
+                                          embed_dim=nn_config['embed_dim'],
+                                          depths=nn_config['depths'], 
+                                          num_heads=nn_config['num_heads'], 
+                                          window_size=nn_config['window_size'])
+        elif type == 'patch':
             self.online = PatchTransformer(n_actions=n_actions,
                                 n_layers=int(nn_config['n_layers']),
                                 patch_size=int(nn_config['patch_size']),
@@ -61,8 +76,6 @@ class DQN(nn.Module):
             exit()
             
         self.target.load_state_dict(self.online.state_dict())
-
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
         # Q_online network parameters must be trained
         for p in self.online.parameters():
