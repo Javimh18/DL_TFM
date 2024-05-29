@@ -1,4 +1,4 @@
-patch_transformer:
+patch:
   n_layers: 4
   patch_size: 3
   fc_dim: 256
@@ -9,8 +9,15 @@ patch_transformer:
 
 vit:
   patch_size: 3
-  embed_dim: 144
-  n_heads: 4
-  n_layers: 4
+  embed_dim: 96
+  n_heads: 6
+  n_layers: 6
+
+swin:
+  patch_size: 3
+  embed_dim: 96
+  depths: [2,3,2]
+  num_heads: [3,3,6]
+  window_size: 7
 
 cnn:
