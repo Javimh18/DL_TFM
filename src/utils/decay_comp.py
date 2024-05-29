@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 def log_base(x, base):
     return np.log(x) / np.log(base)
 
-end = 10
+end = 10e6
 inc = 1
 t = np.arange(0, end+inc, inc)
 n = len(t)
@@ -30,7 +30,6 @@ y = []
 acc = e_0
 for i in t:
     acc = acc * gamma**(i*l)
-    print(gamma**(i*l))
     y.append(acc)
 
 y = np.array(y)
