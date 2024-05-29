@@ -4,7 +4,7 @@ from torch import nn
 from models.patch_transformer import PatchTransformer
 from models.vit import ViT
 from models.cnn import CNN
-from models._swin_transformer import SwinTransformer
+from models.swin_transformer import SwinTransformer
 
 class DQN(nn.Module):
     def __init__(self, type:str, n_actions:int, obs_shape:tuple, config:dict) -> None:
