@@ -54,6 +54,7 @@ class MultiHeadAttention(nn.Module):
         super().__init__()
         self.n_heads = n_heads 
         self.embed_dim = n_embd
+        self.head_dim = n_embd//n_heads
         
         # key, query, value projections
         self.qkv = nn.Linear(n_embd, 3*n_embd)
@@ -67,11 +68,11 @@ class MultiHeadAttention(nn.Module):
             exit(-1)
         
         # calculate query, key, values for all heads in batch and move head forward to be the batch dim
-        qkv = self.qkv(x).reshape(B, N, 3, self.n_heads, E//self.n_heads).permute(2, 0, 3, 1, 4) # (B, N, 3*E) -> (B, N, 3, nh, E//nh) -> (3, B, nh, N, E//nh)
+        qkv = self.qkv(x).reshape(B, N, 3, self.n_heads, self.head_dim).permute(2, 0, 3, 1, 4) # (B, N, 3*E) -> (B, N, 3, nh, E//nh) -> (3, B, nh, N, E//nh)
         q, k, v = qkv[0], qkv[1], qkv[2] 
         
         # attention (B, nh, N, E//nh) x (B, nh, E//nh, N) -> (B, nh, N, N) 
-        att = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(k.size(-1)))
+        att = (q @ k.transpose(-2, -1)) * (1.0 / (math.sqrt(self.head_dim)))
         att = torch.nn.functional.softmax(att, dim=-1)
         y = att @ v # (B, nh, N, N) x (B, nh, N, E) -> (B, nh, N, E)
         y = y.transpose(1, 2).contiguous().view(B, N, E) # re-assemble all head outputs side by side
