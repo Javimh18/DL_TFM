@@ -29,6 +29,7 @@ class MetricLogger:
         self.moving_avg_ep_lengths = []
         self.moving_avg_ep_avg_losses = []
         self.moving_avg_ep_avg_qs = []
+        self.steps = []
 
         # Current episode metric
         self.init_episode()
@@ -72,6 +73,7 @@ class MetricLogger:
         self.moving_avg_ep_lengths.append(mean_ep_length)
         self.moving_avg_ep_avg_losses.append(mean_ep_loss)
         self.moving_avg_ep_avg_qs.append(mean_ep_q)
+        self.steps.append(step)
 
         last_record_time = self.record_time
         self.record_time = time.time()
@@ -100,6 +102,8 @@ class MetricLogger:
 
         for metric in ["ep_lengths", "ep_avg_losses", "ep_avg_qs", "ep_rewards"]:
             plt.clf()
-            plt.plot(getattr(self, f"moving_avg_{metric}"), label=f"moving_avg_{metric}")
+            plt.plot(self.steps, getattr(self, f"Moving Avg. {metric}"), label=f"moving_avg_{metric}")
+            plt.xlabel("Step")
+            plt.ylabel(f"moving_avg_{metric}")
             plt.legend()
             plt.savefig(getattr(self, f"{metric}_plot"))
