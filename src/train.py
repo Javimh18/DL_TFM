@@ -137,7 +137,7 @@ if __name__ == '__main__':
                       save_video_progress=args.save_video_progress)  
         trainer.load_prev_training_info(Path(args.path_to_training_folder))
     else:
-        logger = MetricLogger(save_check_dir)
+        logger = MetricLogger(save_check_dir, agent_type=agent_type)
         # declare the training class and start training the agent
         trainer = Trainer(env=env, 
                       agent=agent, 
