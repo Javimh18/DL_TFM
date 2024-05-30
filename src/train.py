@@ -51,14 +51,17 @@ if __name__ == '__main__':
     parser.add_argument("-c", "--agent_config", help="Path to the config file of the agent.", default="../config/agents_config.yaml")
     parser.add_argument("-m", "--agent_model_config", help="Path to the config file of the model that the agent uses as a function approximator.", default="../config/agent_nns.yaml")
     parser.add_argument("-o", '--option_agent', help="Agent config to train. See agents_config.yaml for further info.", required=True)
-    parser.add_argument("-d", "--cuda_device", help="Cuda device to train on.")
+    parser.add_argument("-d", "--cuda_device", help="Cuda device to train on.", default=None)
     parser.add_argument("-p", "--prioritized_replay", help="Use prioritized experience replay", default=False, action='store_true')
     parser.add_argument("-w", "--path_to_weights", help="Path to an already trained models.", default=None, type=str)
     # process the arguments, store them in args
     args = parser.parse_args()
 
     if torch.cuda.device_count() > 1:
-        device = torch.device(f'cuda:{args.cuda_device}')
+        if args.cuda_device is not None:
+            device = torch.device(f'cuda:{args.cuda_device}')
+        else:
+            device = torch.device(f'cuda') if torch.cuda.is_available() else torch.device('cpu')
     else:
         device = torch.device(f'cuda') if torch.cuda.is_available() else torch.device('cpu')
     print(f"Using torch with {device}")
