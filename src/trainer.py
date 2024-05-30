@@ -33,7 +33,9 @@ class Trainer:
         """
         # create if not exists
         self.save_check_dir.mkdir(parents=True)
-        self.save_video_dir.mkdir(parents=True)
+        # only save videos in training if specified
+        if self.save_vid_flag:
+            self.save_video_dir.mkdir(parents=True)
         logger = MetricLogger(self.save_check_dir)
     
         while self.curr_step < self.n_steps:
