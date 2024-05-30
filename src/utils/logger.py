@@ -106,4 +106,5 @@ class MetricLogger:
             plt.xlabel("Step")
             plt.ylabel(f"Moving Avg.{metric}")
             plt.legend()
+            plt.grid()
             plt.savefig(getattr(self, f"{metric}_plot"))
