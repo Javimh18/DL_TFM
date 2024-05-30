@@ -43,7 +43,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-e", "--environment", help='The name of environment where the agent is going to perform.', default="ALE/MsPacman-v5")
     parser.add_argument("-k", "--skip_frames", help='Tells the number of frames to skip and stack for the observation.', default=4)
-    parser.add_argument("-n", "--number_steps", help="Number of steps.", default=1e7, type=float)
+    parser.add_argument("-n", "--number_steps", help="Number of steps.", default=1e8, type=float)
     parser.add_argument("-x", "--exploration_schedule", help=f"Type of scheduler for the exploration rate: lin (default) | exp | pow.", default="lin", type=str)
     parser.add_argument("-s", "--save_check_dir", help="Path to the folder where checkpoints are stored.", default="../checkpoints")
     parser.add_argument("-v", "--save_video_dir", help="Path to the folder where videos of the agent playing are stored.", default="../evidences/videos")
