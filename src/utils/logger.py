@@ -1,7 +1,9 @@
 import numpy as np
 import time, datetime
-import matplotlib.pyplot as plt
+import plotly.express as px
+import pandas as pd
 
+NOT_2_PLOT = ['Episode', 'Step', 'Epsilon', 'Time', 'TimeDelta']
 class MetricLogger:
     def __init__(self, save_dir):
 
@@ -13,10 +15,7 @@ class MetricLogger:
                 f"{'MeanLength':>15}{'MeanLoss':>15}{'MeanQValue':>15}"
                 f"{'TimeDelta':>15}{'Time':>20}\n"
             )
-        self.ep_rewards_plot = save_dir / "reward_plot.jpg"
-        self.ep_lengths_plot = save_dir / "length_plot.jpg"
-        self.ep_avg_losses_plot = save_dir / "loss_plot.jpg"
-        self.ep_avg_qs_plot = save_dir / "q_plot.jpg"
+        self.save_dir = save_dir
 
         # History metrics
         self.ep_rewards = []
@@ -99,12 +98,8 @@ class MetricLogger:
                 f"{time_since_last_record:15.3f}"
                 f"{datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S'):>20}\n"
             )
-
-        for metric in ["ep_lengths", "ep_avg_losses", "ep_avg_qs", "ep_rewards"]:
-            plt.clf()
-            plt.plot(self.steps, getattr(self, f"moving_avg_{metric}"), label=f"moving_avg_{metric}")
-            plt.xlabel("Step")
-            plt.ylabel(f"Moving Avg.{metric}")
-            plt.legend()
-            plt.grid()
-            plt.savefig(getattr(self, f"{metric}_plot"))
+        df = pd.read_csv(self.save_log, header=0, sep='\s+', skipinitialspace=True)
+        for i in df.columns:
+            if i not in NOT_2_PLOT:
+                fig = px.line(df, x = 'Step', y = i, title=f'{i} over time for [agent_type] Agent')
+                fig.write_image(self.save_dir / f"{i}.png")
