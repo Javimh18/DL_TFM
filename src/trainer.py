@@ -1,9 +1,12 @@
 import gymnasium as gym
 from gym.utils.save_video import save_video
+import pandas as pd
+from pathlib import Path
 
 from utils.logger import MetricLogger
 from agents.ddqn_agent import DDQNAgent
 from agents.dqn_agent import DQNAgent
+from utils.schedulers import PowerDecayScheduler
 
 class Trainer:
     """
@@ -13,6 +16,7 @@ class Trainer:
                  env: gym.Env, 
                  agent:DQNAgent|DDQNAgent, 
                  n_steps: int, 
+                 logger:MetricLogger,
                  log_every=200, 
                  save_check_dir="../checkpoint",
                  save_video_dir='../video',
@@ -26,17 +30,16 @@ class Trainer:
         self.save_check_dir = save_check_dir
         self.save_video_dir = save_video_dir
         self.save_vid_flag = save_video_progress
+        self.logger = logger
         
     def train(self):
         """
         This function implements the training loop of an experience replay DQN agent.
         """
-        # create if not exists
-        self.save_check_dir.mkdir(parents=True)
+    
         # only save videos in training if specified
         if self.save_vid_flag:
             self.save_video_dir.mkdir(parents=True)
-        logger = MetricLogger(self.save_check_dir)
     
         while self.curr_step < self.n_steps:
             # reset environment
@@ -60,15 +63,15 @@ class Trainer:
                 # 6. Update step value 
                 self.curr_step += 1            
                 #measure_array.append(measure)
-                logger.log_step(loss, q)
+                self.logger.log_step(loss, q)
             
             # since we are dealing with an episodic life env, at the end of each episode
             # the info dictionary contains the relevant statistics for the reward and length
             if 'episode' in info:
                 # episode field is stored in the info dict if episode ended
-                logger.log_episode(ep_length=info['episode']['l'], ep_reward=info['episode']['r'],)
+                self.logger.log_episode(ep_length=info['episode']['l'], ep_reward=info['episode']['r'],)
                 if not(self.curr_episode % self.log_every) :
-                    logger.record(episode=self.curr_episode, 
+                    self.logger.record(episode=self.curr_episode, 
                                   epsilon=self.agent.exploration_rate, 
                                   step=self.curr_step)
                 # log the real reward using episode statistics
@@ -84,7 +87,21 @@ class Trainer:
                     fps=self.env.metadata["render_fps"],
                     episode_index=self.curr_episode
                 )
-            
+                
+    def load_prev_training_info(self, training_folder:Path):
+        log_prev_training = training_folder / "log"
+        df = pd.read_csv(log_prev_training, header=0, sep='\s+', skipinitialspace=True)
+        max_step = max(df['Step'].values)
+        max_ep = max(df['Episode'].values)
+        self.curr_episode = max_ep
+        self.curr_step = max_step
+        
+        # in case the scheduler is of type powerdecay, we
+        # set the scheduler to the state that it was in the
+        # prev training
+        if type(self.agent.exp_scheduler) == PowerDecayScheduler:
+            for t in range(max_step):
+                self.agent.exp_scheduler.step(t)
                 
                 
             

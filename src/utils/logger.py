@@ -2,20 +2,27 @@ import numpy as np
 import time, datetime
 import plotly.express as px
 import pandas as pd
+from pathlib import Path
 
 NOT_2_PLOT = ['Episode', 'Step', 'Epsilon', 'Time', 'TimeDelta']
 class MetricLogger:
-    def __init__(self, save_dir):
+    def __init__(self, save_dir:Path, agent_type:str, load_pre=False):
 
         # paths for saving logs and plots
         self.save_log = save_dir / "log"
-        with open(self.save_log, "w") as f:
-            f.write(
-                f"{'Episode':>8}{'Step':>8}{'Epsilon':>10}{'MeanReward':>15}"
-                f"{'MeanLength':>15}{'MeanLoss':>15}{'MeanQValue':>15}"
-                f"{'TimeDelta':>15}{'Time':>20}\n"
-            )
+        if not load_pre:
+            # create if not exists
+            save_dir.mkdir(parents=True)
+            with open(self.save_log, "w") as f:
+                f.write(
+                    f"{'Episode':>8}{'Step':>8}{'Epsilon':>10}{'MeanReward':>15}"
+                    f"{'MeanLength':>15}{'MeanLoss':>15}{'MeanQValue':>15}"
+                    f"{'TimeDelta':>15}{'Time':>20}\n"
+                )
+        else:
+            self.load_from_log(save_dir)
         self.save_dir = save_dir
+        self.agent_type = agent_type
 
         # History metrics
         self.ep_rewards = []
@@ -101,5 +108,8 @@ class MetricLogger:
         df = pd.read_csv(self.save_log, header=0, sep='\s+', skipinitialspace=True)
         for i in df.columns:
             if i not in NOT_2_PLOT:
-                fig = px.line(df, x = 'Step', y = i, title=f'{i} over time for [agent_type] Agent')
+                fig = px.line(df, x = 'Step', y = i, title=f'{i} over time for {self.agent_type}')
                 fig.write_image(self.save_dir / f"{i}.png")
+                
+    def load_from_log(self, path_to_checkpoint:Path):
+        self.save_log = path_to_checkpoint / 'log'

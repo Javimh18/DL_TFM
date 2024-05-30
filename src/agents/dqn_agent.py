@@ -5,7 +5,9 @@ from torchrl.data import TensorDictReplayBuffer, LazyMemmapStorage
 from torchrl.data.replay_buffers.samplers import PrioritizedSampler, RandomSampler
 from tensordict import TensorDict
 import numpy as np
-import datetime
+import os
+import glob
+from pathlib import Path
 from utils.utils import first_if_tuple
 from agents.dqn_models import DQN
 from utils.schedulers import LinearScheduler, ExpDecayScheduler, PowerDecayScheduler
@@ -208,8 +210,18 @@ class DQNAgent:
         print(f"INFO: DQNAgent net saved to {save_path} at step {step}")
         
         
-    def load_weights(self, path_to_checkpoint:str, set_epsilon:bool):
-        checkpoint = torch.load(path_to_checkpoint)
+    def load_weights(self, path_to_checkpoint:str):
+        
+        def extract_number(s: str):
+            splits = s.split('_')
+            print(splits)
+            return int(splits[-3])
+        # search for the .chkpt file in the path_to_checkpoint path
+        self.save_net_dir = path_to_checkpoint
+        path_to_checkpoint = os.path.join(path_to_checkpoint, "*.chkpt")
+        checkpoint_files = glob.glob(path_to_checkpoint)
+        checkpoint = max(checkpoint_files, key=extract_number)
+        checkpoint = torch.load(checkpoint)
         
         if checkpoint['type_model'] != self.type:
             print(f"ERROR: Tried to load a net with a different type."
@@ -220,10 +232,5 @@ class DQNAgent:
 
         # load model from dictionary
         self.net.load_state_dict(checkpoint['model'])
-        # set the exploration rate to whatever it was trained
-        if set_epsilon:
-            print(f"INFO: Saved exploration rate loaded. eps_max={checkpoint['exploration_rate']}")
-            self.exploration_rate = checkpoint['exploration_rate']
-        else:
-            print(f"INFO: Saved exploration rate not loaded. eps_max={self.exploration_rate}") 
+            
 

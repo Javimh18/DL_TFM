@@ -1,5 +1,6 @@
 from agents.dqn_agent import DQNAgent
 from agents.ddqn_agent import DDQNAgent
+from utils.logger import MetricLogger
 from trainer import Trainer
 from gym.wrappers import FrameStack, RecordEpisodeStatistics
 from utils.wrappers import SkipFrame, GrayScaleObservation, ResizeObservation
@@ -53,7 +54,8 @@ if __name__ == '__main__':
     parser.add_argument("-o", '--option_agent', help="Agent config to train. See agents_config.yaml for further info.", required=True)
     parser.add_argument("-d", "--cuda_device", help="Cuda device to train on.", default=None)
     parser.add_argument("-p", "--prioritized_replay", help="Use prioritized experience replay", default=False, action='store_true')
-    parser.add_argument("-w", "--path_to_weights", help="Path to an already trained models.", default=None, type=str)
+    parser.add_argument("-r", "--resume_training", help="Flag to indicating resuming training", default=False, action="store_true")
+    parser.add_argument("-w", "--path_to_training_folder", help="Path to an folder with logs and already trained models.", default=None, type=str)
     # process the arguments, store them in args
     args = parser.parse_args()
 
@@ -85,56 +87,67 @@ if __name__ == '__main__':
     
     choice = args.option_agent
     choice = int(choice)
-    while choice <= 0 or choice > len(agents_list):
-        print("Incorrect option, please try again.")
-        choice = input("> Option:")
-        choice = int(choice)
+    if choice <= 0 or choice > len(agents_list):
+        print("Incorrect option, exiting...")
+        exit()
     
     # Selected agent
-    agent = agents_list[choice-1]
-    print(f">>>>>>>> Selected agent: {agent}")
+    agent_type = agents_list[choice-1]
+    print(f">>>>>>>> Selected agent: {agent_type}")
     
     # initializing key directories for metrics and evidences from the code
-    save_check_dir = Path(args.save_check_dir) / args.environment / agent / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
-    save_video_dir = Path(args.save_video_dir) / args.environment / agent / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
+    save_check_dir = Path(args.save_check_dir) / args.environment / agent_type / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
+    save_video_dir = Path(args.save_video_dir) / args.environment / agent_type / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     
-    if 'dqn' in agent:
+    if 'dqn' in agent_type:
         agent = DQNAgent(obs_shape=obs_shape,
                         action_dim=n_actions,
                         device=device,
                         save_net_dir=save_check_dir,
                         prioritized_replay=args.prioritized_replay,
                         exp_schedule=args.exploration_schedule,
-                        agent_config=agent_config[agent],
+                        agent_config=agent_config[agent_type],
                         nn_config=nn_config
                         )
-    elif 'ddqn' in agent:
+    elif 'ddqn' in agent_type:
         agent = DDQNAgent(obs_shape=obs_shape,
                         action_dim=n_actions,
                         device=device,
                         save_net_dir=save_check_dir,
                         prioritized_replay=args.prioritized_replay,
                         exp_schedule=args.exploration_schedule,
-                        agent_config=agent_config[agent],
+                        agent_config=agent_config[agent_type],
                         nn_config=nn_config
                         )
     else:
         print("WARNING: Type of agent specified not recognized. Exiting...")
         exit()
     
-    # load agent weights
-    if args.path_to_weights is not None:
-        print(f"Loading weights from path: {args.path_to_weights}")
-        agent.load_weights(args.path_to_weights, True)
-    
-    # declare the training class and start training the agent
-    trainer = Trainer(env=env, 
+    if args.resume_training and args.path_to_training_folder is not None:
+        print(f"Loading weights from path: {args.path_to_training_folder}")
+        agent.load_weights(Path(args.path_to_training_folder))
+        logger = MetricLogger(Path(args.path_to_training_folder), agent_type=agent_type, load_pre=args.resume_training)
+        trainer = Trainer(env=env, 
                       agent=agent, 
                       n_steps=args.number_steps, 
                       log_every=args.log_every,
+                      logger=logger,
                       save_check_dir=save_check_dir,
                       save_video_dir=save_video_dir,
-                      save_video_progress=args.save_video_progress)
+                      save_video_progress=args.save_video_progress)  
+        trainer.load_prev_training_info(Path(args.path_to_training_folder))
+    else:
+        logger = MetricLogger(save_check_dir)
+        # declare the training class and start training the agent
+        trainer = Trainer(env=env, 
+                      agent=agent, 
+                      n_steps=args.number_steps, 
+                      log_every=args.log_every,
+                      logger=logger,
+                      save_check_dir=save_check_dir,
+                      save_video_dir=save_video_dir,
+                      save_video_progress=args.save_video_progress)  
+   
     trainer.train()
     env.close()
     
