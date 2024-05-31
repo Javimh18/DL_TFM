@@ -5,7 +5,7 @@ ddqn_cnn_agent:
   type: cnn # swin, patch
   gamma: 0.99
   replay_memory_size: 1e6
-  save_every: 2e5
+  save_every: 1e5
   sync_every: 1e4
   learn_every: 4
   exp_rate_max: 1
@@ -37,7 +37,7 @@ ddqn_vit_agent:
   type: vit # swin, patch
   gamma: 0.99
   replay_memory_size: 1e6
-  save_every: 2e5
+  save_every: 1e5
   sync_every: 1e4
   learn_every: 4
   exp_rate_max: 1
@@ -69,7 +69,7 @@ ddqn_patch_transformer_agent:
   type: patch # swin, patch
   gamma: 0.99
   replay_memory_size: 1e6
-  save_every: 2e5
+  save_every: 1e5
   sync_every: 1e4
   learn_every: 4
   exp_rate_max: 1
@@ -101,7 +101,7 @@ ddqn_swin_transformer_agent:
   type: swin # swin, patch
   gamma: 0.99
   replay_memory_size: 1e6
-  save_every: 2e5
+  save_every: 1e5
   sync_every: 1e4
   learn_every: 4
   exp_rate_max: 1
