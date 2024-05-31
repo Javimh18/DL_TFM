@@ -85,7 +85,7 @@ class DQNAgent:
         self.memory = TensorDictReplayBuffer(storage=LazyMemmapStorage(
             max_size=float(agent_config['replay_memory_size']),
             scratch_dir='./memmap_dir',
-            device=self.device,
+            device="cpu",
         ),sampler=sampler)
         
         # loss function and optimizer
