@@ -87,3 +87,12 @@ class ResizeObservation(gym.ObservationWrapper):
         # apply the transformation
         observation = transforms(observation).squeeze(0)
         return observation
+    
+class NormalizeObservation(gym.ObservationWrapper):
+    def __init__(self, env):
+        super(NormalizeObservation, self).__init__(env)
+        self.observation_space = gym.spaces.Box(low=0.0, high=1.0, shape=self.observation_space.shape, dtype=np.float32)
+
+    def observation(self, observation):
+        # Asumiendo que las observaciones son imágenes en grayscale con valores entre 0 y 255
+        return observation / 255.0

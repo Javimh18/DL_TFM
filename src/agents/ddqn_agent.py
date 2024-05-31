@@ -17,10 +17,10 @@ class DDQNAgent(DQNAgent):
     @torch.no_grad() # since this is our "ground truth" (look ahead prediction)
     def compute_q_target(self, reward, next_state, done):
         # for the next state, get the actions that have higher q_values
-        online_q_action_value = self.net(next_state, model='online')
+        online_q_action_value = self.net(next_state.float(), model='online')
         max_value_action = torch.argmax(online_q_action_value, dim=1)
         # then, apply those actions onto the target (off-line) model
-        target_q_action_values = self.net(next_state, model='target')
+        target_q_action_values = self.net(next_state.float(), model='target')
         q_next_state_target = target_q_action_values[np.arange(0, self.batch_size), max_value_action]
         
         return (reward + (1-done.float()) * self.gamma * q_next_state_target).float()

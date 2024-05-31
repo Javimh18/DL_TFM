@@ -84,8 +84,8 @@ class DQNAgent:
             sampler = RandomSampler()
         self.memory = TensorDictReplayBuffer(storage=LazyMemmapStorage(
             max_size=float(agent_config['replay_memory_size']),
-            scratch_dir='./memmap_dir',
-            device="cpu",
+            scratch_dir=f'./memmap_dir_{self.type}_{exp_schedule}',
+            device=self.device,
         ),sampler=sampler)
         
         # loss function and optimizer
@@ -102,7 +102,7 @@ class DQNAgent:
             # use of __array__(): https://gymnasium.farama.org/main/_modules/gymnasium/wrappers/frame_stack/
             state = first_if_tuple(state).__array__()
             state = torch.tensor(state, device=self.device).unsqueeze(0)
-            q_values = self.net(state, model='online')
+            q_values = self.net(state.float(), model='online')
             action = torch.argmax(q_values, dim=1).item()
         
         # decrease exploration_rate according to scheduler
@@ -136,7 +136,7 @@ class DQNAgent:
     
     def compute_q_estimate(self, state, action):
         # get the q values estimates for the states || Q_online(s,a;w)
-        q_estimates = self.net(state, model='online')
+        q_estimates = self.net(state.float(), model='online')
         # select, for each q_estimate, the q_value of the selected action
         # np.arange does the trick of extracting all the q_values from the batch, given the action (torch.Tensor.gather would do the same)
         q_action_estimates = q_estimates[np.arange(0, self.batch_size), action]
@@ -145,7 +145,7 @@ class DQNAgent:
     
     @torch.no_grad() # since this is our "ground truth" (look ahead prediction)
     def compute_q_target(self, reward, done, next_state):
-        q_next_max_value, _ = torch.max(self.net(next_state, model='target'), dim=1)
+        q_next_max_value, _ = torch.max(self.net(next_state.float(), model='target'), dim=1)
         return reward + (1 - done.float()) * self.gamma * q_next_max_value
     
     

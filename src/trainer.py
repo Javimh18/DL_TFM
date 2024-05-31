@@ -2,6 +2,7 @@ import gymnasium as gym
 from gym.utils.save_video import save_video
 import pandas as pd
 from pathlib import Path
+import datetime
 
 from utils.logger import MetricLogger
 from agents.ddqn_agent import DDQNAgent
@@ -45,24 +46,24 @@ class Trainer:
             # reset environment
             done, trunc = False, False
             state = self.env.reset()
-            #measure_array = []
+            measure_array = []
             while (not done) and (not trunc):
                 # 1. get action for state
                 action = self.agent.perform_action(state, self.curr_step) # 20.69 ms  
                 # 2. run action in environment
+                start = datetime.datetime.now()
                 next_state, reward, done, trunc, info = self.env.step(action) # 1.70 ms
+                measure = datetime.datetime.now() - start
                 # 3. collect experience in exp. replay buffer for Q-learning
                 self.agent.store_transition(state, action, reward, next_state, done, trunc) # 0.56 ms
                 # 4. Learn from collected experiences
-                #start = datetime.datetime.now()
                 q, loss = self.agent.learn(self.curr_step) # 39.76 ms
-                #measure = datetime.datetime.now() - start
-                #measure = measure.total_seconds() * 1000
+                measure = measure.total_seconds() * 1000
+                measure_array.append(measure)
                 # 5. Update the current state 
                 state = next_state
                 # 6. Update step value 
                 self.curr_step += 1            
-                #measure_array.append(measure)
                 self.logger.log_step(loss, q)
             
             # since we are dealing with an episodic life env, at the end of each episode
@@ -103,8 +104,3 @@ class Trainer:
             for t in range(max_step):
                 self.agent.exp_scheduler.step(t)
                 
-                
-            
-        
-        
-        
