@@ -1,6 +1,6 @@
 import torch
 from torchvision import transforms as T
-import gym
+import gymnasium as gym
 from gym.spaces import Box
 import numpy as np
 
@@ -87,7 +87,11 @@ class ResizeObservation(gym.ObservationWrapper):
         # apply the transformation
         observation = transforms(observation).squeeze(0)
         return observation
-    
+
+###############################################################################################
+################################### NORMALIZE OBSERVATION #####################################
+###############################################################################################
+
 class NormalizeObservation(gym.ObservationWrapper):
     def __init__(self, env):
         super(NormalizeObservation, self).__init__(env)
@@ -96,3 +100,36 @@ class NormalizeObservation(gym.ObservationWrapper):
     def observation(self, observation):
         # Asumiendo que las observaciones son imágenes en grayscale con valores entre 0 y 255
         return observation / 255.0
+
+###############################################################################################
+################################### FOR METRICS EXTRACTION ####################################
+###############################################################################################
+
+class FrameExtractor(gym.Wrapper):
+    def __init__(self, env):
+        super(FrameExtractor, self).__init__(env)
+        self.frames = []
+
+    def step(self, action):
+        obs, total_reward, done, trunk, info = self.env.step(action)
+        frame = self._get_frame()
+        self.frames.append(frame)
+        return obs, total_reward, done, trunk, info
+
+    def _get_frame(self):
+        # This is where we handle environments that support rendering.
+        # Try to render the environment and capture the frame.
+        frame = self.env.render()
+        return frame
+    
+class SaveOriginalObservation(gym.ObservationWrapper):
+    def __init__(self, env):
+        super(SaveOriginalObservation, self).__init__(env)
+        self.original_observation = None
+
+    def observation(self, obs):
+        self.original_observation = obs.copy()  # Save the original observation
+        return obs
+
+    def get_original_observation(self):
+        return self.original_observation
