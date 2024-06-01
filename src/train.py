@@ -2,14 +2,11 @@ from agents.dqn_agent import DQNAgent
 from agents.ddqn_agent import DDQNAgent
 from utils.logger import MetricLogger
 from trainer import Trainer
-from gym.wrappers import FrameStack, RecordEpisodeStatistics
-from utils.wrappers import SkipFrame, GrayScaleObservation, ResizeObservation, NormalizeObservation
+from gym.wrappers import RecordEpisodeStatistics
+from utils.wrappers import SkipFrame, NormalizeObservation
 from stable_baselines3.common.atari_wrappers import (
     ClipRewardEnv,
     EpisodicLifeEnv,
-    FireResetEnv,
-    MaxAndSkipEnv,
-    NoopResetEnv
 )
 
 import gymnasium as gym
@@ -32,7 +29,6 @@ def make_env():
     env = gym.wrappers.GrayScaleObservation(env)
     env = NormalizeObservation(env)
     env = gym.wrappers.FrameStack(env, args.skip_frames)
-    env.metadata["render_fps"] = 30
     env.action_space.seed(SEED)
     return env
 
@@ -81,11 +77,7 @@ if __name__ == '__main__':
     with open(args.agent_model_config, 'r') as f:
         nn_config = yaml.load(f, Loader=yaml.SafeLoader)
     
-    print("Select among the different agent configs:")
     agents_list = list(agent_config.keys())
-    for i in range(len(agents_list)):
-        print(f"Option {i+1}: {agents_list[i]}")
-    
     choice = args.option_agent
     choice = int(choice)
     if choice <= 0 or choice > len(agents_list):
