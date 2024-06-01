@@ -44,7 +44,7 @@ if __name__ == '__main__':
     parser.add_argument("-c", "--agent_config", help="Path to the config file of the agent", default="../config/agents_config.yaml")
     parser.add_argument("-m", "--agent_model_config", help="Path to the config file of the model that the agent uses as a function approximator", default="../config/agent_nns.yaml")
     parser.add_argument("-p", "--path_to_agent_checkpoint", help="Path to the checkpoint file where that contains the NN weights", 
-                        default='../checkpoints/ALE/MsPacman-v5/ddqn_cnn_agent/2024-05-25T19-46-36')
+                        default='../checkpoints/ALE/MsPacman-v5/ddqn_cnn_agent/2024-06-01T09-00-00')
     parser.add_argument("-v", "--save_video_dir", help="Path to the folder where videos of the agent playing are stored", default="../evidences/videos")
     
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -103,7 +103,7 @@ if __name__ == '__main__':
                         nn_config=nn_config
                         )
         
-    agent.load_weights(path_to_checkpoint=args.path_to_agent_checkpoint, set_epsilon=False)
+    agent.load_weights(path_to_checkpoint=args.path_to_agent_checkpoint)
     agent.exploration_rate = 0.0
     
     curr_step = 0
