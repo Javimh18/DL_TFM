@@ -214,14 +214,14 @@ class DQNAgent:
         
         def extract_number(s: str):
             splits = s.split('_')
-            print(splits)
             return int(splits[-3])
         # search for the .chkpt file in the path_to_checkpoint path
         self.save_net_dir = path_to_checkpoint
         path_to_checkpoint = os.path.join(path_to_checkpoint, "*.chkpt")
         checkpoint_files = glob.glob(path_to_checkpoint)
-        checkpoint = max(checkpoint_files, key=extract_number)
-        checkpoint = torch.load(checkpoint)
+        checkpoint_name = max(checkpoint_files, key=extract_number)
+        checkpoint = torch.load(checkpoint_name)
+        print(f"Checkpoint: {checkpoint_name} loaded")
         
         if checkpoint['type_model'] != self.type:
             print(f"ERROR: Tried to load a net with a different type."
