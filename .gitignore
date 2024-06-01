@@ -9,7 +9,7 @@
 *.out
 **log
 **/checkpoints
-**/memmap_dir
+**/memmap_dir*
 **test.py
 # geintra specific
 commands.txt
