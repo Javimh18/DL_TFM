@@ -55,7 +55,7 @@ class Trainer:
                 next_state, reward, done, trunc, info = self.env.step(action) # 1.70 ms
                 measure = datetime.datetime.now() - start
                 # 3. collect experience in exp. replay buffer for Q-learning
-                self.agent.store_transition(state, action, reward, next_state, done, trunc) # 0.56 ms
+                self.agent.store_transition(state, action, reward, next_state, done) # 0.56 ms
                 # 4. Learn from collected experiences
                 q, loss = self.agent.learn(self.curr_step) # 39.76 ms
                 measure = measure.total_seconds() * 1000

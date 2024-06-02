@@ -112,7 +112,7 @@ class DQNAgent:
         return action
         
         
-    def store_transition(self, state, action, reward, next_state, done, trunc):
+    def store_transition(self, state, action, reward, next_state, done):
         # check if the environment returned the state as a tuple
         state = first_if_tuple(state).__array__()
         next_state = first_if_tuple(next_state).__array__()
@@ -129,8 +129,7 @@ class DQNAgent:
             'action': action,
             'reward': reward,
             'next_state': next_state,
-            'done': done,
-            'trunc': trunc
+            'done': done
         }, batch_size=[]))
     
     

@@ -11,20 +11,21 @@ class DQN(nn.Module):
         super().__init__()
         nn_config = config[type]
         if type == 'vit':
-            P = int(nn_config['patch_size'])
-            self.online = ViT(img_size=obs_shape,
-                              patch_size=(P, P),
+            self.online = ViT(img_size=obs_shape[-1],
+                              patch_size=int(nn_config['patch_size']),
+                              in_chans=obs_shape[0],
                               embed_dim=int(nn_config['embed_dim']),
-                              n_heads=int(nn_config['n_heads']),
-                              n_layers=int(nn_config['n_layers']),
-                              n_actions=n_actions)
+                              num_heads=int(nn_config['n_heads']),
+                              depth=int(nn_config['n_layers']),
+                              num_classes=n_actions)
             
-            self.target = ViT(img_size=obs_shape,
-                              patch_size=(P, P),
+            self.target = ViT(img_size=obs_shape[-1],
+                              patch_size=int(nn_config['patch_size']),
+                              in_chans=obs_shape[0],
                               embed_dim=int(nn_config['embed_dim']),
-                              n_heads=int(nn_config['n_heads']),
-                              n_layers=int(nn_config['n_layers']),
-                              n_actions=n_actions)
+                              num_heads=int(nn_config['n_heads']),
+                              depth=int(nn_config['n_layers']),
+                              num_classes=n_actions)
         elif type == 'swin':
             self.online = SwinTransformer(img_size=obs_shape[-1], 
                                           patch_size=nn_config['patch_size'], 
