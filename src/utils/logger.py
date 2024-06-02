@@ -15,7 +15,7 @@ class MetricLogger:
             save_dir.mkdir(parents=True)
             with open(self.save_log, "w") as f:
                 f.write(
-                    f"{'Episode':>8}{'Step':>8}{'Epsilon':>10}{'MeanReward':>15}"
+                    f"{'Episode':>8}{'Step':>10}{'Epsilon':>10}{'MeanReward':>15}"
                     f"{'MeanLength':>15}{'MeanLoss':>15}{'MeanQValue':>15}"
                     f"{'TimeDelta':>15}{'Time':>20}\n"
                 )
@@ -100,7 +100,7 @@ class MetricLogger:
 
         with open(self.save_log, "a") as f:
             f.write(
-                f"{episode:8d}{step:8d}{epsilon:10.3f}"
+                f"{episode:8d}{step:10d}{epsilon:10.3f}"
                 f"{mean_ep_reward:15.3f}{mean_ep_length:15.3f}{mean_ep_loss:15.3f}{mean_ep_q:15.3f}"
                 f"{time_since_last_record:15.3f}"
                 f"{datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S'):>20}\n"
