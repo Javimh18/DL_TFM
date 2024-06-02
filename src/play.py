@@ -46,6 +46,8 @@ if __name__ == '__main__':
     
     # process the arguments, store them in args
     args = parser.parse_args()
+    
+    # TODO: WATCH OUT!!! RESULTS MAY VARY DEPENDING ON THE DEVICE YOU TRAINED ON YOUR MODEL
     if torch.cuda.device_count() > 1:
         if args.cuda_device is not None:
             device = torch.device(f'cuda:{args.cuda_device}')
