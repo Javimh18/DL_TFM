@@ -12,7 +12,7 @@ from utils.utils import first_if_tuple
 from agents.dqn_models import DQN
 from utils.schedulers import LinearScheduler, ExpDecayScheduler, PowerDecayScheduler
 
-TRANSITION_KEYS = ("state", "action", "reward", "next_state", "done", 'trunc')
+TRANSITION_KEYS = ("state", "action", "reward", "next_state", "done")
 
 class DQNAgent:
     def __init__(self, 
@@ -151,9 +151,9 @@ class DQNAgent:
         # sample from memory 
         transitions_batch = self.memory.sample(self.batch_size)
         # extract samples such that: s_t, a_t, r_t+1, s_t+1
-        state, action, reward, next_state, done, trunc = (transitions_batch.get(key) for key in \
+        state, action, reward, next_state, done = (transitions_batch.get(key) for key in \
                                                     (TRANSITION_KEYS))
-        return state, action.squeeze(), reward.squeeze(), next_state, done.squeeze(), trunc.squeeze()
+        return state, action.squeeze(), reward.squeeze(), next_state, done.squeeze()
         
         
     def learn(self, step):
@@ -175,7 +175,7 @@ class DQNAgent:
         if step % self.learn_every != 0:
             return None, None
         
-        state, action, reward, next_state, done, _ = self.recall()
+        state, action, reward, next_state, done = self.recall()
             
         # once we have our transition tuple, we apply TD learning over our DQN and compute the loss
         q_estimate = self.compute_q_estimate(state, action)
