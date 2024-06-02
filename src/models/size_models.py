@@ -1,4 +1,4 @@
-from torchsummary import summary
+from torchinfo import summary
 import torch
 
 import gymnasium as gym
@@ -13,7 +13,7 @@ from stable_baselines3.common.atari_wrappers import (
 from patch_transformer import PatchTransformer
 from vit import ViT
 from cnn import CNN
-from models.swin_transformer import SwinTransformer
+from swin_transformer import SwinTransformer
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -48,21 +48,29 @@ envs = gym.vector.SyncVectorEnv(
     )
 obs_shape = envs.single_observation_space.shape
 n_actions = envs.single_action_space.n
-print(obs_shape[0])
-"""
-print(">>>>>>>>> Conv NN")
+obs_shape = (1,)+obs_shape
+
+print("\n>>>>>>>>> Conv NN")
 q_network = CNN(n_actions=n_actions).to(device)
 summary(q_network, obs_shape)
-"""
-print(">>>>>>>>> Patch Transformer:")
+
+print("\n>>>>>>>>> Patch Transformer:")
 q_network = PatchTransformer(n_layers=2, n_actions=envs.single_action_space.n, patch_size=4, \
-    fc_dim=64, embed_dim=128, head_dim=256, attn_heads=[4,8], dropouts=[0.3, 0.3], input_shape=(1,)+obs_shape).to(device)
+    fc_dim=64, embed_dim=128, head_dim=256, attn_heads=[4,8], dropouts=[0.3, 0.3], input_shape=obs_shape).to(device)
 summary(q_network, obs_shape)
-print(">>>>>>>>> Vision Transformer:")
-q_network = ViT(img_size=obs_shape, patch_size=(3,3), embed_dim=144, n_heads=6, n_layers=7, n_actions=envs.single_action_space.n).to(device)
+
+print("\n>>>>>>>>> Vision Transformer:")
+q_network = ViT(img_size=obs_shape[2],
+            patch_size=7,
+            in_chans=obs_shape[1],
+            embed_dim=196,
+            num_heads=4,
+            depth=4,
+            num_classes=n_actions).to(device)
 summary(q_network, obs_shape)
-print(">>>>>>>> SWIN Transformer")
+
+print("\n>>>>>>>> SWIN Transformer")
 q_network = SwinTransformer(img_size=84, patch_size=3, in_chans=4, num_classes=envs.single_action_space.n, embed_dim=96,
                             depths=[2,3,2], num_heads=[3,3,6], window_size=7).to(device)
-summary(q_network, (4,84,84))
+summary(q_network, obs_shape)
 
