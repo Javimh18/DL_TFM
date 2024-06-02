@@ -9,9 +9,9 @@ patch:
 
 vit:
   patch_size: 7
-  embed_dim: 196
+  embed_dim: 156
   n_heads: 6
-  n_layers: 4
+  n_layers: 5
 
 swin:
   patch_size: 3
