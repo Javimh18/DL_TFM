@@ -122,7 +122,6 @@ class DQNAgent:
         action = torch.tensor([action])
         reward = torch.tensor([reward])
         done = torch.tensor([done])
-        trunc = torch.tensor([trunc])
         # add it to the experience replay buffer
         self.memory.add(TensorDict({
             'state': state,
