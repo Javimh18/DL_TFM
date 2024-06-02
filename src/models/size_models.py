@@ -63,9 +63,9 @@ print("\n>>>>>>>>> Vision Transformer:")
 q_network = ViT(img_size=obs_shape[2],
             patch_size=7,
             in_chans=obs_shape[1],
-            embed_dim=196,
-            num_heads=4,
-            depth=4,
+            embed_dim=156,
+            num_heads=6,
+            depth=5,
             num_classes=n_actions).to(device)
 summary(q_network, obs_shape)
 
