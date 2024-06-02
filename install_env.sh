@@ -12,7 +12,7 @@ pip3 install gymnasium[accept-rom-license]
 pip3 install gymnasium[atari]
 pip3 install timm
 pip3 install moviepy
-pip3 install torchsummary
+pip3 install torchinfo
 pip3 install pyyaml
 pip3 install stable_baselines3
 pip3 install pandas
