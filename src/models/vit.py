@@ -240,6 +240,7 @@ class ViT(nn.Module):
         return self.pos_drop(x)
 
     def forward(self, x):
+        x = x / 255.0
         x = self.prepare_tokens(x)
         for blk in self.blocks:
             x = blk(x)

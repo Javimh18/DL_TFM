@@ -18,4 +18,7 @@ class CNN(nn.Module):
         )
 
     def forward(self, x):
+        
+        x = x / 255.0
+        
         return self.network(x)

@@ -571,6 +571,7 @@ class SwinTransformer(nn.Module):
         return x
 
     def forward(self, x, head=None):
+        x = x / 255.0
         x = self.forward_features(x)
         x = self.head(x)
         return x
