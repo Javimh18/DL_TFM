@@ -3,7 +3,7 @@ from agents.ddqn_agent import DDQNAgent
 from utils.logger import MetricLogger
 from trainer import Trainer
 from gym.wrappers import RecordEpisodeStatistics
-from utils.wrappers import SkipFrame, NormalizeObservation
+from utils.wrappers import SkipFrame
 from stable_baselines3.common.atari_wrappers import (
     ClipRewardEnv,
     EpisodicLifeEnv,
@@ -27,7 +27,6 @@ def make_env():
     env = ClipRewardEnv(env)
     env = gym.wrappers.ResizeObservation(env, (84,84))
     env = gym.wrappers.GrayScaleObservation(env)
-    env = NormalizeObservation(env)
     env = gym.wrappers.FrameStack(env, args.skip_frames)
     env.action_space.seed(SEED)
     return env
