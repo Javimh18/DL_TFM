@@ -1,0 +1,158 @@
+\begin{thebibliography}{10}
+
+\bibitem{markovdecisionprocessgithub}
+M.~Fabien, ``Markov decision process,'' 2022.
+
+\bibitem{vaswani2023attention}
+A.~Vaswani, N.~Shazeer, N.~Parmar, J.~Uszkoreit, L.~Jones, A.~N. Gomez,
+  L.~Kaiser, and I.~Polosukhin, ``Attention is all you need,'' 2023.
+
+\bibitem{translationmin2023attention}
+Z.~Min, ``Attention link: An efficient attention-based low resource machine
+  translation architecture,'' 2023.
+
+\bibitem{intro_rl}
+R.~S. Sutton and A.~G. Barto, {\em Reinforcement Learning: An Introduction}.
+\newblock Cambridge, MA, USA: A Bradford Book, 2018.
+
+\bibitem{mnih2013playing}
+V.~Mnih, K.~Kavukcuoglu, D.~Silver, A.~Graves, I.~Antonoglou, D.~Wierstra, and
+  M.~Riedmiller, ``Playing atari with deep reinforcement learning,'' 2013.
+
+\bibitem{vanhasselt2015deep}
+H.~van Hasselt, A.~Guez, and D.~Silver, ``Deep reinforcement learning with
+  double q-learning,'' 2015.
+
+\bibitem{bahdanau2016neural}
+D.~Bahdanau, K.~Cho, and Y.~Bengio, ``Neural machine translation by jointly
+  learning to align and translate,'' 2016.
+
+\bibitem{understandingattentionmechanism}
+S.~Yadav, ``Understanding attention mechanism,'' 2023.
+
+\bibitem{model_emsembling_survey}
+I.~D. Mienye and Y.~Sun, ``A survey of ensemble learning: Concepts, algorithms,
+  applications, and prospects,'' {\em IEEE Access}, vol.~10, pp.~99129--99149,
+  2022.
+
+\bibitem{vit}
+A.~Dosovitskiy, L.~Beyer, A.~Kolesnikov, D.~Weissenborn, X.~Zhai,
+  T.~Unterthiner, M.~Dehghani, M.~Minderer, G.~Heigold, S.~Gelly, J.~Uszkoreit,
+  and N.~Houlsby, ``An image is worth 16x16 words: Transformers for image
+  recognition at scale,'' 2021.
+
+\bibitem{liu2021swin}
+Z.~Liu, Y.~Lin, Y.~Cao, H.~Hu, Y.~Wei, Z.~Zhang, S.~Lin, and B.~Guo, ``Swin
+  transformer: Hierarchical vision transformer using shifted windows,'' 2021.
+
+\bibitem{swin_unet}
+Y.~Dai, Z.~Xu, F.~Liu, S.~Li, S.~Liu, L.~Shi, and J.~Fu, ``Parotid gland mri
+  segmentation based on swin-unet and multimodal images,'' 06 2022.
+
+\bibitem{rl_transformers2023survey}
+W.~Li, H.~Luo, Z.~Lin, C.~Zhang, Z.~Lu, and D.~Ye, ``A survey on transformers
+  in reinforcement learning,'' 2023.
+
+\bibitem{vit_q_learning_sample_eff}
+A.~A. Kalantari, M.~Amini, S.~Chandar, and D.~Precup, ``Improving sample
+  efficiency of value based models using attention and vision transformers,''
+  2022.
+
+\bibitem{meng2024deep}
+L.~Meng, M.~Goodwin, A.~Yazidi, and P.~Engelstad, ``Deep reinforcement learning
+  with swin transformers,'' 2024.
+
+\bibitem{Bellemare_2013}
+M.~G. Bellemare, Y.~Naddaf, J.~Veness, and M.~Bowling, ``The arcade learning
+  environment: An evaluation platform for general agents,'' {\em Journal of
+  Artificial Intelligence Research}, vol.~47, p.~253–279, June 2013.
+
+\bibitem{janner2021offline}
+M.~Janner, Q.~Li, and S.~Levine, ``Offline reinforcement learning as one big
+  sequence modeling problem,'' 2021.
+
+\bibitem{chen2021decision}
+L.~Chen, K.~Lu, A.~Rajeswaran, K.~Lee, A.~Grover, M.~Laskin, P.~Abbeel,
+  A.~Srinivas, and I.~Mordatch, ``Decision transformer: Reinforcement learning
+  via sequence modeling,'' 2021.
+
+\bibitem{wang2022bootstrapped}
+K.~Wang, H.~Zhao, X.~Luo, K.~Ren, W.~Zhang, and D.~Li, ``Bootstrapped
+  transformer for offline reinforcement learning,'' 2022.
+
+\bibitem{BRAMLAGE202210}
+L.~Bramlage and A.~Cortese, ``Generalized attention-weighted reinforcement
+  learning,'' {\em Neural Networks}, vol.~145, pp.~10--21, 2022.
+
+\bibitem{LEONG2017451}
+Y.~C. Leong, A.~Radulescu, R.~Daniel, V.~DeWoskin, and Y.~Niv, ``Dynamic
+  interaction between reinforcement learning and attention in multidimensional
+  environments,'' {\em Neuron}, vol.~93, no.~2, pp.~451--463, 2017.
+
+\bibitem{stable-baselines3}
+A.~Raffin, A.~Hill, A.~Gleave, A.~Kanervisto, M.~Ernestus, and N.~Dormann,
+  ``Stable-baselines3: Reliable reinforcement learning implementations,'' {\em
+  Journal of Machine Learning Research}, vol.~22, no.~268, pp.~1--8, 2021.
+
+\bibitem{bou2023torchrl}
+A.~Bou, M.~Bettini, S.~Dittert, V.~Kumar, S.~Sodhani, X.~Yang, G.~D. Fabritiis,
+  and V.~Moens, ``Torchrl: A data-driven decision-making library for pytorch,''
+  2023.
+
+\bibitem{Eschmann2021}
+J.~Eschmann, {\em Reward Function Design in Reinforcement Learning},
+  pp.~25--33.
+\newblock Cham: Springer International Publishing, 2021.
+
+\bibitem{exploitation_vs_exploration}
+S.~Sinha, ``The exploration–exploitation dilemma: A review in the context of
+  managing growth of new ventures,'' {\em Vikalpa}, vol.~40, no.~3,
+  pp.~313--323, 2015.
+
+\bibitem{schaul2016prioritized}
+T.~Schaul, J.~Quan, I.~Antonoglou, and D.~Silver, ``Prioritized experience
+  replay,'' 2016.
+
+\bibitem{9918637}
+A.~Patterson, V.~Liao, and M.~White, ``Robust losses for learning value
+  functions,'' {\em IEEE Transactions on Pattern Analysis and Machine
+  Intelligence}, vol.~45, no.~5, pp.~6157--6167, 2023.
+
+\bibitem{caron2021emerging}
+M.~Caron, H.~Touvron, I.~Misra, H.~Jégou, J.~Mairal, P.~Bojanowski, and
+  A.~Joulin, ``Emerging properties in self-supervised vision transformers,''
+  2021.
+
+\bibitem{he2015deep}
+K.~He, X.~Zhang, S.~Ren, and J.~Sun, ``Deep residual learning for image
+  recognition,'' 2015.
+
+\bibitem{feng2022mario}
+Y.~Feng, S.~Subramanian, H.~Wang, and S.~Guo, ``Train a mario-playing rl
+  agent.''
+  \url{https://pytorch.org/tutorials/intermediate/mario_rl_tutorial.html},
+  2022.
+\newblock Accessed: 2024-02-03.
+
+\bibitem{gerstner2021multilevel}
+T.~Gerstner, B.~Harrach, D.~Roth, and M.~Simon, ``Multilevel monte carlo
+  learning,'' 2021.
+
+\bibitem{Watkins1992}
+C.~J. C.~H. Watkins and P.~Dayan, ``Q-learning,'' {\em Machine Learning},
+  vol.~8, pp.~279--292, May 1992.
+
+\bibitem{haarnoja2018soft}
+T.~Haarnoja, A.~Zhou, P.~Abbeel, and S.~Levine, ``Soft actor-critic: Off-policy
+  maximum entropy deep reinforcement learning with a stochastic actor,'' 2018.
+
+\bibitem{schulman2017proximal}
+J.~Schulman, F.~Wolski, P.~Dhariwal, A.~Radford, and O.~Klimov, ``Proximal
+  policy optimization algorithms,'' 2017.
+
+\bibitem{lillicrap2019continuous}
+T.~P. Lillicrap, J.~J. Hunt, A.~Pritzel, N.~Heess, T.~Erez, Y.~Tassa,
+  D.~Silver, and D.~Wierstra, ``Continuous control with deep reinforcement
+  learning,'' 2019.
+
+\end{thebibliography}

@@ -1,0 +1,59 @@
+This is BibTeX, Version 0.99d (TeX Live 2024)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: TFM.aux
+A level-1 auxiliary file: 0.Abstract.aux
+A level-1 auxiliary file: 1.Introduction.aux
+A level-1 auxiliary file: 2.RelatedWork.aux
+A level-1 auxiliary file: 3.Design.aux
+A level-1 auxiliary file: 4.Evaluation.aux
+A level-1 auxiliary file: 5.Conclusions.aux
+The style file: ieeetr.bst
+A level-1 auxiliary file: 6.Appendix.aux
+Database file #1: bibliography.bib
+Warning--entry type for "understandingattentionmechanism" isn't style-file defined
+--line 412 of file bibliography.bib
+Warning--entry type for "markovdecisionprocessgithub" isn't style-file defined
+--line 429 of file bibliography.bib
+Warning--can't use both author and editor fields in Eschmann2021
+You've used 35 entries,
+            1876 wiz_defined-function locations,
+            642 strings with 9550 characters,
+and the built_in function-call counts, 7708 in all, are:
+= -- 606
+> -- 542
+< -- 0
++ -- 194
+- -- 159
+* -- 551
+:= -- 1174
+add.period$ -- 38
+call.type$ -- 35
+change.case$ -- 33
+chr.to.int$ -- 0
+cite$ -- 36
+duplicate$ -- 269
+empty$ -- 737
+format.name$ -- 159
+if$ -- 1840
+int.to.chr$ -- 0
+int.to.str$ -- 35
+missing$ -- 12
+newline$ -- 111
+num.names$ -- 35
+pop$ -- 196
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 242
+stack$ -- 0
+substring$ -- 238
+swap$ -- 91
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 1
+while$ -- 53
+width$ -- 37
+write$ -- 283
+(There were 3 warnings)
