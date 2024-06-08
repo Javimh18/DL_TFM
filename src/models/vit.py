@@ -249,6 +249,7 @@ class ViT(nn.Module):
         return x[:, 0]
 
     def get_last_selfattention(self, x):
+        x = x / 255.0
         x = self.prepare_tokens(x)
         for i, blk in enumerate(self.blocks):
             if i < len(self.blocks) - 1:
@@ -256,8 +257,23 @@ class ViT(nn.Module):
             else:
                 # return attention of the last block
                 return blk(x, return_attention=True)
+            
+    def get_selfattention_at(self, x, n):
+        x = x / 255.0
+        if n > len(self.blocks):
+            print("ERROR: Attention layer specified out of bounds... Exiting...")
+            exit()
+        
+        x = self.prepare_tokens(x)
+        for i in range(n):
+            if i < n - 1:
+                x = self.blocks[i](x)
+            else:
+                # return attention of the last block
+                return self.blocks[i+1](x, return_attention=True)
 
     def get_intermediate_layers(self, x, n=1):
+        x = x / 255.0
         x = self.prepare_tokens(x)
         # we return the output tokens from the `n` last blocks
         output = []
