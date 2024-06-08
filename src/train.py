@@ -91,8 +91,8 @@ if __name__ == '__main__':
     save_check_dir = Path(args.save_check_dir) / args.environment / agent_type / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     save_video_dir = Path(args.save_video_dir) / args.environment / agent_type / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     
-    if 'dqn' in agent_type:
-        agent = DQNAgent(obs_shape=obs_shape,
+    if 'ddqn' in agent_type:
+        agent = DDQNAgent(obs_shape=obs_shape,
                         action_dim=n_actions,
                         device=device,
                         save_net_dir=save_check_dir,
@@ -101,8 +101,8 @@ if __name__ == '__main__':
                         agent_config=agent_config[agent_type],
                         nn_config=nn_config
                         )
-    elif 'ddqn' in agent_type:
-        agent = DDQNAgent(obs_shape=obs_shape,
+    elif 'dqn' in agent_type:
+        agent = DQNAgent(obs_shape=obs_shape,
                         action_dim=n_actions,
                         device=device,
                         save_net_dir=save_check_dir,
