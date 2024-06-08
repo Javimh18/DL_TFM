@@ -9,10 +9,12 @@ class DDQNAgent(DQNAgent):
                  action_dim: int, 
                  device: str, 
                  save_net_dir: str, 
+                 exp_schedule: str,
+                 prioritized_replay: bool,
                  agent_config: dict,
                  nn_config:dict
                  ):
-        super().__init__(obs_shape, action_dim, device, save_net_dir, agent_config, nn_config)
+        super().__init__(obs_shape, action_dim, device, save_net_dir, exp_schedule, prioritized_replay, agent_config, nn_config)
         
     @torch.no_grad() # since this is our "ground truth" (look ahead prediction)
     def compute_q_target(self, reward, next_state, done):
