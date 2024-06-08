@@ -77,21 +77,20 @@ if __name__ == '__main__':
         nn_config = yaml.load(f, Loader=yaml.SafeLoader)
     
     agents_list = list(agent_config.keys())
-    choice = args.option_agent
-    choice = int(choice)
+    choice = int(args.option_agent)
     if choice <= 0 or choice > len(agents_list):
         print("Incorrect option, exiting...")
         exit()
     
     # Selected agent
     agent_type = agents_list[choice-1]
-    print(f">>>>>>>> Selected agent: {agent_type}")
     
     # initializing key directories for metrics and evidences from the code
     save_check_dir = Path(args.save_check_dir) / args.environment / agent_type / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     save_video_dir = Path(args.save_video_dir) / args.environment / agent_type / datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
     
     if 'ddqn' in agent_type:
+        assert choice%2, "ERROR: The choice is incorrect for DDQN agent"
         agent = DDQNAgent(obs_shape=obs_shape,
                         action_dim=n_actions,
                         device=device,
@@ -102,6 +101,7 @@ if __name__ == '__main__':
                         nn_config=nn_config
                         )
     elif 'dqn' in agent_type:
+        assert not(choice%2), "ERROR: The choice is incorrect for DQN agent"
         agent = DQNAgent(obs_shape=obs_shape,
                         action_dim=n_actions,
                         device=device,
@@ -112,8 +112,10 @@ if __name__ == '__main__':
                         nn_config=nn_config
                         )
     else:
-        print("WARNING: Type of agent specified not recognized. Exiting...")
+        print("ERROR: Type of agent specified not recognized. Exiting...")
         exit()
+        
+    print(f"INFO: Selected agent {agent_type} with type {type(agent)}")
     
     if args.resume_training and args.path_to_training_folder is not None:
         print(f"Loading weights from path: {args.path_to_training_folder}")
