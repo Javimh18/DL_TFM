@@ -20,8 +20,8 @@ class DQNAgent:
                  action_dim: int, 
                  device: torch.device, 
                  save_net_dir: str,
-                 exp_schedule:str,
-                 prioritized_replay:bool,
+                 exp_schedule: str,
+                 prioritized_replay: bool,
                  agent_config: dict,
                  nn_config:dict):
         
@@ -94,9 +94,9 @@ class DQNAgent:
     
     
     @torch.no_grad()
-    def perform_action(self, state, t):
+    def perform_action(self, state, t, exploit=False):
         # decide wether to exploit or explore
-        if np.random.random() < self.exploration_rate:
+        if (np.random.random() < self.exploration_rate) and not exploit:
             action =  np.random.randint(0, self.action_dim)
         else:
             # use of __array__(): https://gymnasium.farama.org/main/_modules/gymnasium/wrappers/frame_stack/
@@ -104,6 +104,8 @@ class DQNAgent:
             state = torch.tensor(state, device=self.device).unsqueeze(0)
             q_values = self.net(state.float(), model='online')
             action = torch.argmax(q_values, dim=1).item()
+            if exploit:
+                return action, q_values
         
         # decrease exploration_rate according to scheduler
         self.exploration_rate = self.exp_scheduler.step(t)
