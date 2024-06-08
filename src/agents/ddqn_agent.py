@@ -17,7 +17,7 @@ class DDQNAgent(DQNAgent):
         super().__init__(obs_shape, action_dim, device, save_net_dir, exp_schedule, prioritized_replay, agent_config, nn_config)
         
     @torch.no_grad() # since this is our "ground truth" (look ahead prediction)
-    def compute_q_target(self, reward, next_state, done):
+    def compute_q_target(self, reward, done, next_state):
         # for the next state, get the actions that have higher q_values
         online_q_action_value = self.net(next_state.float(), model='online')
         max_value_action = torch.argmax(online_q_action_value, dim=1)
