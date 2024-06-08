@@ -16,17 +16,17 @@ ddqn_cnn_agent:
   batch_size: 32
 
 dqn_cnn_agent:
-  type: cnn # swin, patch, cnn, vit
+  type: cnn # swin, patch
   gamma: 0.99
-  replay_memory_size: 5e5
-  save_every: 5e5
+  replay_memory_size: 1e6
+  save_every: 1e5
   sync_every: 1e4
   learn_every: 4
   exp_rate_max: 1
-  exp_rate_min: 0.1
+  exp_rate_min: 0.01
   steps_to_explore: 1e6
   burning: 5e4
-  lr: 1e-5
+  lr: 6.25e-5
   batch_size: 32
 
 ############################################################################################################
@@ -48,17 +48,17 @@ ddqn_vit_agent:
   batch_size: 32
 
 dqn_vit_agent:
-  type: vit # swin, patch, cnn, vit
+  type: vit # swin, patch
   gamma: 0.99
-  replay_memory_size: 5e5
-  save_every: 5e5
+  replay_memory_size: 1e6
+  save_every: 1e5
   sync_every: 1e4
   learn_every: 4
   exp_rate_max: 1
-  exp_rate_min: 0.1
+  exp_rate_min: 0.01
   steps_to_explore: 1e6
   burning: 5e4
-  lr: 1e-5
+  lr: 6.25e-5
   batch_size: 32
 
 ############################################################################################################
@@ -80,17 +80,17 @@ ddqn_patch_transformer_agent:
   batch_size: 32
 
 dqn_patch_transformer_agent:
-  type: patch # swin, patch, cnn, vit
+  type: patch # swin, patch
   gamma: 0.99
-  replay_memory_size: 5e5
-  save_every: 5e5
+  replay_memory_size: 1e6
+  save_every: 1e5
   sync_every: 1e4
   learn_every: 4
   exp_rate_max: 1
-  exp_rate_min: 0.1
+  exp_rate_min: 0.01
   steps_to_explore: 1e6
   burning: 5e4
-  lr: 1e-5
+  lr: 6.25e-5
   batch_size: 32
 
 ############################################################################################################
@@ -112,15 +112,15 @@ ddqn_swin_transformer_agent:
   batch_size: 32
 
 dqn_swin_transformer_agent:
-  type: swin # swin, patch, cnn, vit
+  type: swin # swin, patch
   gamma: 0.99
-  replay_memory_size: 5e5
-  save_every: 5e5
+  replay_memory_size: 1e6
+  save_every: 1e5
   sync_every: 1e4
   learn_every: 4
   exp_rate_max: 1
-  exp_rate_min: 0.1
+  exp_rate_min: 0.01
   steps_to_explore: 1e6
   burning: 5e4
-  lr: 1e-5
+  lr: 6.25e-5
   batch_size: 32
