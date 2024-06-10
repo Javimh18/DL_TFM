@@ -25,7 +25,7 @@ parser.add_argument("-e", "--environment", help='The name of environment where t
 parser.add_argument("-c", "--agent_config", help="Path to the config file of the agent", default="../config/agents_config.yaml")
 parser.add_argument("-m", "--agent_model_config", help="Path to the config file of the model that the agent uses as a function approximator", default="../config/agent_nns.yaml")
 parser.add_argument("-p", "--path_to_agent_checkpoint", help="Path to the checkpoint file where that contains the NN weights", 
-                    default='../checkpoints/ALE/MsPacman-v5/dqn_vit_agent/2024-05-31T08-35-17')
+                    default='../checkpoints/ALE/MsPacman-v5/dqn_vit_agent/2024-06-01T09-00-00')
 parser.add_argument("-v", "--save_video_dir", help="Path to the folder where videos of the agent playing are stored", default="../evidences/attention_maps")
 parser.add_argument("-d", "--cuda_device", help="Cuda device to run inference on.", default=None)
 args = parser.parse_args()
@@ -175,14 +175,16 @@ if __name__ == '__main__':
                                             scale_factor=patch_size,
                                             final_shape=original_shape)
         attn_maps.append(cls_attn_int)
+        original_frames.append(env.get_original_observation()) # TODO: review; before or after
         next_state, reward, done, trunc, info = env.step(action)
         trunc_frames.append(np.array(env.frames))
-        original_frames.append(env.get_original_observation())
         # 5. update current observation
         state = next_state
         # 6. Update step value
         curr_step += 1
         total_reward += reward
+        
+    env.close()
         
     print(f"INFO: RUN with REWARD: {total_reward}")
         
@@ -205,17 +207,17 @@ if __name__ == '__main__':
     for orig_frames, attn_map, a, q_s in zip(original_frames, attn_maps, actions, q_values):
         fig, ax = plt.subplots(1, 3, figsize=(24,10))
         # subplot the original frame
-        _ = ax[1].imshow(orig_frames)
-        ax[1].set_title("Original Frame")
+        _ = ax[0].imshow(orig_frames)
+        ax[0].set_title("Original Frame")
         # subplot the attention map with the color-bar
-        attn_map = ax[2].imshow(attn_map)
-        ax[2].set_title("Attention map")
-        cbar = fig.colorbar(attn_map, ax=ax[2], cmap='plasma')
+        attn_map = ax[1].imshow(attn_map)
+        ax[1].set_title("Attention map")
+        cbar = fig.colorbar(attn_map, ax=ax[1], cmap='plasma')
         # plot the histogram with the q values
-        qs_hist = ax[0].bar(action_names, q_s, color='blue')
+        qs_hist = ax[2].bar(action_names, q_s, color='blue')
         plt.xticks(rotation=75)
-        ax[0].set_ylim(-10,100)
-        ax[0].set_title(f"Q action values with action {action_dict[a]} selected")
+        ax[2].set_ylim(-10,100)
+        ax[2].set_title(f"Q action values with action {action_dict[a]} selected")
         plt.savefig(os.path.join(save_video_dir,
                                  f"{frame_count}.png"))
         plt.close()
