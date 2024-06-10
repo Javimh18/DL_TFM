@@ -224,11 +224,11 @@ class DQNAgent:
         print(f"Checkpoint: {checkpoint_name} loaded")
         
         if checkpoint['type_model'] != self.type:
-            print(f"ERROR: Tried to load a net with a different type."
-                  f"Declared model: {self.type} | Loaded model: {checkpoint['type_model']}"
-                  f"Please review the datatypes."
-                  f"Exiting...")
-            exit()
+            print(f"ERROR: Tried to load a net with a different type.\n"
+                  f"Declared model: {self.type} | Loaded model: {checkpoint['type_model']}\n"
+                  f"Please review the datatypes.\n"
+                  f"Exiting...\n")
+            raise SystemExit
 
         # load model from dictionary
         self.net.load_state_dict(checkpoint['model'])
