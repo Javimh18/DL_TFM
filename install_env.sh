@@ -19,3 +19,4 @@ pip3 install pandas
 pip3 install plotly==5.22.0
 pip install -U kaleido
 pip install opencv-python
+pip install grad-cam
