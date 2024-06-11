@@ -1,6 +1,5 @@
 # geintra_run_python_env -d logs/ -M 32000 -g -G 1 -V -C rl_env_tfm train.py -x pow -o 1 -n 7e6 
 import gymnasium as gym
-from gym.utils.save_video import save_video
 import torch
 
 from agents.dqn_agent import DQNAgent
@@ -12,11 +11,13 @@ import yaml
 from pathlib import Path
 import datetime
 import numpy as np
+from tqdm import tqdm
 
 SEED = 1234
 FRAME_SKIP = 4
 torch.manual_seed(SEED)
 torch.backends.cudnn.deterministic = True
+RUNS = 100
 
 # process the arguments, store them in args
 parser = argparse.ArgumentParser()
@@ -116,29 +117,29 @@ if __name__ == '__main__':
     trun_frames = []
     original_frames = []
     
-    done, trunc = False, False
-    state = env.reset()
-    while (not done) and (not trunc):
-        # 1. get action for state
-        action, _ = agent.perform_action(state, t=-1, exploit=True)
-        actions.append(action)
-        # 2. run action in environment
-        next_state, reward, done, trunc, info = env.step(action) # 1.70 ms
-        trun_frames.append(np.array(env.frames))
-        original_frames.append(env.get_original_observation())
-        # 4. Learn from collected experiences
-        state = next_state
-        # 6. Update step value 
-        curr_step += 1   
-        total_reward += reward
+    runs_reward = []
+    for i in tqdm(range(RUNS)):
+        done, trunc = False, False
+        state = env.reset()
+        total_reward = 0; curr_step = 0
+        while (not done) and (not trunc):
+            # 1. get action for state
+            action, _ = agent.perform_action(state, t=-1, exploit=True)
+            actions.append(action)
+            # 2. run action in environment
+            next_state, reward, done, trunc, info = env.step(action) # 1.70 ms
+            trun_frames.append(np.array(env.frames))
+            original_frames.append(env.get_original_observation())
+            # 4. Learn from collected experiences
+            state = next_state
+            # 6. Update step value 
+            curr_step += 1   
+            total_reward += reward
         
-    save_video(
-        original_frames,
-        save_video_dir,
-        fps=7,
-        episode_index=0
-    )    
+        runs_reward.append(total_reward)
     
+    mean_runs = np.mean(runs_reward)
+    std_runs = np.std(runs_reward)
     
-            
-   
+    print(f"The average of rewards is {mean_runs}\n"
+          f"The std dev of rewards is {std_runs}")
