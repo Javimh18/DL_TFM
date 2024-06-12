@@ -165,7 +165,7 @@ The authors tackled this problem by using an recurrent encoder-decoder architect
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.7\linewidth]{figures/alignment_attention}
-	\caption{Aligning inputs using the attention mechanism. First, the inputs $X_1, X_2, X_3, ... X_{\tau}$ are encoded using a bi-directional RNN, obtaining the embeddings $\overrightarrow{h} , \overleftarrow{h}$. This embeddings are then pondered by the product of the learnable parameters $\alpha_{i \tau}$ for each input, creating the context vector $c_t$. Finally, $c_t$ is fed into the decoder, updating the hidden state $s_t$ and producing the output $y_t$.}
+	\caption{Aligning inputs using the attention mechanism. First, the inputs $X_1, X_2, X_3, ... X_{\tau}$ are encoded using a bi-directional RNN, obtaining the embeddings $\protect\overrightarrow{h} , \protect\overleftarrow{h}$. This embeddings are then pondered by the product of the learnable parameters $\alpha_{i \tau}$ for each input, creating the context vector $c_t$. Finally, $c_t$ is fed into the decoder, updating the hidden state $s_t$ and producing the output $y_t$.}
 	\label{fig:alignmentattention}
 \end{figure}
 
@@ -251,7 +251,7 @@ One of the main issues that the ViT model holds, is the computational cost of th
 
 Masked window shifting, presented in figure \ref{fig:windowshifting} is a simple but effective procedure to broaden the spatial context of the windowed attention. The intuition is to drift the layout of the patches inside the image, providing a wider spatial context to the attention performed inside the windows. This means that the group of patches that are left out of the image (sections A, B, C) are mirrored to the symmetric part of the image, performing a \textit{"cyclic shift"}. This cyclic shift alters the spatial disposition of the elements in an image, since the parts of the top left are now in the bottom right. To handle this, they provide a mask that ensures that the shifted regions only attend to their corresponding parts. For example, the patches inside region A will only attend to patches that are only inside said, region. This ensures that the spatial information remains unaltered and no "abnormal" representations are learn as a product of this shifting. 
 
-On the other side Patch Merging, figure \ref{fig:patchmerging}, is an operation that uses concatenation along the channel dimension to aggregate the features from the patches inside a window. This provides a hierarchical architecture, where the local features are captured in the first stages of the architecture, since the spatial dimension is bigger, and the global features are captured at the latest stages, where the spatial dimension is diminished, and all the local features are aggregated along the channel dimension. The patches are selected in a 2 by 2 grid, so the input has a shape of $W$ x $H$ x $C$, and after the patch merging, has a shape of $\frac{W}{2}$ x $\frac{H}{2}$ x $4C$. In some type of way, this could be seen as a \textit{"convolutional transformer"}, since it quite resembles some of the mechanisms that the CNNs have to perform feature extraction from an image. 
+On the other side Patch Merging, figure \ref{fig:patchmerging}, is an operation that uses concatenation along the channel dimension to aggregate the features from the patches inside a window. This provides a hierarchical architecture, where the local features are captured in the first stages of the architecture, since the spatial dimension is bigger, and the global features are captured at the latest stages, where the spatial dimension is diminished, and all the local features are aggregated along the channel dimension. The patches are selected in a 2 by 2 grid, so the input has a shape of $W \times H \times C$, and after the patch merging, has a shape of $\frac{W}{2} \times \frac{H}{2} \times 4C$. In some type of way, this could be seen as a \textit{"convolutional transformer"}, since it quite resembles some of the hierarchical mechanisms that the CNNs have to perform feature extraction from an image. 
 
 \begin{figure}[!h]
 	\centering
@@ -272,6 +272,67 @@ On the other side Patch Merging, figure \ref{fig:patchmerging}, is an operation 
 	\label{fig:combined}
 \end{figure}
 
+\section{Explainable AI}
+Explainable AI (XAI) refers to techniques and methods that make the behavior and decisions of artificial intelligence systems transparent, understandable, and interpretable to humans. It aims to clarify how AI models reach their conclusions, enhancing trust, accountability, and usability, especially in critical applications like healthcare and finance. The concept of explainable AI has been around for quite some time. In the eighties, in \cite{swartout1985explaining}, Swartout explains that the need for systems that have "cognitive" abilities to solve complex problems must come with an explanation, and developed a basic rule-system to explain the results. It is clear that, since the AI research began, researchers have always claimed the need for mechanisms and systems to explain decision making. There are some AI models that are quite good at, this, like decision trees, since is quite common to follow down the nodes and leaves (questions and conditions that the tree proposes in order to perform inter-class separability) in order to understand the decisions performed to classify a given input with a certain class, presenting a reasoning of a final decision. The issue comes when the complexity of the model increases. For example, a random forest is a set of decision trees that jointly participate in a poll to determine, the class of a given input. The set of decision trees can be huge for complex datasets, and to trace each and everyone of the decisions performed by all of the trees can be an exhaustive process. Something similar happens with deep neural networks. With the appearance of AlexNet \cite{alexNet} in the ImageNet challenge \cite{ILSVRC15}, a shift of paradigm appeared, since the following years, deeper models were presented to the challenge. Results at the time were astonishing, but with a cost, since as the network got deeper, the interpretation of the activation maps in the receptive fields of the layer was almost impossible, which led to a big concern: what is the network looking at in order to make the predictions? One thing is clear, as shown in Figure \ref{fig:explainablechart} from \cite{Turek2017}, the accuracy is higher when less explainable is the model.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures/explainable_chart}
+	\caption{Explainability of ML models against the prediction accuracy.}
+	\label{fig:explainablechart}
+\end{figure}
+
+in the past decade, the field of computer vision has been involved a pursuit to make DNNs transparent and understandable. In the following sub-sections we will briefly explain the techniques that have been used in this work along with another relevant works from the XAI field.
+
+\subsubsection{Sensitive Analysis}
+
+In \cite{xai_survey2019, sensitivity_analysis}, sensitive Analysis (SA) is defined as a method that identifies which parts of the input are more sensitive to the network to perform the predictions. To do so, it assumes that the most relevant input features are the most sensitive for the output, and by "obstructing" pixels or sections of the image, it ponders how relevant are different sections to the predicted output. The mathematical definition behind this concept is defined in equation \ref{eq:grad_sensanalysis}, where they define all the partial derivatives for a function $f(x)$ as the sensitivity $s_{ik}$ of the network to a certain input $x_n$ with respect to all the i-th elements of the input $x_i$ and the output $y_k$.
+
+\begin{equation}
+	\label{eq:grad_sensanalysis}
+	s_{ik} \bigg|_{\mathbf{x}_n} = \frac{\partial y_k}{\partial x_i} (\mathbf{x}_n)
+\end{equation}
+
+The issue that appears with SA is that it does not explain the function approximation performed by the neural network, but only quantifies the importance of the input. This may not be ideal, as we want to understand what the network gives more importance to with respect to the features of the input, not understand which parts of the network are essential to produce the output.
+
+\subsubsection{Layer-wise Relevance Propagation}
+Layer-wise Relevance Propagation (LRP) \cite{bach2015pixel} is an interpretability method used to explain the predictions of neural networks. The main idea of LRP is to propagate the prediction score $f(x)$ backwards through the network layers, assigning relevance scores $R_i$ to each neuron in the network.
+
+There are several variations of LRP to interpret neural network predictions, but one of the most useful ones is the LRP-$\alpha\beta$, which ponders between the positive and negative contributions to the prediction, given an input. The relevance $R_i$ of each neuron $i$ is traced back layer by layer, indicating the contribution of each neuron to the final prediction. To distinguish between positive and negative contributions, LRP decomposes the term $Z_{ij} = a_i^{(l-1)} \cdot w_{ij}$, where $a_i^{(l-1)}$ is the activation of neuron $i$ and $w_{ij}$ is the weight connecting neuron $i$ to neuron $j$. The positive and negative parts are defined as $z^+_{ij} = \text{max}(0, z_{ij})$ and $z^-_{ij} = \text{min}(0, z_{ij})$. The  LRP-$\alpha\beta$ then, combines these parts to propagate the relevance from the current layer $l$ to the previous $l-1$, as defined in equation \ref{eq:lrp_alphabeta}
+
+\begin{equation}
+	\label{eq:lrp_alphabeta}
+	R_i^{(l-1)} = \sum_j \left( \alpha \frac{z_{ij}^+}{\sum_{i'} z_{i'j}^+} R_j^{(l)} - \beta \frac{z_{ij}^-}{\sum_{i'} z_{i'j}^-} R_j^{(l)} \right)
+\end{equation}
+
+
+\subsubsection{Class Activation Maps}
+\label{sec:cam}
+Another widely-known approach for explainability is called class activation maps (CAM). Introduced in \cite{zhou2015learning}, the main intuition behind this technique is to use the activation units of the last layers, specially the Global Average Pooling to understand which sections of the input image generates relevant information for the final softmax layer. It is formally defined in equation \ref{eq:cam_basic}, where $M_c(x,y)$ refers to the activation for the $x,y$ pixels in the input space, given the class $c$, $w_k^c$ refers to the weights that go from the input neuron $k$ (the channel) to the output space $c$, and $f_k(x,y)$ refers to the unit $k$ in the last convolutional layer, given the input at coordinates $x,y$ of the image.
+
+\begin{equation}
+	\label{eq:cam_basic}
+	M_c(x,y) = \sum_{k} w_k^c  \cdot f_k(x,y)
+\end{equation}
+
+An extension to this work is developed in \cite{Selvaraju_2019} called Grad-CAM. They use the gradients of the output with respect to the activations to compute the activations of the network under a desired class $c$. First, 
+The input image $\mathbf{I}$ is passed through the CNN to obtain the feature maps from the last convolutional layer, denoted as $A^k$, where $k$ is the channel index. The network also produces a prediction score $y^c$ for each class $c$. To compute Grad-CAM, we need the gradient of the score for the target class $y^c$ with respect to the feature maps $A^k$:
+\[
+\frac{\partial y^c}{\partial A^k}
+\]
+
+This gradient indicates the importance of each pixel in the feature maps $A^k$ for the target class $c$. Said gradients are globally averaged over the width and height dimensions to obtain the weights $\alpha_k$:
+\[
+\alpha_k = \frac{1}{Z} \sum_i \sum_j \frac{\partial y^c}{\partial A_{ij}^k}
+\]
+where $Z$ is the number of pixels in the feature map ($Z = H \times W$) which serves as a normalization term, and $A_{ij}^k$ is the value at position $(i, j)$ in the $k$-th feature map. The operation of the global average pooling seems to perform better empirically, according to \cite{Selvaraju_2019}. To properly ponder the activations, the weights $\alpha_k$ are used to compute a weighted sum of the feature maps:
+\[
+L_{\text{Grad-CAM}}^c = \text{ReLU} \left( \sum_k \alpha_k A^k \right)
+\]
+Additionally, the ReLU function is applied to the activations in order to obtain only the positive contributions that "help" the gradient to find the most relevant regions from the input. 
+
+The results that Grad-CAM provides are coarse, since we are generally focusing in the last layers of the network, where the spatial information is limited. To overcome this, $L_{\text{Grad-CAM}}^c$ is up-sampled to the size of the input image using interpolation methods.
+
 
 \section{Reinforcement Learning using Transformers}
 \label{sec:rl-with-attention}
@@ -281,6 +342,7 @@ Recently, there has been a trend into fitting the Transformer model into the RL 
 Swin Transformers have also been used to perform DDQN Learning \cite{meng2024deep}. Using a similar approach to \cite{vanhasselt2015deep}, they use a SWIN Transformer as a $Q$-value function approximator. As we mentioned in section \ref{sec:swin-transformer}, the ViT transformer has a quadratic cost in terms of computing the self-attention mechanism, and since DQN-learning is a sample intensive task, researchers opted to use a less computational expensive model to try to solve the problem of RL. Results in the Arcade Learning Environment (ALE) \cite{Bellemare_2013} set-up are state of the art in several games, but little is explored about the how the attention mechanism influences the decision making of the agent.
 
 Also, we think is worth mentioning other approaches that have been proposed to solve RL using transformers. In \cite{janner2021offline}, they try to model RL as a big sequence prediction problem in an offline RL set-up, where the next action is conditioned in the past actions and reward, thus expanding the MDP approach. Right after, in \cite{chen2021decision} they introduced the decision transformer, a similar model that is focused in predict the action that maximizes the reward based only in collected experiences from previous, online trained agents, but also in an offline set-up. There has been also several intents of learn-on-the-run transformer-based set ups. For example, in \cite{wang2022bootstrapped}, they propose the bootstrapping transformer, a model that generates its own trajectories and learns from them, highly boosting the sequence offline training procedure.
+
 
 \section{Explainable RL using Attention}
 Explainable RL or (XRL) is a field of study that aims to understand and to provide tools that improve a RL agent explainability of their decision making.
