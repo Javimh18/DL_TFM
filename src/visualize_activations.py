@@ -256,7 +256,7 @@ if __name__ == '__main__':
         ax[0].set_title("Original Frame")
         # subplot the attention map with the color-bar
         plot_activation_map = ax[1].imshow(activ_map)
-        ax[1].set_title("Attention map")
+        ax[1].set_title("Activation map")
         cbar = fig.colorbar(plot_activation_map, ax=ax[1], cmap='plasma')
         # plot the histogram with the q values
         qs_hist = ax[2].bar(action_names, q_s, color='blue')
