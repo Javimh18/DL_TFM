@@ -55,8 +55,8 @@
 \@writefile{brf}{\backcite{understandingattentionmechanism}{{10}{2.2.1}{subsection.2.2.1}}}
 \citation{model_emsembling_survey}
 \citation{vaswani2023attention}
-\@writefile{lof}{\contentsline {figure}{\numberline {2.2}{\ignorespaces Aligning inputs using the attention mechanism. First, the inputs $X_1, X_2, X_3, ... X_{\tau }$ are encoded using a bi-directional RNN, obtaining the embeddings $\overrightarrow  {h} , \overleftarrow  {h}$. This embeddings are then pondered by the product of the learnable parameters $\alpha _{i \tau }$ for each input, creating the context vector $c_t$. Finally, $c_t$ is fed into the decoder, updating the hidden state $s_t$ and producing the output $y_t$.}}{11}{figure.caption.12}\protected@file@percent }
-\newlabel{fig:alignmentattention}{{2.2}{11}{Aligning inputs using the attention mechanism. First, the inputs $X_1, X_2, X_3, ... X_{\tau }$ are encoded using a bi-directional RNN, obtaining the embeddings $\overrightarrow {h} , \overleftarrow {h}$. This embeddings are then pondered by the product of the learnable parameters $\alpha _{i \tau }$ for each input, creating the context vector $c_t$. Finally, $c_t$ is fed into the decoder, updating the hidden state $s_t$ and producing the output $y_t$}{figure.caption.12}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.2}{\ignorespaces Aligning inputs using the attention mechanism. First, the inputs $X_1, X_2, X_3, ... X_{\tau }$ are encoded using a bi-directional RNN, obtaining the embeddings $\overrightarrow {h} , \overleftarrow {h}$. This embeddings are then pondered by the product of the learnable parameters $\alpha _{i \tau }$ for each input, creating the context vector $c_t$. Finally, $c_t$ is fed into the decoder, updating the hidden state $s_t$ and producing the output $y_t$.}}{11}{figure.caption.12}\protected@file@percent }
+\newlabel{fig:alignmentattention}{{2.2}{11}{Aligning inputs using the attention mechanism. First, the inputs $X_1, X_2, X_3, ... X_{\tau }$ are encoded using a bi-directional RNN, obtaining the embeddings $\protect \overrightarrow {h} , \protect \overleftarrow {h}$. This embeddings are then pondered by the product of the learnable parameters $\alpha _{i \tau }$ for each input, creating the context vector $c_t$. Finally, $c_t$ is fed into the decoder, updating the hidden state $s_t$ and producing the output $y_t$}{figure.caption.12}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2.2}The Transformer Architecture}{11}{subsection.2.2.2}\protected@file@percent }
 \newlabel{sec:transformer}{{2.2.2}{11}{The Transformer Architecture}{subsection.2.2.2}{}}
 \@writefile{brf}{\backcite{vaswani2023attention}{{11}{2.2.2}{subsection.2.2.2}}}
@@ -97,8 +97,10 @@
 \newlabel{fig:swin_transformer_parts}{{2.6}{14}{Swin Transformer architecture and its building blocks. The transformer block, figure \ref {fig:swinblocks}, has two phases. In the first one (left-most block), it performs a layer normalization, followed by a window-MSHA block that is forwarded onto a MLP with a neurons ratio of 4. In the second, it makes use of the shifted window MSHA, instead of the window-MHSA. In figure \ref {fig:swinarchitecture} we can see the whole SWIN Transformer architecture, where each of the "stages" are built upon the transformer blocks, that have as input the patch merged embeddings that are passed at each stage}{figure.caption.16}{}}
 \citation{swin_unet}
 \citation{swin_unet}
-\citation{rl_transformers2023survey}
-\citation{vit_q_learning_sample_eff}
+\citation{swartout1985explaining}
+\citation{alexNet}
+\citation{ILSVRC15}
+\citation{Turek2017}
 \newlabel{fig:windowshifting}{{2.7a}{15}{Window shifting and cyclic shifting module}{figure.caption.17}{}}
 \newlabel{sub@fig:windowshifting}{{a}{15}{Window shifting and cyclic shifting module}{figure.caption.17}{}}
 \@writefile{brf}{\backcite{swin_unet}{{15}{2.7b}{figure.caption.17}}}
@@ -106,32 +108,59 @@
 \newlabel{sub@fig:patchmerging}{{b}{15}{Patch merging module for hierarchical feature aggregation (image from\cite {swin_unet})}{figure.caption.17}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2.7}{\ignorespaces Window shifting in the SWIN Transformer architecture (figure \ref {fig:windowshifting}). From the window partition, shift to the bottom right, so the A, B, C patches are rearranged in the mirrored side of the image. Patch Merging (figure \ref {fig:patchmerging}), picks blocks of 2 by 2 patches inside a window and concatenates them along the channel dimension.}}{15}{figure.caption.17}\protected@file@percent }
 \newlabel{fig:combined}{{2.7}{15}{Window shifting in the SWIN Transformer architecture (figure \ref {fig:windowshifting}). From the window partition, shift to the bottom right, so the A, B, C patches are rearranged in the mirrored side of the image. Patch Merging (figure \ref {fig:patchmerging}), picks blocks of 2 by 2 patches inside a window and concatenates them along the channel dimension}{figure.caption.17}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {2.3}Reinforcement Learning using Transformers}{15}{section.2.3}\protected@file@percent }
-\newlabel{sec:rl-with-attention}{{2.3}{15}{Reinforcement Learning using Transformers}{section.2.3}{}}
-\@writefile{brf}{\backcite{rl_transformers2023survey}{{15}{2.3}{section.2.3}}}
-\@writefile{brf}{\backcite{vit_q_learning_sample_eff}{{15}{2.3}{section.2.3}}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.3}Explainable AI}{15}{section.2.3}\protected@file@percent }
+\@writefile{brf}{\backcite{swartout1985explaining}{{15}{2.3}{section.2.3}}}
+\citation{xai_survey2019}
+\citation{sensitivity_analysis}
+\@writefile{brf}{\backcite{alexNet}{{16}{2.3}{section.2.3}}}
+\@writefile{brf}{\backcite{ILSVRC15}{{16}{2.3}{section.2.3}}}
+\@writefile{brf}{\backcite{Turek2017}{{16}{2.3}{section.2.3}}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.8}{\ignorespaces Explainability of ML models against the prediction accuracy.}}{16}{figure.caption.18}\protected@file@percent }
+\newlabel{fig:explainablechart}{{2.8}{16}{Explainability of ML models against the prediction accuracy}{figure.caption.18}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Sensitive Analysis}{16}{section*.19}\protected@file@percent }
+\@writefile{brf}{\backcite{xai_survey2019, sensitivity_analysis}{{16}{2.3}{section*.19}}}
+\newlabel{eq:grad_sensanalysis}{{2.18}{16}{Sensitive Analysis}{equation.2.3.18}{}}
+\citation{bach2015pixel}
+\citation{zhou2015learning}
+\citation{Selvaraju_2019}
+\@writefile{toc}{\contentsline {subsubsection}{Layer-wise Relevance Propagation}{17}{section*.20}\protected@file@percent }
+\@writefile{brf}{\backcite{bach2015pixel}{{17}{2.3}{section*.20}}}
+\newlabel{eq:lrp_alphabeta}{{2.19}{17}{Layer-wise Relevance Propagation}{equation.2.3.19}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Class Activation Maps}{17}{section*.21}\protected@file@percent }
+\newlabel{sec:cam}{{2.3}{17}{Class Activation Maps}{section*.21}{}}
+\@writefile{brf}{\backcite{zhou2015learning}{{17}{2.3}{section*.21}}}
+\newlabel{eq:cam_basic}{{2.20}{17}{Class Activation Maps}{equation.2.3.20}{}}
+\@writefile{brf}{\backcite{Selvaraju_2019}{{17}{2.3}{equation.2.3.20}}}
+\citation{Selvaraju_2019}
+\citation{rl_transformers2023survey}
+\citation{vit_q_learning_sample_eff}
 \citation{meng2024deep}
 \citation{vanhasselt2015deep}
 \citation{Bellemare_2013}
 \citation{janner2021offline}
 \citation{chen2021decision}
 \citation{wang2022bootstrapped}
+\@writefile{brf}{\backcite{Selvaraju_2019}{{18}{2.3}{equation.2.3.20}}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.4}Reinforcement Learning using Transformers}{18}{section.2.4}\protected@file@percent }
+\newlabel{sec:rl-with-attention}{{2.4}{18}{Reinforcement Learning using Transformers}{section.2.4}{}}
+\@writefile{brf}{\backcite{rl_transformers2023survey}{{18}{2.4}{section.2.4}}}
+\@writefile{brf}{\backcite{vit_q_learning_sample_eff}{{18}{2.4}{section.2.4}}}
+\@writefile{brf}{\backcite{meng2024deep}{{18}{2.4}{section.2.4}}}
+\@writefile{brf}{\backcite{vanhasselt2015deep}{{18}{2.4}{section.2.4}}}
+\@writefile{brf}{\backcite{Bellemare_2013}{{18}{2.4}{section.2.4}}}
+\@writefile{brf}{\backcite{janner2021offline}{{18}{2.4}{section.2.4}}}
+\@writefile{brf}{\backcite{chen2021decision}{{18}{2.4}{section.2.4}}}
+\@writefile{brf}{\backcite{wang2022bootstrapped}{{18}{2.4}{section.2.4}}}
 \citation{BRAMLAGE202210}
 \citation{LEONG2017451}
 \citation{BRAMLAGE202210}
-\@writefile{brf}{\backcite{meng2024deep}{{16}{2.3}{section.2.3}}}
-\@writefile{brf}{\backcite{vanhasselt2015deep}{{16}{2.3}{section.2.3}}}
-\@writefile{brf}{\backcite{Bellemare_2013}{{16}{2.3}{section.2.3}}}
-\@writefile{brf}{\backcite{janner2021offline}{{16}{2.3}{section.2.3}}}
-\@writefile{brf}{\backcite{chen2021decision}{{16}{2.3}{section.2.3}}}
-\@writefile{brf}{\backcite{wang2022bootstrapped}{{16}{2.3}{section.2.3}}}
-\@writefile{toc}{\contentsline {section}{\numberline {2.4}Explainable RL using Attention}{16}{section.2.4}\protected@file@percent }
-\@writefile{brf}{\backcite{BRAMLAGE202210}{{16}{2.4}{section.2.4}}}
-\@writefile{brf}{\backcite{LEONG2017451}{{16}{2.4}{section.2.4}}}
-\@writefile{brf}{\backcite{BRAMLAGE202210}{{16}{2.4}{section.2.4}}}
+\@writefile{toc}{\contentsline {section}{\numberline {2.5}Explainable RL using Attention}{19}{section.2.5}\protected@file@percent }
+\@writefile{brf}{\backcite{BRAMLAGE202210}{{19}{2.5}{section.2.5}}}
+\@writefile{brf}{\backcite{LEONG2017451}{{19}{2.5}{section.2.5}}}
+\@writefile{brf}{\backcite{BRAMLAGE202210}{{19}{2.5}{section.2.5}}}
 \@setckpt{2.RelatedWork}{
-\setcounter{page}{17}
-\setcounter{equation}{17}
+\setcounter{page}{20}
+\setcounter{equation}{20}
 \setcounter{enumi}{2}
 \setcounter{enumii}{0}
 \setcounter{enumiii}{0}
@@ -140,23 +169,23 @@
 \setcounter{mpfootnote}{0}
 \setcounter{part}{0}
 \setcounter{chapter}{2}
-\setcounter{section}{4}
+\setcounter{section}{5}
 \setcounter{subsection}{0}
 \setcounter{subsubsection}{0}
 \setcounter{paragraph}{0}
 \setcounter{subparagraph}{0}
-\setcounter{figure}{7}
+\setcounter{figure}{8}
 \setcounter{table}{0}
 \setcounter{section@level}{1}
 \setcounter{Item}{2}
 \setcounter{Hfootnote}{0}
-\setcounter{bookmark@seq@number}{16}
+\setcounter{bookmark@seq@number}{17}
 \setcounter{@pps}{0}
 \setcounter{@ppsavesec}{0}
 \setcounter{@ppsaveapp}{0}
-\setcounter{caption@flags}{6}
+\setcounter{caption@flags}{2}
 \setcounter{continuedfloat}{0}
-\setcounter{subfigure}{2}
+\setcounter{subfigure}{0}
 \setcounter{subtable}{0}
 \setcounter{parentequation}{0}
 \setcounter{float@type}{16}

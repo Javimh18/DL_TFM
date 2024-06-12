@@ -3,27 +3,159 @@
 
 \section{Experimental set-up}
 \label{sec:exp_setup}
+To carry out our experiments, we used several computers with several GPUs to meet the time constrains that this work imposed. According to several works \cite{mnih2013playing, hessel2017rainbow, schaul2016prioritized, meng2024deep}, the usual number of training steps for DQN learning algorithms is between 100 million and 200 million steps. We could not achieve this for any of our training procedures, even though the GPUs we used for our training were powerful, they cannot compare to the resources that companies such as Google DeepMind has. For the development of this work, we used 4 different computers:
 
-\subsection{Environments}
+\begin{enumerate}
+	\item Computer 1 - Personal computer with the following specs:
+	\begin{itemize}
+		\item CPU: AMD Ryzen 5600X.
+		\item GPU: 1 $\times$ NVIDIA RTX 3060 (12 GB of GDDR6 VRAM).
+		\item RAM: 32 GB of DDR4.
+	\end{itemize}
+	\item Computer 2 - Universidad de Alcalá with the following specs:
+	\begin{itemize}
+		\item CPU: AMD Ryzen 9 5950X.
+		\item GPU: 2 $\times$ NVIDIA RTX 3080 (10 GB of GDDR6X VRAM).
+		\item RAM: 32 GB of DDR4.
+	\end{itemize} 
+	\item Computer 3 - Artemisa cluster (Universidad de Valencia and Universidad de Alcalá) with the following specs (we only specify the resources we were allowed to use):
+	\begin{itemize}
+		\item CPU: Intel(R) Xeon(R) Gold 6130 CPU @ 2.10GHz
+		\item GPU: 1 $\times$ NVIDIA V100 (40GB of HBM2e)
+		\item RAM: 32 GB of DDR4
+	\end{itemize} 
+	\item Computer 4 - Anomalia cluster (Universidad Autónoma de Madrid) with the following specs:
+	\begin{itemize}
+		\item CPU: Intel(R) Xeon(R) Silver 4210R CPU @ 2.40GHz.
+		\item GPU: 3 $\times$ NVIDIA RTX 3090 (24 GB of GDDR6X VRAM).
+		\item RAM: 196 GB of DDR4.
+	\end{itemize} 
+\end{enumerate}
+
+The use of this systems made possible to accelerate the training speeds, but we could not get their full potential such as training parallelization. We tried to implement a training procedure similar to \cite{stooke2019rlpyt} where they implement a library to accelerate inference times and sampling from the experience replay buffer across GPUs using MPI \cite{gropp_using_1994} in python using PyTorch. We tried to do something similar in our implementation, but could not make it to work.
+
+\section{Training results}
 \label{sec:env_setup}
 
-\subsection{Proposed models set-up}
-\label{sec:models_setup}
+For the training procedure, we run the models under just one constrain: to end the training if for a portion of the total trained steps until that time, no improvement is done. We were aware that for a lot of training set-ups, the model may face a streak where does not improve for a long period of time, and the, out of the blue, starts to pick up knowledge and exploits it obtaining great scores down the line. We could not afford to do this, given our time constrains, and "limited" resources. Referring to the hyper-parameters used in the training procedures, we fixed the ones that were related to the agent training, such as the $\gamma$, the learning rate, the batch size or the initial and final exploration rates (see Table \ref{tab:hyper-parameters}). We have seen that in several works, such as \cite{vanhasselt2015deep, hessel2017rainbow, meng2024deep}, they implement the same thing for the training procedure.
 
-\section{Joint Evaluation}
-\label{sec:joint_ev}
+\begin{table}[!h]
+	\begin{center}
+		\caption[Sample table (short title)]{Fixed hyper-parameters across different training procedures.}
+		\label{tab:hyper-parameters}
+		\begin{tabular}{||c | c||} 
+			\hline
+			Input & 84 $\times$ 84 $\times$ 4 \\
+			\hline
+			Optimizer & Adam \\
+			\hline
+			Adam Learning Rate & $6.25 \times 10^{-5}$ \\
+			\hline
+			$\gamma$ & 0.99 \\
+			\hline
+			Initial $\epsilon$ & 1 \\
+			\hline
+			Final $\epsilon$ & 0.01 \\
+			\hline
+			$\epsilon$-decay steps (frames) & 1 $\times 10^6$   \\
+			\hline
+			SyncFrames & $4 \times 10^4$ \\
+			\hline
+			SkipLearningFrames & 4 \\
+			\hline
+			Replay Buffer Size & $1 \times 10^{6}$ \\
+			\hline
+			Batch Size & 32 \\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
 
-\subsection{Attention and other markers for explainability}
-\label{sec:joint_attn_explainability}
+For each of the backbones (the ViT and the SWIN), the hyper-parameters related to the topology of the networks varies in terms of layers, and the number of weights. Additionally, we also trained a series of models using a CNN similar to the one used in \cite{vanhasselt2015deep} to obtain a "baseline" on the performance and perform different experiments in the exploration schedules, since their computational complexity is inferior to the attention-based models, and given the results, we selected the exploration schedule accordingly.
 
-\subsection{Qualitative results}
-\label{sec:joint_qual_explainability}
+The hyper-parameters related to the models are defined in tables \ref{tab:swin-hyper-parameters} and \ref{tab:vit-hyper-parameters}. In the case of the SWIN DDQN network, we copied the same topology as the one proposed in \cite{meng2024deep}. In the case of the ViT DDQN network, we tried to balance between the number of weights from the model and the computation complexity of the forward and backward pass, given the quadratic computational complexity from the model. Additionally, since to the best of our knowledge, we have not seen any work that explores the ViT as the backbone for a value function approximation in DQN-learning, we did not have a baseline to start from.
 
-\subsection{Quantitative results}
-\label{sec:joint_quant_explainability}
+\begin{table}[!h]
+	\begin{center}
+		\caption[Sample table (short title)]{ViT DDQN network hyper-parameters}
+		\label{tab:swin-hyper-parameters}
+		\begin{tabular}{||c | c||} 
+			\hline
+			 Layers & 5 \\
+			 \hline
+			 Blocks per layer & 1 \\
+			 \hline
+			 Number of heads per block & 6 \\
+			 \hline
+			 Embedding dimension & 156 \\
+			 \hline
+			 Patch size & 7 \\
+			 \hline
+			 Dropout rate & 0.1 \\
+			 \hline
+		\end{tabular}
+	\end{center}
+\end{table}
 
-\subsection{Counter-examples}
-\label{sec:counter_examples}
+\begin{table}[!h]
+	\begin{center}
+		\caption[Sample table (short title)]{SWIN DDQN network hyper-parameters}
+		\label{tab:vit-hyper-parameters}
+		\begin{tabular}{||c | c||} 
+			\hline
+			Layers/Stages & 3 \\
+			\hline
+			Blocks per layer & 2,3,2 \\
+			\hline
+			Heads per layer & 3,3,6 \\
+			\hline
+			Patch Size & 3 $\times$ 3 \\
+			\hline
+			Window Size & 7 $\times$ 7 \\
+			\hline
+			Embedding dimension & 96 \\
+			\hline
+			Dropout rate & 0.2 \\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+Additionally, we state in Table \ref{tab:models_parameters} the number of weights each backbone that we trained our agent on had. We used the \inlinecode{torchinfo} \cite{torchinfo} library to obtain these estimations. Also, we state the floating operations per second (FLOPs) for the proposed models using the \inlinecode{ptflops} library \cite{ptflops}.
+
+\begin{table}[!h]
+	\begin{center}
+		\caption[Sample table (short title)]{Number of parameters and FLOPs per model.}
+		\label{tab:models_parameters}
+		\begin{tabular}{||c | c | c | c||} 
+			\hline
+			 & SWIN & VIT  & CNN\\
+			\hline
+			Number of weights &   &   &\\
+			\hline
+			FLOPs &   &   &\\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\subsection{Exploration schedules}
+\label{sec:eval_exp_schedules}
+
+\subsection{Attention models training comparison}
+\label{sec:eval_comp_models}
+
+\section{Explainability features}
+\label{sec:eval_feat_explainability}
+
+\subsection{Attention maps results}
+\label{sec:eval_attn_maps_explainability}
+
+\subsection{Activation maps results}
+\label{sec:eval_actv_explainability}
+
+\subsection{Comparison}
+\label{sec:eval_comparison}
 
 %
 %\begin{table}[]

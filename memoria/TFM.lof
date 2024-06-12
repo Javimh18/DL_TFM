@@ -7,13 +7,17 @@
 \contentsline {figure}{\numberline {2.5}{\ignorespaces In figure \ref {fig:transformer_arch} (left) the ViT transformer architecture is presented. In figure \ref {fig:translation_attn} (right) an attention map is presented. The model that produced the attention maps was trained to track people on a scene, and it is why, the higher attention weights (red) are put in the pixels where people is present.}}{14}{figure.caption.15}%
 \contentsline {figure}{\numberline {2.6}{\ignorespaces Swin Transformer architecture and its building blocks. The transformer block, figure \ref {fig:swinblocks}, has two phases. In the first one (left-most block), it performs a layer normalization, followed by a window-MSHA block that is forwarded onto a MLP with a neurons ratio of 4. In the second, it makes use of the shifted window MSHA, instead of the window-MHSA. In figure \ref {fig:swinarchitecture} we can see the whole SWIN Transformer architecture, where each of the "stages" are built upon the transformer blocks, that have as input the patch merged embeddings that are passed at each stage.}}{14}{figure.caption.16}%
 \contentsline {figure}{\numberline {2.7}{\ignorespaces Window shifting in the SWIN Transformer architecture (figure \ref {fig:windowshifting}). From the window partition, shift to the bottom right, so the A, B, C patches are rearranged in the mirrored side of the image. Patch Merging (figure \ref {fig:patchmerging}), picks blocks of 2 by 2 patches inside a window and concatenates them along the channel dimension.}}{15}{figure.caption.17}%
+\contentsline {figure}{\numberline {2.8}{\ignorespaces Explainability of ML models against the prediction accuracy.}}{16}{figure.caption.18}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces In figure \ref {fig:landing} (left) the goal is to land securely the spaceship (in pruple). In figure \ref {fig:translation_attn} (right) the goal is for the ant to balance itself and start walking.}}{18}{figure.caption.18}%
-\contentsline {figure}{\numberline {3.2}{\ignorespaces Shape of the proposed exploration functions for the DQN agent}}{44}{figure.caption.37}%
-\contentsline {figure}{\numberline {3.3}{\ignorespaces Implementation overview of the whole pipeline that we have developed for this work.}}{45}{figure.caption.40}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces In figure \ref {fig:landing} (left) the goal is to land securely the spaceship (in pruple). In figure \ref {fig:translation_attn} (right) the goal is for the ant to balance itself and start walking.}}{22}{figure.caption.22}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Shape of the proposed exploration functions for the DQN agent}}{48}{figure.caption.41}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Example of an attention matrix for one attention head with 4 $\times $ 4 patches. The section under the red rectangle refers to the patches that the class token ponders in order to perform the output. This patches will be our extraction for the attention maps.}}{49}{figure.caption.43}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Left side, the original frame from the game, in the center, the attention maps for the class token, at the right-side, the Q-values for the observation from the state.}}{50}{figure.caption.44}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Left-side, the current frame of the game. In the center, the activation maps from the ViT using grad-CAM. At the right-side, the Q-values provided by the neural network.}}{51}{figure.caption.46}%
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Implementation overview of all the modules involved in this work}}{52}{figure.caption.49}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {A.1}{\ignorespaces TD Returns}}{58}{figure.caption.43}%
+\contentsline {figure}{\numberline {A.1}{\ignorespaces TD Returns}}{66}{figure.caption.56}%
 \addvspace {10\p@ }
 \addvspace {10\p@ }

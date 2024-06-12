@@ -323,7 +323,7 @@ def learn(self, step):
 
 After these checks, we start with the learning process. To do so, we first recall or sample from the replay buffer with a defined sample size (i.e. 8, 16, 32... etc.) that extract a set of samples for the model to learn. Thanks to tensor operation support provided from PyTorch, this is forwarded through the online and target networks seamlessly. The \inlinecode{compute\_q\_target} method implements the TD target element in the DQN loss equation \ref{eq:dqn_loss} which is $r + \gamma \max_{a'} Q(s', a'; w^-))$, while the method \inlinecode{compute\_q\_estimate} implements the TD estimate which is $Q(s, a; w)$ where actions $a$ and $a'$ are selected according to the target greedy policy for the sampled state s from the buffer and its corresponding next state s'.
 
-With the TD values, we compute the loss. We opted for the Huber Loss \cite{9918637}, defined in equation \ref{eq:hub_loss} where $\delta$ is a regularization parameter. This type of loss is useful in these set-ups, thanks to its robustness to outliers in the data compared to the mean squared error loss function, which is of convenience for this problem in cases where loss between Q values estimates that fall far over the hyper-parameter $\delta$.
+With the TD values, we compute the loss. We opted for the Huber Loss \cite{9918637}, defined in equation \ref{eq:hub_loss} where $\delta$ is a regularization parameter. This type of loss is useful in these set-ups, thanks to its robustness to outliers in the data compared to the mean squared error loss function, which is of convenience for this problem in cases where loss between Q values estimates fall far over the hyper-parameter $\delta$.
 
 \begin{equation}
 	\label{eq:hub_loss}
@@ -772,9 +772,9 @@ As we can see, the SWIN transformer is a step-up in comparison to the ViT, with 
 Up until this point, all we have explained in this section is the algorithmic part on how we programmed the agent in order to learn, but that is not the only important thing when developing machine learning algorithms. Our implementation comprises several modules to provide the training framework additional information on how the training process is going, which models work best, and save the weights of the neural networks that help the agent to perform better in the environment. We have already explained in sections \ref{sec:dqn_training_loop}, \ref{sec:vit_transformer_imp} and \ref{sec:swin_transformer_rl}, which are the main parts which work together to train the different agent configurations that we propose. In this section we will delve into the critical aspects from that have taken part to develop them. 
 
 \subsection{Trainer}
-The trainer class is kind of the orchestrator of this work. Its main functionality is to coordinate the environment with the agent learning procedure while extracting relevant metrics and evidences of the agent's behaviour. Our environment has different wrappers added to them, that alter the behaviour and the dynamics of the environment, which may be an issue if the code is not properly adapted. In section \ref{sec:env_dyn} we explain the different types of wrappers that we used, but we have not explained the implications that they have in the way the agent behaves and the metric extraction. For example, our environment uses the \textbf{EpisodicLifeEnvironment} which basically treats each life of a game as an episode from the agent to learn, which helps the agent to improve its estimates of the rewards. The issue here is that when we extract the real statistics of the episode they come altered. To solve these problems we make use of the wrapper \textbf{RecordEpisodeStatistics} which collects the actual real statistics from the environment. This wrapper adds to additional information to the environment when the episode has ended. In listing \ref{code:trainer_info_episode}, that is taken from listing \ref{code:trainer_main_loop}, we can see that in the info dictionary, that is return for each \inlinecode{env.step(action)} call, there is a key called episode that opens up an embedded dictionary with information that is specific from the episode, such as the accumulated reward or the length of the episode which we extracted and saved for logging purposes. Additional information can be extracted too, such as the last frame that the agent saw.
+The trainer class is kind of the orchestrator of this work. Its main functionality is to coordinate the environment with the agent learning procedure while extracting relevant metrics and evidences of the agent's behaviour. Our environment has different wrappers added to them, that alter the behaviour and the dynamics of the environment, which may be an issue if the code is not properly adapted. In section \ref{sec:env_dyn} we explain the different types of wrappers that we used, but we have not explained the implications that they have in the way the agent behaves and the metric extraction. For example, our environment uses the \inlinecode{EpisodicLifeEnvironment} which basically treats each life of a game as an episode from the agent to learn, which helps the agent to improve its estimates of the rewards. The issue here is that when we extract the real statistics of the episode they come altered. To solve these problems we make use of the wrapper \inlinecode{RecordEpisodeStatistics} which collects the actual real statistics from the environment. This wrapper adds to additional information to the environment when the episode has ended. In listing \ref{code:trainer_info_episode}, that is taken from listing \ref{code:trainer_main_loop}, we can see that in the info dictionary, that is return for each \inlinecode{env.step(action)} call, there is a key called episode that opens up an embedded dictionary with information that is specific from the episode, such as the accumulated reward or the length of the episode which we extracted and saved for logging purposes. Additional information can be extracted too, such as the last frame that the agent saw.
 
-\begin{lstlisting}[caption={Episodic information retrival from \textbf{RecordEpisodeStatistics} wrapper}, label={code:trainer_info_episode}]
+\begin{lstlisting}[caption={Episodic information retrival from \inlinecode{RecordEpisodeStatistics} wrapper}, label={code:trainer_info_episode}]
 if 'episode' in info:
 	# episode field is stored in the info dict if episode ended
 	logger.log_episode(ep_length=info['episode']['l'], ep_reward=info['episode']['r'],)
@@ -931,7 +931,7 @@ The $\gamma_{exp}$ value for the exponent decay function is defined in \ref{eq:g
 	k = \sum_{i=0}^{N} i  = n a_1 + d \frac{(n-1)n}{2}
 \end{equation}
 
-To clarify that the $\gamma$ used in these equations is completely different from the hyper-parameter that is used in the DQN learning equations defined in \ref{eq:dqn_loss} and \ref{eq:ddqn_loss}. Additionally, the way we came up with the gamma values is shown in section \ref{app:gamma_proof}.
+To clarify that the $\gamma$ used in these equations is completely different from the hyper-parameter that is used in the DQN learning equations defined in \ref{eq:dqn_loss} and \ref{eq:ddqn_loss}. Additionally, the way we came up with them is shown in section \ref{app:gamma_proof}.
 
 To properly scheme the different schedulers, we first defined an abstract class, as seen in listing \ref{code:abs_scheduler}. This class has three main values, the upper bound \inlinecode{e_0}, the lower bound \inlinecode{e_f} and the number of time-steps for the function to go from the upper bound to the lower one. The step method will return the current exploration rate, given the current time-step.
 \begin{lstlisting}[caption={Abstract class for the scheduler}, label={code:abs_scheduler}]
@@ -999,6 +999,72 @@ To have a better understanding on how these equations behave over time, the shap
 	\label{fig:shape_exp_funs}
 \end{figure}
 
+\subsection{Extracting explainability features}
+In this section we are going to explain how, once we trained our models, we extracted several feature maps to understand what the model is taking into account to perform an action. We must note that for section \ref{sec:extracting_attn_maps}, we could not implement a way to extract raw attention maps for the SWIN transformer, nor we found any reference in the literature that would help us with this purpose, so we only extracted the attention maps for the ViT model. For section \ref{sec:grad_cam_act_maps}, the developed method takes into account both ViT and SWIN transformer.
+
+\subsubsection{Extracting attention maps}
+\label{sec:extracting_attn_maps}
+As explained in section \ref{sec:vis-transformers}, the ViT introduces an additional token along the patches, called the class token, which holds the information that class takes into account via self-attention to produce the output. Figure \ref{fig:classtokenattention} illustrates this, since we can see that, for a 4 by 4 patched image, the disposition of the attention matrix for one attention head would give us for the class token row, all the patches with the weighted attention. The code developed for this section is available in the script \href{https://github.com/Javimh18/DL_TFM/blob/main/src/visualize_attention_vit.py}{visualize\_attention\_vit.py}.
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures/class_token_attention}
+	\caption{Example of an attention matrix for one attention head with 4 $\times$ 4 patches. The section under the red rectangle refers to the patches that the class token ponders in order to perform the output. This patches will be our extraction for the attention maps.}
+	\label{fig:classtokenattention}
+\end{figure}
+
+In order to extract the attention maps, the implementation from \cite{caron2021emerging} has the functionality of returning the attention maps in the forward pass of the ViT blocks (see listing \ref{code:attn_block}). The only thing we ought to do, is index the attention matrix correctly to extract the elements of interest. In listing \ref{code:single_frame_attn}, we can see a example of this. First, we obtain the attention weights for each patch by indexing the attention matrix like \inlinecode{attn[0, :, 0, 1:]} in line 3, obtaining a matrix with dimensions $\mathbb{R}^{nh \times (P-1)}$, where nh refers to the number of heads from the attention mechanism, and P refers to the tokens that go into the attention mechanism. Since we are not interested in the attention weight that the class token has with respect to itself, we exclude it out. To compute the averaged importance of each patch, we perform the mean across the nh dimension, and reshape the $P$ dimension to the original spatial dimensions $P_w$ and $P_h$ for the width and the height respectively (line 4). Then, by calling the method \inlinecode{interpolate_attn_map} we perform a interpolation to return the attention map to the original size of the input (lines 5 to 8).
+
+\begin{lstlisting}[caption={Attention map extractor for a single frame}, label={code:single_frame_attn}]
+	vit = agent.net.online
+	attn = vit.get_last_selfattention(state.float())
+	cls_attn = attn[0, :, 0, 1:]
+	cls_attn = cls_attn.reshape(-1, dimension, dimension).mean(dim=0, keepdim=True).unsqueeze(0)
+	# 3. Interpolate the attention maps to original frame size
+	cls_attn_int = interpolate_attn_map(attention_map=cls_attn, 
+	scale_factor=patch_size,
+	final_shape=original_shape)
+\end{lstlisting}
+
+Once we have done this, we can plot the attention map along with the original frame to observe where does the model pay attention to, given a frame. In Figure \ref{fig:attnvisualizationframe} we provide an example for this. Additionally, in the right side of the figure, we provide the returned Q-values from the network, since they are of vital importance for understanding the network's decisions. The interpretations that we extract from this will be discussed in section \ref{cha:evaluation}.
+
+\begin{figure} [!h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/attn_visualization_frame}
+	\caption{Left side, the original frame from the game, in the center, the attention maps for the class token, at the right-side, the Q-values for the observation from the state.}
+	\label{fig:attnvisualizationframe}
+\end{figure}
+
+
+
+\subsubsection{Extracting Grad-CAM's activation maps}
+\label{sec:grad_cam_act_maps}
+We developed something similar to section \ref{sec:extracting_attn_maps} but using the grad-CAM technique explained in \ref{sec:cam}. To do so, we used the \inlinecode{pytorch-cam} library \cite{jacobgilpytorchcam} that integrates a well varied amount of CAM methods to select. Part of the developed code is displayed in listing \ref{code:grad_cam_rl}, and the complete code can be found in the \href{https://github.com/Javimh18/DL_TFM/blob/main/src/visualize_activations.py}{visualize\_activations.py} script.
+
+\begin{lstlisting}[caption={Activation maps using Grad-CAM}, label={code:grad_cam_rl}]
+	action, q_v = agent.perform_action(state, t=-1, exploit=True)
+	actions.append(action)
+	q_values.append(q_v.squeeze().detach().cpu().numpy())
+	# 2. get the activation maps
+	state = first_if_tuple(state).__array__()
+	state = torch.tensor(np.array([state]), device=device)
+	action_target = ClassifierOutputTarget(action)
+	gray_scale_cam = cam(input_tensor=state, targets=[action_target])
+	gray_scale_cam = torch.tensor(gray_scale_cam[0, :]).unsqueeze(0).unsqueeze(0) # appropiate dims for interpolation
+	activ_map = interpolate_activations(gray_scale_cam,
+	final_shape=original_shape)
+\end{lstlisting}
+
+To adapt Grad-CAM from the classification supervised learning set-up to the reinforcement learning set-up, we treated each of the actions the agent selected as the predicted "class". By doing so, we expected to obtain the biggest activations from the input that the agent considers to perform the output. The \inlinecode{ClassifierOutputTarget} method takes the target class (our action in this case), and passes it to the cam method, that returns the activations. Then we perform an interpolation to return the resolution to the original frame size, obtaining a map depicted in Figure \ref{fig:activationmapsvisualization}. We must say that this method works for both ViT and SWIN backbones, along with other non-attention based models, such as CNNs. 
+
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/activation_maps_visualization}
+	\caption{Left-side, the current frame of the game. In the center, the activation maps from the ViT using grad-CAM. At the right-side, the Q-values provided by the neural network.}
+	\label{fig:activationmapsvisualization}
+\end{figure}
+
+
 \subsection{Additional implementations}
 
 \subsubsection{Configuration files}
@@ -1015,9 +1081,12 @@ With almost all the components involved in the training pipeline for our agents,
 
 \begin{figure}[!h]
 	\centering
-	\includegraphics[width=0.7\linewidth]{figures/implementation_everview}
-	\caption{Implementation overview of the whole pipeline that we have developed for this work.}
+	\includegraphics[width=\linewidth]{figures/implementationoverview}
+	\caption{Implementation overview of all the modules involved in this work}
 	\label{fig:implementationoverview}
 \end{figure}
+
+
+
 
 
