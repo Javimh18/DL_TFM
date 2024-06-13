@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import datetime
 import glob
+import cv2
 
 from utils.wrappers import SkipFrame, FrameExtractor, SaveOriginalObservation
 from agents.ddqn_agent import DDQNAgent
@@ -16,6 +17,8 @@ from agents.ddqn_agent import DDQNAgent
 VIT_CHOICE = 3
 SEED = 1234
 FRAME_SKIP = 4
+VMIN = 0
+VMAX = 0.6
 torch.manual_seed(SEED)
 torch.backends.cudnn.deterministic = True
     
@@ -175,7 +178,7 @@ if __name__ == '__main__':
                                             scale_factor=patch_size,
                                             final_shape=original_shape)
         attn_maps.append(cls_attn_int)
-        original_frames.append(env.get_original_observation()) # TODO: review; before or after
+        original_frames.append(env.get_original_observation())
         next_state, reward, done, trunc, info = env.step(action)
         trunc_frames.append(np.array(env.frames))
         # 5. update current observation
@@ -210,9 +213,10 @@ if __name__ == '__main__':
         _ = ax[0].imshow(orig_frames)
         ax[0].set_title("Original Frame")
         # subplot the attention map with the color-bar
-        attn_map = ax[1].imshow(attn_map)
+        _ = ax[1].imshow(orig_frames)
+        attn_map = ax[1].imshow(attn_map, cmap='plasma', alpha=0.65, aspect='auto', vmin=VMIN, vmax=VMAX)
         ax[1].set_title("Attention map")
-        cbar = fig.colorbar(attn_map, ax=ax[1], cmap='plasma')
+        cbar = fig.colorbar(attn_map, ax=ax[1])
         # plot the histogram with the q values
         qs_hist = ax[2].bar(action_names, q_s, color='blue')
         plt.xticks(rotation=75)

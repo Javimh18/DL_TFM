@@ -22,6 +22,8 @@ from models.vit import ViT
 VIT_CHOICE = 3
 SEED = 1234
 FRAME_SKIP = 4
+VMIN = 0
+VMAX = 1
 torch.manual_seed(SEED)
 torch.backends.cudnn.deterministic = True
     
@@ -255,8 +257,9 @@ if __name__ == '__main__':
         _ = ax[0].imshow(orig_frames)
         ax[0].set_title("Original Frame")
         # subplot the attention map with the color-bar
-        plot_activation_map = ax[1].imshow(activ_map)
+        _ = ax[1].imshow(orig_frames)
         ax[1].set_title("Activation map")
+        plot_activation_map = ax[1].imshow(activ_map, cmap='plasma', alpha=0.65, aspect='auto', vmin=VMIN, vmax=VMAX)
         cbar = fig.colorbar(plot_activation_map, ax=ax[1], cmap='plasma')
         # plot the histogram with the q values
         qs_hist = ax[2].bar(action_names, q_s, color='blue')
@@ -269,7 +272,7 @@ if __name__ == '__main__':
         frame_count += 1
     
     output_video_path = os.path.join(save_video_dir, 'activation_viz.mp4')
-    frames_to_video(save_video_dir, output_video_path, fps=8)
+    frames_to_video(save_video_dir, output_video_path, fps=4)
     # Remove .png files in the specified directory
     remove_png_files(save_video_dir)
     
