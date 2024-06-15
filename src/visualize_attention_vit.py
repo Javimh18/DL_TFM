@@ -28,7 +28,7 @@ parser.add_argument("-e", "--environment", help='The name of environment where t
 parser.add_argument("-c", "--agent_config", help="Path to the config file of the agent", default="../config/agents_config.yaml")
 parser.add_argument("-m", "--agent_model_config", help="Path to the config file of the model that the agent uses as a function approximator", default="../config/agent_nns.yaml")
 parser.add_argument("-p", "--path_to_agent_checkpoint", help="Path to the checkpoint file where that contains the NN weights", 
-                    default='../checkpoints/ALE/MsPacman-v5/dqn_vit_agent/2024-06-01T09-00-00')
+                    default='../checkpoints/ALE/MsPacman-v5/ddqn_vit_agent/2024-06-08T22-19-34')
 parser.add_argument("-v", "--save_video_dir", help="Path to the folder where videos of the agent playing are stored", default="../evidences/attention_maps")
 parser.add_argument("-d", "--cuda_device", help="Cuda device to run inference on.", default=None)
 args = parser.parse_args()
@@ -157,6 +157,7 @@ if __name__ == '__main__':
     trunc_frames = []
     original_frames = []
     attn_maps = []
+    heads_attn_maps = []
     q_values = []
     
     done, trunc = False, False
@@ -172,12 +173,23 @@ if __name__ == '__main__':
         vit = agent.net.online
         attn = vit.get_last_selfattention(state.float())
         cls_attn = attn[0, :, 0, 1:]
-        cls_attn = cls_attn.reshape(-1, dimension, dimension).mean(dim=0, keepdim=True).unsqueeze(0)
-        # 3. Interpolate the attention maps to original frame size
-        cls_attn_int = interpolate_attn_map(attention_map=cls_attn, 
-                                            scale_factor=patch_size,
-                                            final_shape=original_shape)
+        # 3. Fuse the attention heads weights using the mean
+        cls_attn_avg = cls_attn.reshape(-1, dimension, dimension).mean(dim=0, keepdim=True).unsqueeze(0)
+        cls_attn_int = interpolate_attn_map(attention_map=cls_attn_avg, 
+                                                scale_factor=patch_size,
+                                                final_shape=original_shape)
         attn_maps.append(cls_attn_int)
+        # 4. For each attention head, extract the attention weights
+        nh = cls_attn.shape[0]
+        attention_heads_attentions = []
+        for i in range(nh):
+            # 4. Interpolate the attention maps to original frame size
+            head_attn_map = cls_attn[i,:].reshape(dimension, dimension).unsqueeze(0).unsqueeze(0)
+            cls_attn_int = interpolate_attn_map(attention_map=head_attn_map, 
+                                                scale_factor=patch_size,
+                                                final_shape=original_shape)
+            attention_heads_attentions.append(cls_attn_int)
+        heads_attn_maps.append(attention_heads_attentions)
         original_frames.append(env.get_original_observation())
         next_state, reward, done, trunc, info = env.step(action)
         trunc_frames.append(np.array(env.frames))
@@ -207,21 +219,34 @@ if __name__ == '__main__':
     for i, a in enumerate(action_names):
         action_dict[i] = a
     
-    for orig_frames, attn_map, a, q_s in zip(original_frames, attn_maps, actions, q_values):
-        fig, ax = plt.subplots(1, 3, figsize=(24,10))
+    nh = len(heads_attn_maps[0])
+    n_rows = nh//2
+    for orig_frames, attn_map, a, q_s, h_attn_map in zip(original_frames, attn_maps, actions, q_values, heads_attn_maps):
+        fig, ax = plt.subplots(3, 3, figsize=(24,35))
         # subplot the original frame
-        _ = ax[0].imshow(orig_frames)
-        ax[0].set_title("Original Frame")
+        _ = ax[0, 0].imshow(orig_frames)
+        ax[0, 0].set_title("Original Frame")
         # subplot the attention map with the color-bar
-        _ = ax[1].imshow(orig_frames)
-        attn_map = ax[1].imshow(attn_map, cmap='plasma', alpha=0.65, aspect='auto', vmin=VMIN, vmax=VMAX)
-        ax[1].set_title("Attention map")
-        cbar = fig.colorbar(attn_map, ax=ax[1])
+        _ = ax[0, 1].imshow(orig_frames)
+        attn_map = ax[0, 1].imshow(attn_map, cmap='plasma', alpha=0.65, aspect='auto', vmin=VMIN, vmax=VMAX)
+        ax[0, 1].set_title("Attention map")
+        cbar = fig.colorbar(attn_map, ax=ax[0, 1])
         # plot the histogram with the q values
-        qs_hist = ax[2].bar(action_names, q_s, color='blue')
+        qs_hist = ax[0,2].bar(action_names, q_s, color='blue')
         plt.xticks(rotation=75)
-        ax[2].set_ylim(-10,100)
-        ax[2].set_title(f"Q action values with action {action_dict[a]} selected")
+        ax[0,2].set_ylim(-10,100)
+        ax[0,2].set_title(f"Q action values with action {action_dict[a]} selected")
+        
+        c = 1
+        for i in range(nh):
+            if i > 0 and i%n_rows==0:
+                c += 1
+            r = i%n_rows
+            _ = ax[c, r].imshow(orig_frames)
+            head_attn_map = ax[c, r].imshow(h_attn_map[i], cmap='plasma', alpha=0.65, aspect='auto', vmin=VMIN, vmax=VMAX)
+            ax[c, r].set_title(f"Attention map from head {i+1}")
+            cbar = fig.colorbar(attn_map, ax=ax[c, r])
+        
         plt.savefig(os.path.join(save_video_dir,
                                  f"{frame_count}.png"))
         plt.close()
