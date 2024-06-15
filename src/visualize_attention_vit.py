@@ -152,6 +152,9 @@ if __name__ == '__main__':
     patch_size = agent.net.online.patch_embed.patch_size
     dimension = int(obs_shape[2]/patch_size)
     
+    # define the vit outside the loop
+    vit = agent.net.online
+    
     curr_step = 0; total_reward=0
     actions = []
     trunc_frames = []
@@ -170,7 +173,6 @@ if __name__ == '__main__':
         # 2. get the attention maps
         state = first_if_tuple(state).__array__()
         state = torch.tensor(state, device=device).unsqueeze(0)
-        vit = agent.net.online
         attn = vit.get_last_selfattention(state.float())
         cls_attn = attn[0, :, 0, 1:]
         # 3. Fuse the attention heads weights using the mean
@@ -236,21 +238,21 @@ if __name__ == '__main__':
         ax[0,2].set_ylim(-10,100)
         ax[0,2].set_title(f"Q action values with action {action_dict[a]} selected")
         
-        c = 1
+        # plot the attention weights for each attention heads
+        r = 1
         for i in range(nh):
             if i > 0 and i%n_rows==0:
-                c += 1
-            r = i%n_rows
-            _ = ax[c, r].imshow(orig_frames)
-            head_attn_map = ax[c, r].imshow(h_attn_map[i], cmap='plasma', alpha=0.65, aspect='auto', vmin=VMIN, vmax=VMAX)
-            ax[c, r].set_title(f"Attention map from head {i+1}")
-            cbar = fig.colorbar(attn_map, ax=ax[c, r])
+                r += 1
+            c = i%n_rows
+            _ = ax[r, c].imshow(orig_frames)
+            head_attn_map = ax[r, c].imshow(h_attn_map[i], cmap='plasma', alpha=0.65, aspect='auto', vmin=VMIN, vmax=VMAX)
+            ax[r, c].set_title(f"Attention map from head {i+1}")
+            cbar = fig.colorbar(attn_map, ax=ax[r, c])
         
         plt.savefig(os.path.join(save_video_dir,
                                  f"{frame_count}.png"))
         plt.close()
         frame_count += 1
-        break
     
     output_video_path = os.path.join(save_video_dir, 'attention_viz.mp4')
     frames_to_video(save_video_dir, output_video_path, fps=8)
