@@ -198,7 +198,6 @@ if __name__ == '__main__':
         # 6. Update step value
         curr_step += 1
         total_reward += reward
-        
     env.close()
         
     print(f"INFO: RUN with REWARD: {total_reward}")
@@ -223,14 +222,14 @@ if __name__ == '__main__':
     n_rows = nh//2
     for orig_frames, attn_map, a, q_s, h_attn_map in zip(original_frames, attn_maps, actions, q_values, heads_attn_maps):
         fig, ax = plt.subplots(3, 3, figsize=(24,35))
-        # subplot the original frame
-        _ = ax[0, 0].imshow(orig_frames)
-        ax[0, 0].set_title("Original Frame")
         # subplot the attention map with the color-bar
+        _ = ax[0, 0].imshow(orig_frames)
+        attn_map = ax[0, 0].imshow(attn_map, cmap='plasma', alpha=0.65, aspect='auto', vmin=VMIN, vmax=VMAX)
+        ax[0, 0].set_title("Averaged Attention map")
+        cbar = fig.colorbar(attn_map, ax=ax[0, 0])
+        # subplot the original frame
         _ = ax[0, 1].imshow(orig_frames)
-        attn_map = ax[0, 1].imshow(attn_map, cmap='plasma', alpha=0.65, aspect='auto', vmin=VMIN, vmax=VMAX)
-        ax[0, 1].set_title("Attention map")
-        cbar = fig.colorbar(attn_map, ax=ax[0, 1])
+        ax[0, 1].set_title("Original Frame")
         # plot the histogram with the q values
         qs_hist = ax[0,2].bar(action_names, q_s, color='blue')
         plt.xticks(rotation=75)
@@ -251,6 +250,7 @@ if __name__ == '__main__':
                                  f"{frame_count}.png"))
         plt.close()
         frame_count += 1
+        break
     
     output_video_path = os.path.join(save_video_dir, 'attention_viz.mp4')
     frames_to_video(save_video_dir, output_video_path, fps=8)
