@@ -153,7 +153,7 @@ if __name__ == '__main__':
     dimension = int(obs_shape[2]/patch_size)
     
     # define the vit outside the loop
-    vit = agent.net.online
+    vit = agent.net.online.eval()
     
     curr_step = 0; total_reward=0
     actions = []
@@ -223,12 +223,11 @@ if __name__ == '__main__':
     nh = len(heads_attn_maps[0])
     n_rows = nh//2
     for orig_frames, attn_map, a, q_s, h_attn_map in zip(original_frames, attn_maps, actions, q_values, heads_attn_maps):
-        fig, ax = plt.subplots(3, 3, figsize=(16,22))
+        fig, ax = plt.subplots(3, 3, figsize=(17,23))
         # subplot the attention map with the color-bar
         _ = ax[0, 0].imshow(orig_frames)
         attn_map = ax[0, 0].imshow(attn_map, cmap='plasma', alpha=0.65, aspect='auto', vmin=VMIN, vmax=VMAX)
         ax[0, 0].set_title("Averaged Attention map")
-        cbar = fig.colorbar(attn_map, ax=ax[0, 0])
         # subplot the original frame
         _ = ax[0, 1].imshow(orig_frames)
         ax[0, 1].set_title("Original Frame")
@@ -248,8 +247,9 @@ if __name__ == '__main__':
             _ = ax[r, c].imshow(orig_frames)
             head_attn_map = ax[r, c].imshow(h_attn_map[i], cmap='plasma', alpha=0.65, aspect='auto', vmin=VMIN, vmax=VMAX)
             ax[r, c].set_title(f"Attention map from head {i+1}")
-            cbar = fig.colorbar(attn_map, ax=ax[r, c])
-        
+        # general colorbar for the whole frame
+        cbar = fig.colorbar(attn_map, ax=ax, orientation='vertical', fraction=0.035, pad=0.04)
+
         plt.savefig(os.path.join(save_video_dir,
                                  f"{frame_count}.png"))
         plt.close()
