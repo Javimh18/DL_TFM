@@ -5,7 +5,7 @@ import os
 import numpy as np
 
 ROOT_DIR = '../checkpoints/ALE/'
-ENV = 'MsPacman-v5'
+ENV = 'DemonAttack-v5'
 RESULTS_DIR = '../results/training'
 
 model_name_map = {
@@ -17,9 +17,9 @@ model_name_map = {
 if __name__ == "__main__":
     env_dir  = os.path.join(ROOT_DIR, ENV)
     models = os.listdir(env_dir)
-    cnn_file = os.path.join(ROOT_DIR, ENV, "ddqn_cnn_agent", "2024-06-05T13-08-15", "log")
-    swin_file = os.path.join(ROOT_DIR, ENV, "ddqn_swin_transformer_agent", "2024-06-08T22-20-02", "log")
-    vit_file = os.path.join(ROOT_DIR, ENV, "ddqn_vit_agent", "2024-06-08T22-19-34", "log")
+    cnn_file = os.path.join(ROOT_DIR, ENV, "ddqn_cnn_agent", "2024-06-15T14-22-45", "log")
+    swin_file = os.path.join(ROOT_DIR, ENV, "ddqn_swin_transformer_agent", "2024-06-08T22-55-46", "log")
+    vit_file = os.path.join(ROOT_DIR, ENV, "ddqn_vit_agent", "2024-06-08T22-55-22", "log")
     
     os.makedirs(RESULTS_DIR, exist_ok=True)
     
