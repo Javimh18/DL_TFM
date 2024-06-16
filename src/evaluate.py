@@ -67,10 +67,10 @@ if __name__ == '__main__':
         # TODO: WATCH OUT!!! RESULTS MAY VARY DEPENDING ON THE DEVICE YOU TRAINED YOUR MODEL ON
         device = get_device(args)
         print(f"Using torch with {device}")
-        
         env = make_env()
         obs_shape = env.observation_space.shape
         n_actions = env.action_space.n 
+        env.close() # for memory constrains
         
         agents_list = list(agent_config.keys())
         for i in range(len(agents_list)):
@@ -114,33 +114,33 @@ if __name__ == '__main__':
         agent.load_weights(path_to_checkpoint=args.path_to_agent_checkpoint)
         
         curr_step = 0; total_reward = 0
-        actions = []
-        trun_frames = []
-        original_frames = []
         
         runs_reward = []
         for i in tqdm(range(RUNS)):
             done, trunc = False, False
+            env = make_env()
             state = env.reset()
             total_reward = 0; curr_step = 0
             while (not done) and (not trunc):
                 # 1. get action for state
                 action, _ = agent.perform_action(state, t=-1, exploit=True)
-                actions.append(action)
                 # 2. run action in environment
                 next_state, reward, done, trunc, info = env.step(action) # 1.70 ms
-                trun_frames.append(np.array(env.frames))
-                original_frames.append(env.get_original_observation())
                 # 4. Learn from collected experiences
                 state = next_state
                 # 6. Update step value 
                 curr_step += 1   
                 total_reward += reward
+            env.close()
             
             runs_reward.append(total_reward)
         
         mean_runs = np.mean(runs_reward)
         std_runs = np.std(runs_reward)
+        max_run = np.max(runs_reward)
+        min_run = np.min(runs_reward)
         
-        print(f"The average of rewards is {mean_runs}\n"
-            f"The std dev of rewards is {std_runs}")
+        print(f"The mean of rewards is {mean_runs}\n"
+            f"The std dev of rewards is {std_runs}\n"
+            f"The max score achieved is {max_run}\n"
+            f"The min score achieved is {min_run}\n")
