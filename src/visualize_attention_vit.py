@@ -223,7 +223,7 @@ if __name__ == '__main__':
     nh = len(heads_attn_maps[0])
     n_rows = nh//2
     for orig_frames, attn_map, a, q_s, h_attn_map in zip(original_frames, attn_maps, actions, q_values, heads_attn_maps):
-        fig, ax = plt.subplots(3, 3, figsize=(24,35))
+        fig, ax = plt.subplots(3, 3, figsize=(16,22))
         # subplot the attention map with the color-bar
         _ = ax[0, 0].imshow(orig_frames)
         attn_map = ax[0, 0].imshow(attn_map, cmap='plasma', alpha=0.65, aspect='auto', vmin=VMIN, vmax=VMAX)
@@ -234,7 +234,8 @@ if __name__ == '__main__':
         ax[0, 1].set_title("Original Frame")
         # plot the histogram with the q values
         qs_hist = ax[0,2].bar(action_names, q_s, color='blue')
-        plt.xticks(rotation=75)
+        ax[0,2].set_xticks(action_names)
+        ax[0,2].set_xticklabels(action_names, rotation=45)
         ax[0,2].set_ylim(-10,100)
         ax[0,2].set_title(f"Q action values with action {action_dict[a]} selected")
         
