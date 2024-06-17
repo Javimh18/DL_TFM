@@ -12,6 +12,24 @@
 	abstract = {In neuroscience, attention has been shown to bidirectionally interact with reinforcement learning (RL) to reduce the dimensionality of task representations, restricting computations to relevant features. In machine learning, despite their popularity, attention mechanisms have seldom been administered to decision-making problems. Here, we leverage a theoretical model from computational neuroscience – the attention-weighted RL (AWRL), defining how humans identify task-relevant features (i.e., that allow value predictions) – to design an applied deep RL paradigm. We formally demonstrate that the conjunction of the self-attention mechanism, widely employed in machine learning, with value function approximation is a general formulation of the AWRL model. To evaluate our agent, we train it on three Atari tasks at different complexity levels, incorporating both task-relevant and irrelevant features. Because the model uses semantic observations, we can uncover not only which features the agent elects to base decisions on, but also how it chooses to compile more complex, relational features from simpler ones. We first show that performance depends in large part on the ability to compile new compound features, rather than mere focus on individual features. In line with neuroscience predictions, self-attention leads to high resiliency to noise (irrelevant features) compared to other benchmark models. Finally, we highlight the importance and separate contributions of both bottom-up and top-down attention in the learning process. Together, these results demonstrate the broader validity of the AWRL framework in complex task scenarios, and illustrate the benefits of a deeper integration between neuroscience-derived models and RL for decision making in machine learning.}
 }
 
+@misc{lehmann2024definitive,
+	title={The Definitive Guide to Policy Gradients in Deep Reinforcement Learning: Theory, Algorithms and Implementations}, 
+	author={Matthias Lehmann},
+	year={2024},
+	eprint={2401.13662},
+	archivePrefix={arXiv},
+	primaryClass={id='cs.LG' full_name='Machine Learning' is_active=True alt_name=None in_archive='cs' is_general=False description='Papers on all aspects of machine learning research (supervised, unsupervised, reinforcement learning, bandit problems, and so on) including also robustness, explanation, fairness, and methodology. cs.LG is also an appropriate primary category for applications of machine learning methods.'}
+}
+
+@misc{wang2022recursive,
+	title={Recursive Least Squares Advantage Actor-Critic Algorithms}, 
+	author={Yuan Wang and Chunyuan Zhang and Tianzong Yu and Meng Ma},
+	year={2022},
+	eprint={2201.05918},
+	archivePrefix={arXiv},
+	primaryClass={id='cs.LG' full_name='Machine Learning' is_active=True alt_name=None in_archive='cs' is_general=False description='Papers on all aspects of machine learning research (supervised, unsupervised, reinforcement learning, bandit problems, and so on) including also robustness, explanation, fairness, and methodology. cs.LG is also an appropriate primary category for applications of machine learning methods.'}
+}
+
 @article{LEONG2017451,
 	title = {Dynamic Interaction between Reinforcement Learning and Attention in Multidimensional Environments},
 	journal = {Neuron},
@@ -142,6 +160,27 @@
 	year={2015},
 	publisher={Public Library of Science San Francisco, CA USA}
 }
+
+@inproceedings{Chattopadhay_2018,
+	title={Grad-CAM++: Generalized Gradient-Based Visual Explanations for Deep Convolutional Networks},
+	url={http://dx.doi.org/10.1109/WACV.2018.00097},
+	DOI={10.1109/wacv.2018.00097},
+	booktitle={2018 IEEE Winter Conference on Applications of Computer Vision (WACV)},
+	publisher={IEEE},
+	author={Chattopadhay, Aditya and Sarkar, Anirban and Howlader, Prantik and Balasubramanian, Vineeth N},
+	year={2018},
+	month=mar }
+	
+@inproceedings{Muhammad_2020,
+	title={Eigen-CAM: Class Activation Map using Principal Components},
+	url={http://dx.doi.org/10.1109/IJCNN48605.2020.9206626},
+	DOI={10.1109/ijcnn48605.2020.9206626},
+	booktitle={2020 International Joint Conference on Neural Networks (IJCNN)},
+	publisher={IEEE},
+	author={Muhammad, Mohammed Bany and Yeasin, Mohammed},
+	year={2020},
+	month=jul }
+
 
 @Article{Wang2020,
 	author={Wang, Hao-nan
@@ -666,6 +705,75 @@
 	title = {ptflops: a flops counting tool for neural networks in pytorch framework},
 	year = {2018-2024},
 	url = {https://github.com/sovrasov/flops-counter.pytorch},
+}
+
+@misc{hinton2015distilling,
+	title={Distilling the Knowledge in a Neural Network}, 
+	author={Geoffrey Hinton and Oriol Vinyals and Jeff Dean},
+	year={2015},
+	eprint={1503.02531},
+	archivePrefix={arXiv},
+	primaryClass={stat.ML}
+}
+
+@misc{tarvainen2018mean,
+	title={Mean teachers are better role models: Weight-averaged consistency targets improve semi-supervised deep learning results}, 
+	author={Antti Tarvainen and Harri Valpola},
+	year={2018},
+	eprint={1703.01780},
+	archivePrefix={arXiv},
+	primaryClass={cs.NE}
+}
+
+@ARTICLE{layerCAM,
+	author={Jiang, Peng-Tao and Zhang, Chang-Bin and Hou, Qibin and Cheng, Ming-Ming and Wei, Yunchao},
+	journal={IEEE Transactions on Image Processing}, 
+	title={LayerCAM: Exploring Hierarchical Class Activation Maps for Localization}, 
+	year={2021},
+	volume={30},
+	number={},
+	pages={5875-5888},
+	keywords={Location awareness;Task analysis;Semantics;Image segmentation;Reliability;Convolution;Spatial resolution;Weakly-supervised object localization;class activation maps},
+	doi={10.1109/TIP.2021.3089943}}
+	
+@misc{fu2020axiombased,
+	title={Axiom-based Grad-CAM: Towards Accurate Visualization and Explanation of CNNs}, 
+	author={Ruigang Fu and Qingyong Hu and Xiaohu Dong and Yulan Guo and Yinghui Gao and Biao Li},
+	year={2020},
+	eprint={2008.02312},
+	archivePrefix={arXiv},
+	primaryClass={cs.CV}
+}
+
+@Article{Geirhos2020,
+	author={Geirhos, Robert
+	and Jacobsen, J{\"o}rn-Henrik
+	and Michaelis, Claudio
+	and Zemel, Richard
+	and Brendel, Wieland
+	and Bethge, Matthias
+	and Wichmann, Felix A.},
+	title={Shortcut learning in deep neural networks},
+	journal={Nature Machine Intelligence},
+	year={2020},
+	month={Nov},
+	day={01},
+	volume={2},
+	number={11},
+	pages={665-673},
+	abstract={Deep learning has triggered the current rise of artificial intelligence and is the workhorse of today's machine intelligence. Numerous success stories have rapidly spread all over science, industry and society, but its limitations have only recently come into focus. In this Perspective we seek to distil how many of deep learning's failures can be seen as different symptoms of the same underlying problem: shortcut learning. Shortcuts are decision rules that perform well on standard benchmarks but fail to transfer to more challenging testing conditions, such as real-world scenarios. Related issues are known in comparative psychology, education and linguistics, suggesting that shortcut learning may be a common characteristic of learning systems, biological and artificial alike. Based on these observations, we develop a set of recommendations for model interpretation and benchmarking, highlighting recent advances in machine learning to improve robustness and transferability from the lab to real-world applications.},
+	issn={2522-5839},
+	doi={10.1038/s42256-020-00257-z},
+	url={https://doi.org/10.1038/s42256-020-00257-z}
+}
+
+@misc{zhang2022kdecay,
+	title={kDecay: Just adding k-decay items on Learning-Rate Schedule to improve Neural Networks}, 
+	author={Tao Zhang and Wei Li},
+	year={2022},
+	eprint={2004.05909},
+	archivePrefix={arXiv},
+	primaryClass={id='cs.LG' full_name='Machine Learning' is_active=True alt_name=None in_archive='cs' is_general=False description='Papers on all aspects of machine learning research (supervised, unsupervised, reinforcement learning, bandit problems, and so on) including also robustness, explanation, fairness, and methodology. cs.LG is also an appropriate primary category for applications of machine learning methods.'}
 }
 
 

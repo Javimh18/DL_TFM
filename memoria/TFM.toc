@@ -6,81 +6,93 @@
 \contentsline {section}{\numberline {2.1}An introduction to the RL problem}{5}{section.2.1}%
 \contentsline {subsection}{\numberline {2.1.1}Formalizing RL}{5}{subsection.2.1.1}%
 \contentsline {subsection}{\numberline {2.1.2}Value-based RL}{7}{subsection.2.1.2}%
-\contentsline {subsubsection}{Value function approximation}{8}{section*.10}%
+\contentsline {subsubsection}{\numberline {2.1.2.1}Value function approximation}{8}{subsubsection.2.1.2.1}%
 \contentsline {subsection}{\numberline {2.1.3}Policy-based RL}{9}{subsection.2.1.3}%
-\contentsline {subsubsection}{Policy Gradient Theorem}{10}{section*.11}%
+\contentsline {subsubsection}{\numberline {2.1.3.1}Policy Gradient Theorem}{10}{subsubsection.2.1.3.1}%
 \contentsline {section}{\numberline {2.2}Attention-based models}{10}{section.2.2}%
 \contentsline {subsection}{\numberline {2.2.1}What is attention?}{10}{subsection.2.2.1}%
 \contentsline {subsection}{\numberline {2.2.2}The Transformer Architecture}{11}{subsection.2.2.2}%
-\contentsline {subsection}{\numberline {2.2.3}Vision Transformers}{12}{subsection.2.2.3}%
-\contentsline {subsection}{\numberline {2.2.4}SWIN Transformer}{13}{subsection.2.2.4}%
-\contentsline {section}{\numberline {2.3}Explainable AI}{15}{section.2.3}%
-\contentsline {subsubsection}{Sensitive Analysis}{16}{section*.19}%
-\contentsline {subsubsection}{Layer-wise Relevance Propagation}{17}{section*.20}%
-\contentsline {subsubsection}{Class Activation Maps}{17}{section*.21}%
+\contentsline {subsection}{\numberline {2.2.3}Vision Transformers}{13}{subsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.4}SWIN Transformer}{14}{subsection.2.2.4}%
+\contentsline {section}{\numberline {2.3}Explainable AI}{16}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Sensitive Analysis}{16}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Layer-wise Relevance Propagation}{17}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Class Activation Maps}{17}{subsection.2.3.3}%
 \contentsline {section}{\numberline {2.4}Reinforcement Learning using Transformers}{18}{section.2.4}%
 \contentsline {section}{\numberline {2.5}Explainable RL using Attention}{19}{section.2.5}%
 \contentsline {chapter}{\numberline {3}Design and development}{21}{chapter.3}%
 \contentsline {section}{\numberline {3.1}Farama's gymnasium library}{21}{section.3.1}%
 \contentsline {subsection}{\numberline {3.1.1}Environment dynamics}{22}{subsection.3.1.1}%
 \contentsline {subsection}{\numberline {3.1.2}Processing techniques of an environment}{23}{subsection.3.1.2}%
-\contentsline {subsubsection}{Skip N-Frames}{23}{section*.23}%
-\contentsline {subsubsection}{Gray-Scale Observation}{24}{section*.24}%
-\contentsline {subsubsection}{Resize Observation}{25}{section*.25}%
-\contentsline {subsubsection}{Additional Wrappers}{25}{section*.26}%
+\contentsline {subsubsection}{\numberline {3.1.2.1}Skip N-Frames}{23}{subsubsection.3.1.2.1}%
+\contentsline {subsubsection}{\numberline {3.1.2.2}Gray-Scale Observation}{24}{subsubsection.3.1.2.2}%
+\contentsline {subsubsection}{\numberline {3.1.2.3}Resize Observation}{25}{subsubsection.3.1.2.3}%
+\contentsline {subsubsection}{\numberline {3.1.2.4}Additional Wrappers}{25}{subsubsection.3.1.2.4}%
 \contentsline {section}{\numberline {3.2}Agents development}{26}{section.3.2}%
 \contentsline {subsection}{\numberline {3.2.1}DQN and DDQN training loop}{26}{subsection.3.2.1}%
-\contentsline {subsubsection}{Explaining the algorithm}{26}{section*.27}%
-\contentsline {subsubsection}{Main loop implementation}{27}{section*.28}%
-\contentsline {subsubsection}{Digging deeper: the DQN agent}{28}{section*.29}%
-\contentsline {subsubsection}{DDQN training loop: A minor update}{31}{section*.30}%
-\contentsline {subsection}{\numberline {3.2.2}Attention-based models: Vision Transformer}{32}{subsection.3.2.2}%
-\contentsline {subsubsection}{Constructor}{32}{section*.31}%
-\contentsline {subsubsection}{Patch Embedding}{33}{section*.32}%
-\contentsline {subsubsection}{ViT encoder block}{34}{section*.33}%
-\contentsline {subsubsection}{ViT Attention Module}{34}{section*.34}%
-\contentsline {subsubsection}{The forward method}{35}{section*.35}%
-\contentsline {subsection}{\numberline {3.2.3}Attention-based models: SWIN Transformer}{36}{subsection.3.2.3}%
-\contentsline {subsubsection}{Constructor}{36}{section*.36}%
-\contentsline {subsubsection}{BasicLayer}{37}{section*.37}%
-\contentsline {subsubsection}{SwinTransformerBlock}{38}{section*.38}%
-\contentsline {subsubsection}{Window Attention}{41}{section*.39}%
-\contentsline {subsubsection}{The forward method}{42}{section*.40}%
-\contentsline {section}{\numberline {3.3}Setting up the pipeline}{42}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}Trainer}{43}{subsection.3.3.1}%
-\contentsline {subsection}{\numberline {3.3.2}Logger}{43}{subsection.3.3.2}%
-\contentsline {subsection}{\numberline {3.3.3}Schedulers}{46}{subsection.3.3.3}%
-\contentsline {subsection}{\numberline {3.3.4}Extracting explainability features}{49}{subsection.3.3.4}%
-\contentsline {subsubsection}{Extracting attention maps}{49}{section*.42}%
-\contentsline {subsubsection}{Extracting Grad-CAM's activation maps}{50}{section*.45}%
-\contentsline {subsection}{\numberline {3.3.5}Additional implementations}{51}{subsection.3.3.5}%
-\contentsline {subsubsection}{Configuration files}{51}{section*.47}%
-\contentsline {subsubsection}{Checkpoints}{52}{section*.48}%
-\contentsline {subsection}{\numberline {3.3.6}Overview}{52}{subsection.3.3.6}%
-\contentsline {chapter}{\numberline {4}Evaluation}{53}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Experimental set-up}{53}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Training results}{54}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}Exploration schedules}{55}{subsection.4.2.1}%
-\contentsline {subsection}{\numberline {4.2.2}Attention models training comparison}{55}{subsection.4.2.2}%
-\contentsline {section}{\numberline {4.3}Explainability features}{55}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Attention maps results}{55}{subsection.4.3.1}%
-\contentsline {subsection}{\numberline {4.3.2}Activation maps results}{55}{subsection.4.3.2}%
-\contentsline {subsection}{\numberline {4.3.3}Comparison}{55}{subsection.4.3.3}%
-\contentsline {chapter}{\numberline {5}Conclusions and future work}{57}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Conclusions}{57}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Future work}{57}{section.5.2}%
-\contentsline {chapter}{Bibliography}{59}{chapter*.54}%
-\contentsline {chapter}{Appendix}{65}{section*.55}%
-\contentsline {chapter}{\numberline {A}Reinforcement Learning}{65}{appendix.A}%
-\contentsline {section}{\numberline {A.1}Classic learning methods in RL}{65}{section.A.1}%
-\contentsline {subsection}{\numberline {A.1.1}Monte Carlo estimation:}{65}{subsection.A.1.1}%
-\contentsline {subsection}{\numberline {A.1.2}Temporal Difference Learning:}{65}{subsection.A.1.2}%
-\contentsline {subsection}{\numberline {A.1.3}On-Policy Control: }{67}{subsection.A.1.3}%
-\contentsline {subsection}{\numberline {A.1.4}Off-Policy Control: }{68}{subsection.A.1.4}%
-\contentsline {subsection}{\numberline {A.1.5}Actor-Critic Methods}{68}{subsection.A.1.5}%
-\contentsline {chapter}{\numberline {B}Attention Mechanism}{69}{appendix.B}%
-\contentsline {section}{\numberline {B.1}Understanding the attention mechanism}{69}{section.B.1}%
-\contentsline {section}{\numberline {B.2}From attention to self-attention}{70}{section.B.2}%
-\contentsline {chapter}{\numberline {C}Schedulers}{73}{appendix.C}%
-\contentsline {section}{\numberline {C.1}Gamma for the exponential equation}{73}{section.C.1}%
-\contentsline {section}{\numberline {C.2}Gamma for the product of exponential equation}{73}{section.C.2}%
+\contentsline {subsubsection}{\numberline {3.2.1.1}Explaining the DQN algorithm}{26}{subsubsection.3.2.1.1}%
+\contentsline {subsubsection}{\numberline {3.2.1.2}Main loop implementation for DQN}{28}{subsubsection.3.2.1.2}%
+\contentsline {subsubsection}{\numberline {3.2.1.3}Digging deeper: the DQN agent}{29}{subsubsection.3.2.1.3}%
+\contentsline {subsubsection}{\numberline {3.2.1.4}From DQN to DDQN}{31}{subsubsection.3.2.1.4}%
+\contentsline {section}{\numberline {3.3}Q-networks integration}{32}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Setting up the pipeline}{34}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Trainer}{34}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Logger}{35}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Schedulers}{38}{subsection.3.4.3}%
+\contentsline {subsection}{\numberline {3.4.4}Extracting explainability features}{40}{subsection.3.4.4}%
+\contentsline {subsubsection}{\numberline {3.4.4.1}Extracting attention maps}{40}{subsubsection.3.4.4.1}%
+\contentsline {subsubsection}{\numberline {3.4.4.2}Extracting Grad-CAM's activation maps}{42}{subsubsection.3.4.4.2}%
+\contentsline {subsection}{\numberline {3.4.5}Additional implementations}{43}{subsection.3.4.5}%
+\contentsline {subsubsection}{\numberline {3.4.5.1}Configuration files}{43}{subsubsection.3.4.5.1}%
+\contentsline {subsubsection}{\numberline {3.4.5.2}Checkpoints}{43}{subsubsection.3.4.5.2}%
+\contentsline {subsection}{\numberline {3.4.6}Overview}{44}{subsection.3.4.6}%
+\contentsline {chapter}{\numberline {4}Evaluation}{45}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Experimental set-up}{45}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Computing resources}{45}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}Training set-up}{46}{subsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.1.3}Q-networks configuration}{47}{subsection.4.1.3}%
+\contentsline {subsection}{\numberline {4.1.4}Environments}{48}{subsection.4.1.4}%
+\contentsline {section}{\numberline {4.2}Training results}{49}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Exploration schedules}{49}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Agents training comparison}{50}{subsection.4.2.2}%
+\contentsline {subsubsection}{\numberline {4.2.2.1}MsPacman training results}{51}{subsubsection.4.2.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2.2}DemonAttack training results}{53}{subsubsection.4.2.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}Final evaluation results}{55}{subsection.4.2.3}%
+\contentsline {section}{\numberline {4.3}Explainability features}{57}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Attention maps results}{57}{subsection.4.3.1}%
+\contentsline {subsubsection}{\numberline {4.3.1.1}MsPacman attention maps analysis}{57}{subsubsection.4.3.1.1}%
+\contentsline {subsubsection}{\numberline {4.3.1.2}DemonAttack attention maps analysis}{59}{subsubsection.4.3.1.2}%
+\contentsline {subsection}{\numberline {4.3.2}Activation maps results}{60}{subsection.4.3.2}%
+\contentsline {subsubsection}{\numberline {4.3.2.1}MsPacman Activation maps analysis}{60}{subsubsection.4.3.2.1}%
+\contentsline {subsubsection}{\numberline {4.3.2.2}DemonAttack Activation maps analysis}{63}{subsubsection.4.3.2.2}%
+\contentsline {chapter}{\numberline {5}Conclusions and future work}{65}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Conclusions}{65}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Future work}{65}{section.5.2}%
+\contentsline {chapter}{Bibliography}{67}{chapter*.52}%
+\contentsline {chapter}{Appendix}{73}{section*.53}%
+\contentsline {chapter}{\numberline {A}Reinforcement Learning}{73}{appendix.A}%
+\contentsline {section}{\numberline {A.1}Classic learning methods in RL}{73}{section.A.1}%
+\contentsline {subsection}{\numberline {A.1.1}Monte Carlo estimation:}{73}{subsection.A.1.1}%
+\contentsline {subsection}{\numberline {A.1.2}Temporal Difference Learning:}{73}{subsection.A.1.2}%
+\contentsline {subsection}{\numberline {A.1.3}On-Policy Control: }{75}{subsection.A.1.3}%
+\contentsline {subsection}{\numberline {A.1.4}Off-Policy Control: }{76}{subsection.A.1.4}%
+\contentsline {subsection}{\numberline {A.1.5}Actor-Critic Methods}{76}{subsection.A.1.5}%
+\contentsline {chapter}{\numberline {B}Attention Mechanism}{77}{appendix.B}%
+\contentsline {section}{\numberline {B.1}Understanding the attention mechanism}{77}{section.B.1}%
+\contentsline {section}{\numberline {B.2}From attention to self-attention}{78}{section.B.2}%
+\contentsline {chapter}{\numberline {C}Attention-models code analysis}{81}{appendix.C}%
+\contentsline {section}{\numberline {C.1}Attention-based models: Vision Transformer}{81}{section.C.1}%
+\contentsline {subsection}{\numberline {C.1.1}Constructor}{81}{subsection.C.1.1}%
+\contentsline {subsection}{\numberline {C.1.2}Patch Embedding}{82}{subsection.C.1.2}%
+\contentsline {subsection}{\numberline {C.1.3}ViT encoder block}{83}{subsection.C.1.3}%
+\contentsline {subsection}{\numberline {C.1.4}ViT Attention Module}{84}{subsection.C.1.4}%
+\contentsline {subsection}{\numberline {C.1.5}The forward method}{84}{subsection.C.1.5}%
+\contentsline {section}{\numberline {C.2}Attention-based models: SWIN Transformer}{85}{section.C.2}%
+\contentsline {subsection}{\numberline {C.2.1}Constructor}{85}{subsection.C.2.1}%
+\contentsline {subsection}{\numberline {C.2.2}BasicLayer}{87}{subsection.C.2.2}%
+\contentsline {subsection}{\numberline {C.2.3}SwinTransformerBlock}{88}{subsection.C.2.3}%
+\contentsline {subsection}{\numberline {C.2.4}Window Attention}{90}{subsection.C.2.4}%
+\contentsline {subsection}{\numberline {C.2.5}The forward method}{91}{subsection.C.2.5}%
+\contentsline {chapter}{\numberline {D}Schedulers}{93}{appendix.D}%
+\contentsline {section}{\numberline {D.1}Gamma for the exponential equation}{93}{section.D.1}%
+\contentsline {section}{\numberline {D.2}Gamma for the product of exponential equation}{93}{section.D.2}%

@@ -11,9 +11,36 @@ A.~Vaswani, N.~Shazeer, N.~Parmar, J.~Uszkoreit, L.~Jones, A.~N. Gomez,
 Z.~Min, ``Attention link: An efficient attention-based low resource machine
   translation architecture,'' 2023.
 
+\bibitem{meng2024deep}
+L.~Meng, M.~Goodwin, A.~Yazidi, and P.~Engelstad, ``Deep reinforcement learning
+  with swin transformers,'' 2024.
+
 \bibitem{intro_rl}
 R.~S. Sutton and A.~G. Barto, {\em Reinforcement Learning: An Introduction}.
 \newblock Cambridge, MA, USA: A Bradford Book, 2018.
+
+\bibitem{bach2015pixel}
+S.~Bach, A.~Binder, G.~Montavon, F.~Klauschen, K.-R. M{\"u}ller, and W.~Samek,
+  ``On pixel-wise explanations for non-linear classifier decisions by
+  layer-wise relevance propagation,'' {\em PloS one}, vol.~10, no.~7,
+  p.~e0130140, 2015.
+
+\bibitem{Selvaraju_2019}
+R.~R. Selvaraju, M.~Cogswell, A.~Das, R.~Vedantam, D.~Parikh, and D.~Batra,
+  ``Grad-cam: Visual explanations from deep networks via gradient-based
+  localization,'' {\em International Journal of Computer Vision}, vol.~128,
+  p.~336–359, Oct. 2019.
+
+\bibitem{Chattopadhay_2018}
+A.~Chattopadhay, A.~Sarkar, P.~Howlader, and V.~N. Balasubramanian,
+  ``Grad-cam++: Generalized gradient-based visual explanations for deep
+  convolutional networks,'' in {\em 2018 IEEE Winter Conference on Applications
+  of Computer Vision (WACV)}, IEEE, Mar. 2018.
+
+\bibitem{Muhammad_2020}
+M.~B. Muhammad and M.~Yeasin, ``Eigen-cam: Class activation map using principal
+  components,'' in {\em 2020 International Joint Conference on Neural Networks
+  (IJCNN)}, IEEE, July 2020.
 
 \bibitem{mnih2013playing}
 V.~Mnih, K.~Kavukcuoglu, D.~Silver, A.~Graves, I.~Antonoglou, D.~Wierstra, and
@@ -22,6 +49,14 @@ V.~Mnih, K.~Kavukcuoglu, D.~Silver, A.~Graves, I.~Antonoglou, D.~Wierstra, and
 \bibitem{vanhasselt2015deep}
 H.~van Hasselt, A.~Guez, and D.~Silver, ``Deep reinforcement learning with
   double q-learning,'' 2015.
+
+\bibitem{lehmann2024definitive}
+M.~Lehmann, ``The definitive guide to policy gradients in deep reinforcement
+  learning: Theory, algorithms and implementations,'' 2024.
+
+\bibitem{wang2022recursive}
+Y.~Wang, C.~Zhang, T.~Yu, and M.~Ma, ``Recursive least squares advantage
+  actor-critic algorithms,'' 2022.
 
 \bibitem{bahdanau2016neural}
 D.~Bahdanau, K.~Cho, and Y.~Bengio, ``Neural machine translation by jointly
@@ -81,21 +116,9 @@ J.~Pizarroso, J.~Portela, and A.~Muñoz, ``Neuralsens: Sensitivity analysis of
   neural networks,'' {\em Journal of Statistical Software}, vol.~102, no.~7,
   2022.
 
-\bibitem{bach2015pixel}
-S.~Bach, A.~Binder, G.~Montavon, F.~Klauschen, K.-R. M{\"u}ller, and W.~Samek,
-  ``On pixel-wise explanations for non-linear classifier decisions by
-  layer-wise relevance propagation,'' {\em PloS one}, vol.~10, no.~7,
-  p.~e0130140, 2015.
-
 \bibitem{zhou2015learning}
 B.~Zhou, A.~Khosla, A.~Lapedriza, A.~Oliva, and A.~Torralba, ``Learning deep
   features for discriminative localization,'' 2015.
-
-\bibitem{Selvaraju_2019}
-R.~R. Selvaraju, M.~Cogswell, A.~Das, R.~Vedantam, D.~Parikh, and D.~Batra,
-  ``Grad-cam: Visual explanations from deep networks via gradient-based
-  localization,'' {\em International Journal of Computer Vision}, vol.~128,
-  p.~336–359, Oct. 2019.
 
 \bibitem{rl_transformers2023survey}
 W.~Li, H.~Luo, Z.~Lin, C.~Zhang, Z.~Lu, and D.~Ye, ``A survey on transformers
@@ -105,10 +128,6 @@ W.~Li, H.~Luo, Z.~Lin, C.~Zhang, Z.~Lu, and D.~Ye, ``A survey on transformers
 A.~A. Kalantari, M.~Amini, S.~Chandar, and D.~Precup, ``Improving sample
   efficiency of value based models using attention and vision transformers,''
   2022.
-
-\bibitem{meng2024deep}
-L.~Meng, M.~Goodwin, A.~Yazidi, and P.~Engelstad, ``Deep reinforcement learning
-  with swin transformers,'' 2024.
 
 \bibitem{Bellemare_2013}
 M.~G. Bellemare, Y.~Naddaf, J.~Veness, and M.~Bowling, ``The arcade learning
@@ -166,21 +185,17 @@ A.~Patterson, V.~Liao, and M.~White, ``Robust losses for learning value
   functions,'' {\em IEEE Transactions on Pattern Analysis and Machine
   Intelligence}, vol.~45, no.~5, pp.~6157--6167, 2023.
 
-\bibitem{caron2021emerging}
-M.~Caron, H.~Touvron, I.~Misra, H.~Jégou, J.~Mairal, P.~Bojanowski, and
-  A.~Joulin, ``Emerging properties in self-supervised vision transformers,''
-  2021.
-
-\bibitem{he2015deep}
-K.~He, X.~Zhang, S.~Ren, and J.~Sun, ``Deep residual learning for image
-  recognition,'' 2015.
-
 \bibitem{feng2022mario}
 Y.~Feng, S.~Subramanian, H.~Wang, and S.~Guo, ``Train a mario-playing rl
   agent.''
   \url{https://pytorch.org/tutorials/intermediate/mario_rl_tutorial.html},
   2022.
 \newblock Accessed: 2024-02-03.
+
+\bibitem{caron2021emerging}
+M.~Caron, H.~Touvron, I.~Misra, H.~Jégou, J.~Mairal, P.~Bojanowski, and
+  A.~Joulin, ``Emerging properties in self-supervised vision transformers,''
+  2021.
 
 \bibitem{jacobgilpytorchcam}
 J.~Gildenblat and contributors, ``Pytorch library for cam methods.''
@@ -209,6 +224,33 @@ T.~Yep, ``torchinfo: View model summaries in pytorch.''
 V.~Sovrasov, ``ptflops: a flops counting tool for neural networks in pytorch
   framework,'' 2018-2024.
 
+\bibitem{Geirhos2020}
+R.~Geirhos, J.-H. Jacobsen, C.~Michaelis, R.~Zemel, W.~Brendel, M.~Bethge, and
+  F.~A. Wichmann, ``Shortcut learning in deep neural networks,'' {\em Nature
+  Machine Intelligence}, vol.~2, pp.~665--673, Nov 2020.
+
+\bibitem{hinton2015distilling}
+G.~Hinton, O.~Vinyals, and J.~Dean, ``Distilling the knowledge in a neural
+  network,'' 2015.
+
+\bibitem{tarvainen2018mean}
+A.~Tarvainen and H.~Valpola, ``Mean teachers are better role models:
+  Weight-averaged consistency targets improve semi-supervised deep learning
+  results,'' 2018.
+
+\bibitem{layerCAM}
+P.-T. Jiang, C.-B. Zhang, Q.~Hou, M.-M. Cheng, and Y.~Wei, ``Layercam:
+  Exploring hierarchical class activation maps for localization,'' {\em IEEE
+  Transactions on Image Processing}, vol.~30, pp.~5875--5888, 2021.
+
+\bibitem{fu2020axiombased}
+R.~Fu, Q.~Hu, X.~Dong, Y.~Guo, Y.~Gao, and B.~Li, ``Axiom-based grad-cam:
+  Towards accurate visualization and explanation of cnns,'' 2020.
+
+\bibitem{zhang2022kdecay}
+T.~Zhang and W.~Li, ``kdecay: Just adding k-decay items on learning-rate
+  schedule to improve neural networks,'' 2022.
+
 \bibitem{gerstner2021multilevel}
 T.~Gerstner, B.~Harrach, D.~Roth, and M.~Simon, ``Multilevel monte carlo
   learning,'' 2021.
@@ -229,5 +271,9 @@ J.~Schulman, F.~Wolski, P.~Dhariwal, A.~Radford, and O.~Klimov, ``Proximal
 T.~P. Lillicrap, J.~J. Hunt, A.~Pritzel, N.~Heess, T.~Erez, Y.~Tassa,
   D.~Silver, and D.~Wierstra, ``Continuous control with deep reinforcement
   learning,'' 2019.
+
+\bibitem{he2015deep}
+K.~He, X.~Zhang, S.~Ren, and J.~Sun, ``Deep residual learning for image
+  recognition,'' 2015.
 
 \end{thebibliography}

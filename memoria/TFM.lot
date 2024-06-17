@@ -2,10 +2,20 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {table}{\numberline {4.1}{\ignorespaces Sample table (short title)}}{54}{table.caption.50}%
-\contentsline {table}{\numberline {4.2}{\ignorespaces Sample table (short title)}}{55}{table.caption.51}%
-\contentsline {table}{\numberline {4.3}{\ignorespaces Sample table (short title)}}{55}{table.caption.52}%
-\contentsline {table}{\numberline {4.4}{\ignorespaces Sample table (short title)}}{55}{table.caption.53}%
+\contentsline {table}{\numberline {4.1}{\ignorespaces Fixed hyper-parameters that are shared across different training procedures.}}{46}{table.caption.23}%
+\contentsline {table}{\numberline {4.2}{\ignorespaces CNN DDQN network hyper-parameters}}{47}{table.caption.24}%
+\contentsline {table}{\numberline {4.3}{\ignorespaces ViT Small DDQN network hyper-parameters}}{47}{table.caption.25}%
+\contentsline {table}{\numberline {4.4}{\ignorespaces ViT Big DDQN network hyper-parameters}}{48}{table.caption.26}%
+\contentsline {table}{\numberline {4.5}{\ignorespaces SWIN DDQN network hyper-parameters}}{48}{table.caption.27}%
+\contentsline {table}{\numberline {4.6}{\ignorespaces SWIN DDQN network hyper-parameters}}{48}{table.caption.28}%
+\contentsline {table}{\numberline {4.7}{\ignorespaces MsPacman environment results for the several trained agents}}{53}{table.caption.34}%
+\contentsline {table}{\numberline {4.8}{\ignorespaces MsPacman environment results for the several trained agents}}{55}{table.caption.37}%
+\contentsline {table}{\numberline {4.9}{\ignorespaces Mean Scores for the trained agents}}{55}{table.caption.38}%
+\contentsline {table}{\numberline {4.10}{\ignorespaces Max Scores for the trained agents}}{56}{table.caption.39}%
+\contentsline {table}{\numberline {4.11}{\ignorespaces Min Scores for the trained agents}}{56}{table.caption.40}%
+\contentsline {table}{\numberline {4.12}{\ignorespaces Comparison with SWIN DQN \cite {meng2024deep} for mean scores for the trained agents}}{56}{table.caption.41}%
+\contentsline {table}{\numberline {4.13}{\ignorespaces Comparison with SWIN DQN \cite {meng2024deep} for max scores for the trained agents}}{56}{table.caption.42}%
+\addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
